@@ -214,7 +214,7 @@ ALL_CFLAGS := $(OPT) -std=gnu99 $(INCS) $(WARN) $(LOW) $(TRIM) \
 OBJDIR  := $(BUILD)/obj-$(RULES)/$(subst $(space),-,$(TAGS))
 OBJECTS := $(patsubst %.c,$(OBJDIR)/%.o,$(notdir $(SOURCES)))
 
-.PHONY: all probe rules missing install clean evv32 probe32 instances interrupt landing rate inikeys stopthread
+.PHONY: all probe rules missing install clean evv32 probe32 instances interrupt landing rate voices inikeys stopthread pieces prims
 all: $(BUILD)/evv
 
 $(BUILD)/evv: cli/evv.c $(BUILD)/libevv$(SUF).a $(RULESTAMP)
@@ -254,6 +254,28 @@ $(BUILD)/rate: test/rate.c $(BUILD)/libevv.a
 	@$(CC) $(ALL_CFLAGS) test/rate.c $(BUILD)/libevv.a -lpthread -lm -o $@
 	@echo "built $@"
 
+# One text spoken whole and then in pieces, which is what the add-on does with
+# a long message so that a cancel waits out a piece. The suite speaks whole
+# utterances and cannot see where a boundary may go; a boundary at a sentence
+# end costs nothing and one anywhere else costs the pause a full stop gets.
+pieces: $(BUILD)/pieces
+	@$(BUILD)/pieces
+
+$(BUILD)/pieces: test/pieces.c $(BUILD)/libevv.a
+	@$(CC) $(ALL_CFLAGS) test/pieces.c $(BUILD)/libevv.a -lpthread -lm -o $@
+	@echo "built $@"
+
+# The eight voices the caller may edit, which the suite is blind to: nothing it
+# runs asks an instance about voice nine, so the loop that copies the language's
+# own eight into them can be turned off and all 81 cases still match. That
+# happened by accident once. This is what catches it.
+voices: $(BUILD)/voices
+	@$(BUILD)/voices
+
+$(BUILD)/voices: test/voices.c $(BUILD)/libevv.a
+	@$(CC) $(ALL_CFLAGS) test/voices.c $(BUILD)/libevv.a -lpthread -lm -o $@
+	@echo "built $@"
+
 # A backtrack landed on from a thread that never planted it, which is how
 # stopping the engine from another thread used to fault with nothing in the
 # fault to say so. It is meant to be killed by the guard, so it answers
@@ -286,6 +308,18 @@ $(BUILD)/inikeys: test/inikeys.c $(BUILD)/libevv.a
 	@$(CC) $(ALL_CFLAGS) test/inikeys.c $(BUILD)/libevv.a -lpthread -lm -o $@
 	@echo "built $@"
 
+# A machine primitive no rule calls, held against IBM's own. The suite cannot
+# see one of these: a call nothing makes cannot be reached by speaking a
+# sentence, which is why the primitives the shipped languages never use were
+# missing in the first place. `test/prims.sh' builds this and the same file
+# against IBM's objects and diffs the two.
+prims: $(BUILD)/prims
+	@$(BUILD)/prims > /dev/null && echo "built and ran $(BUILD)/prims"
+
+$(BUILD)/prims: test/prims.c $(BUILD)/libevv.a
+	@$(CC) $(ALL_CFLAGS) -DEVV_PRIMS_OURS test/prims.c $(BUILD)/libevv.a -lpthread -lm -o $@
+	@echo "built $@"
+
 $(OBJDIR)/%.o: %.c $(HEADERS)
 	@mkdir -p $(OBJDIR)
 	@$(CC) $(ALL_CFLAGS) -c $< -o $@
@@ -307,7 +341,9 @@ $(BUILD)/libevv$(SUF).a: $(OBJECTS) $(RULESTAMP)
 # both that the text is still faithful and, once a rule has been changed on
 # purpose, which rules those are. It wants the objects, so it is in the same
 # class as the suite: obtainable, and not needed to build.
-.PHONY: notation notation-check notation-prove notation-regenerate notation-symbols
+.PHONY: notation notation-check notation-prove notation-regenerate \
+        notation-symbols notation-rewrite upper upper-prove upper-check \
+        authored constants codepoints
 notation:
 	@python3 tools/delta-notation.py tree
 
@@ -333,6 +369,110 @@ notation-regenerate:
 # because it is the last thing the emitter wanted them for.
 notation-symbols:
 	@python3 tools/delta-notation.py symbols
+
+# The two generated files written for real rather than compared, out of the
+# lifted text alone. Wanted when something other than a rule changes what they
+# hold -- a constant of ours adds a store, and the store is named in there.
+notation-rewrite:
+	@python3 tools/delta-notation.py rewrite
+
+# What a rule stands for, and what a rule does.
+#
+# `upper' and `upper-prove' are the wrappers as the primitive each stands for:
+# written out of the lower form and compiled back, where the bytecode has to
+# match byte for byte. `authored' is the other upper form, the real rules in
+# lang/<tag>/rules/*.up, compiled into the two generated files a build
+# compiles -- which is how one gets into a build at all, since an ordinary
+# build reads what is in the tree.
+#
+# `upper-check' is the one that says whether an authored rule is the rule it
+# stands in for. There is no byte comparison to be had: our compiler would
+# have to make the same choices IBM's did. So it speaks the seven plain cases
+# through a build carrying the authored rules and through one carrying IBM's,
+# and holds every rule entered and every call made with its arguments against
+# each other, and the audio besides. It wants no objects and no Wine.
+upper:
+	@python3 tools/delta-notation.py upper
+
+upper-prove:
+	@python3 tools/delta-notation.py upper-prove
+
+upper-check:
+	@bash tools/upper-check.sh
+
+authored:
+	@python3 tools/delta-notation.py authored
+
+# And that held against the tree, which is the check for a module written with
+# `authored' rather than lifted. EVV_NOTATION_LANG says which one.
+authored-check:
+	@python3 tools/delta-notation.py authored-check
+
+# Bytes a rule of ours names by address, out of lang/<tag>/rules/constants
+# into the one file in a language module that no lifter writes. Run
+# `notation-rewrite' after it: a new store is named in the generated file too.
+constants:
+	@python3 tools/delta-consts.py $(TAGS)
+
+# What each of a language's own characters arrives as: the code point a caller
+# writes and the byte its alphabet knows it by. Authored like the constants
+# rather than lifted, since the nine IBM shipped need none -- every letter they
+# have is in the byte set the engine was built around, and a language of ours
+# can have letters that are not.
+codepoints:
+	@python3 tools/lang-codepoints.py $(TAGS)
+
+# The tables beside the rules, as text: the variables the language declares,
+# the settings it carries, the statement table, the lookup sets and the bytes
+# the rules name by address. Each has a text form in lang/<tag> and one writer
+# for the C, so what a lifter writes and what the text writes cannot drift.
+#
+# `tables-dump' writes the four texts. Three of them read IBM's objects; the
+# sets read the C in the tree instead, on purpose, because the dictionary's
+# arrays in that file are laid down by tools/delta-dict.py out of the words and
+# IBM's objects hold what the dictionary said before anything was added.
+#
+# `tables-check' writes the C from each text into a directory of its own and
+# holds it against the tree, byte for byte. That is the one to believe, and it
+# wants no objects. `tables-write' does it for real, which is how a language
+# that was authored rather than lifted gets built.
+TEMPLATE ?= itit
+
+.PHONY: tables-dump tables-check tables-write
+tables-dump:
+	@for t in $(TAGS); do \
+	    python3 tools/gen-globals.py dump $$t && \
+	    python3 tools/lift-ini.py dump $$t && \
+	    python3 tools/delta-link.py dump $$t && \
+	    python3 tools/delta-sets.py dump $$t && \
+	    python3 tools/delta-consts.py dump $$t || exit 1; \
+	done
+
+tables-check:
+	@for t in $(TAGS); do \
+	    python3 tools/gen-globals.py regenerate $$t && \
+	    python3 tools/lift-ini.py regenerate $$t && \
+	    python3 tools/delta-link.py regenerate $$t && \
+	    python3 tools/delta-sets.py regenerate $$t && \
+	    python3 tools/delta-consts.py regenerate $$t || exit 1; \
+	done
+
+# How much of a module is still the module it was copied from. A language IBM
+# never shipped starts as one it did and becomes itself a rule at a time, and
+# what this answers is how far that has got: TEMPLATE says which to hold it
+# against. It reads the text forms only.
+.PHONY: census
+census:
+	@python3 tools/lang-census.py $(firstword $(TAGS)) $(TEMPLATE)
+
+tables-write:
+	@for t in $(TAGS); do \
+	    python3 tools/gen-globals.py write $$t && \
+	    python3 tools/lift-ini.py write $$t && \
+	    python3 tools/delta-link.py write $$t && \
+	    python3 tools/delta-sets.py write $$t && \
+	    python3 tools/delta-consts.py write $$t || exit 1; \
+	done
 
 # The rules as C. Thirteen megabytes written out of the bytecode beside it,
 # so it is made here rather than kept in the tree, where every change to the

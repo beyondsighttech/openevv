@@ -64,6 +64,32 @@ typedef struct {
 } delta_actrec;
 
 
+/* An operand as the machine keeps one, rather than as a caller builds one.
+   The difference is the pointer: a delta_operand holds the host's, and one
+   of these holds what fits in a value, because these live inside the
+   machine's own blocks where every word is four bytes whatever the host is. */
+typedef struct {
+    evv_ref ptr;     /* +0x00 */
+    int16_t kind;    /* +0x04 */
+    int8_t  flag;    /* +0x06 */
+    int8_t  pad_07;
+} delta_operand_at;
+
+/* What a generate statement collects before anything is written out: the
+   frame it is to lay down, the moment it covers, and the parameters that go
+   with it. Each of the three sets its own bit as it arrives, and nothing is
+   generated until all three have; the second cell is the copy vgen_copy
+   makes so that the next generate can start filling the first again. */
+typedef struct {
+    int32_t value;     /* +0x00, the frame */
+    uint8_t time;      /* +0x04 */
+    uint8_t nparams;   /* +0x05, how many parameter bytes there are */
+    uint8_t pad_06[2];
+    evv_ref params;    /* +0x08, a dynamic buffer holding them */
+    uint8_t flags;     /* +0x0c, 1 the frame, 2 the time, 4 the parameters */
+    uint8_t pad_0d[3];
+} delta_gencell;
+
 /* What seqscan is handed and fills in: which way to walk, where to start,
    how far it got, and whether anything along the way was not a lone
    sequential statement. */
@@ -120,7 +146,19 @@ typedef struct {
     uint8_t       pad_0051[0x5c - 0x51];
     evv_ref       nsq_fields;  /* 0x005c, which fields decide the flags,
                                   terminated by a negative entry */
-    uint8_t       pad_0060[0x94 - 0x60];
+    uint8_t       pad_0060[0x6c - 0x60];
+    /* Where mapsyncs numbers the syncs it walks: a table of one word per
+       sync, indexed by the number absoluteSyncNum gives, and the next
+       number to hand out. */
+    evv_ref       sync_map;    /* 0x006c */
+    int32_t       sync_next;   /* 0x0070 */
+    uint8_t       pad_0074[0x84 - 0x74];
+    /* What the context check was asked, and whether it cleared anything.
+       vredoctxt sets the first and reads the second to decide whether to
+       say the delta is correct. */
+    int32_t       ctxt_arg;    /* 0x0084 */
+    int32_t       ctxt_cleared; /* 0x0088 */
+    uint8_t       pad_008c[0x94 - 0x8c];
     int32_t       sync_size;   /* 0x0094, how big one sync node is */
     int32_t       unknown_98;  /* 0x0098, cleared when memory is set up */
     int32_t       unknown_9c;  /* 0x009c, cleared when a loop restarts */
@@ -136,11 +174,32 @@ typedef struct {
     int32_t   list_fld;      /* 0x00c0, which entry of a stream list the
                                 field walk is on */
     int32_t   list_val;      /* 0x00c4, and which field of that entry */
-    uint8_t   pad_00c8[0xdc - 0xc8];
+    /* Where the walk over a field's declared value names stands. One of
+       these is set up by first_fieldval and stepped by next_fieldval, and
+       nothing else in the machine touches them. The prefix is a pointer the
+       machine holds in a value, so it has to be somewhere the arena can
+       name; that is what the crossing checks. */
+    int8_t    vals_stm;      /* 0x00c8, which statement type */
+    uint8_t   pad_00c9[3];
+    int32_t   vals_fld;      /* 0x00cc, and which of its fields */
+    evv_ref   vals_str;      /* 0x00d0, the prefix a name has to start with */
+    int32_t   vals_at;       /* 0x00d4, how far the walk has got */
+    int32_t   vals_dashes;   /* 0x00d8, set when the prefix is all dashes */
     /* What a value named "undefined" reads back as. The tables spell the
        absent value one way and whoever asks is told another. */
     evv_ref     undefined_text;  /* 0x00dc */
-    uint8_t   pad_00e0[0xfc - 0xe0];
+    /* Set when the context check has run through. */
+    int32_t   ctxt_done;     /* 0x00e0 */
+    /* Six tables vctxtinit takes for the check to work in: four of a word
+       per statement type and two of a byte. Nothing else transcribed here
+       touches them, so what each is for is not established and they are
+       named by nothing better than their order. */
+    evv_ref   ctxt_a;        /* 0x00e4 */
+    evv_ref   ctxt_b;        /* 0x00e8 */
+    evv_ref   ctxt_c;        /* 0x00ec */
+    evv_ref   ctxt_d;        /* 0x00f0 */
+    evv_ref   ctxt_e;        /* 0x00f4 */
+    evv_ref   ctxt_f;        /* 0x00f8 */
     /* What the save layer works in. It is only ever reached through the
        routines at the end of delta_trace.c, which the engine does not use;
        a target that wants to write the machine out and read it back is what
@@ -154,7 +213,16 @@ typedef struct {
     char      save_name[100];  /* 0x0150, the name last read off it; the
                                   original writes past the end of this
                                   rather than stop at it */
-    uint8_t   pad_01b4[0x1d0 - 0x1b4];
+    uint8_t   pad_01b4[0x1bc - 0x1b4];
+    /* Where val_expr2 looks when it is not asked to work a position out for
+       itself: one entry per statement type, the two ends it should measure
+       between. And three caches beside them, twelve bytes to a statement
+       type, which durcalc keeps its last answer in. */
+    evv_ref   expr_l;          /* 0x01bc */
+    evv_ref   expr_r;          /* 0x01c0 */
+    evv_ref   dur_cache_a;     /* 0x01c4 */
+    evv_ref   dur_cache_b;     /* 0x01c8 */
+    evv_ref   dur_cache_c;     /* 0x01cc */
     /* visleft remembers its last fifty answers here. The whole table is
        thrown away whenever the spine is relinked, which is what the stamp
        is for; the counts keep a hot pair from being evicted. */
@@ -170,7 +238,8 @@ typedef struct {
     evv_ref    seg;          /* 0x0504, the segment the stack lives in */
     evv_ref    heap_cur;     /* 0x0508, where the next object comes from */
     evv_ref    vbot;         /* 0x050c, how far back an unwind may go */
-    uint8_t    pad_0510[4];
+    evv_ref    walk;         /* 0x0510, where a walk over the records has
+                                got to; only the two peek calls use it */
     int32_t    seg_size;     /* 0x0514 */
     evv_ref    base;         /* 0x0518 */
     delta_mark marks[DELTA_MARKS];  /* 0x051c */
@@ -193,7 +262,11 @@ typedef struct {
     int32_t   error_thrown;    /* 0x0fa8 */
     evv_ref   err_jmp;         /* 0x0fac, where a thrown error lands */
     uint8_t   return_code;     /* 0x0fb0, what a C helper answered with */
-    uint8_t   pad_0fb1[0xf];
+    uint8_t   pad_0fb1[3];
+    /* The generate statement being read, whose first byte says which of the
+       three parts of a frame this one carries. */
+    evv_ref   gen_stmt;        /* 0x0fb4 */
+    uint8_t   pad_0fb8[8];
     int32_t   loop_tag;        /* 0x0fc0, what a forall is iterating */
     int32_t   test_tag;        /* 0x0fc4, what the running test is matching */
     uint8_t   pad_0fc8[4];
@@ -211,14 +284,25 @@ typedef struct {
     evv_ref   back;            /* 0x0fdc, where an unwind returns to */
     int8_t    compared_equal;  /* 0x0fe0 */
     int8_t    fence_count;     /* 0x0fe1, how many characters are fenced */
-    uint8_t   pad_0fe2[0x1006 - 0xfe2];
+    uint8_t   pad_0fe2[2];
+    /* The frame being collected, and the copy of it that is written out. */
+    delta_gencell gen_now;     /* 0x0fe4 */
+    delta_gencell gen_done;    /* 0x0ff4 */
+    uint8_t   gen_len;         /* 0x1004, how many parameter bytes to take */
+    uint8_t   gen_nparams;     /* 0x1005, and how many the statement says */
     /* Scratch the runtime builds a value in when it has to convert one. */
     uint8_t   scratch_b;       /* 0x1006 */
     uint8_t   pad_1007[0x100c - 0x1007];
     int32_t   scratch_l;       /* 0x100c */
     uint8_t   pad_1010[0x1022 - 0x1010];
     int16_t   scratch_s;       /* 0x1022 */
-    uint8_t   pad_1024[0x1120 - 0x1024];
+    uint8_t   pad_1024[0x1030 - 0x1024];
+    evv_ref   gen_at;          /* 0x1030, where the parameter bytes are read
+                                  from, stepped a byte at a time */
+    uint8_t   pad_1034[0x106c - 0x1034];
+    delta_operand_at gen_src;  /* 0x106c, what a frame is assigned from */
+    delta_operand_at gen_dst;  /* 0x1074, and the cell it goes into */
+    uint8_t   pad_107c[0x1120 - 0x107c];
     int32_t   ctx_both;        /* 0x1120, look both ways for a context */
     int32_t   relink;          /* 0x1124, keep the spine order consistent */
     uint8_t   pad_1128[0x116c - 0x1128];
@@ -434,7 +518,8 @@ typedef struct delta_stmt {
                                          a statement with */
     uint8_t                walkable;  /* +0x36, only Ms sets this */
     uint8_t                pad_37;
-    int32_t                unknown_38;
+    int32_t                gen_sel;   /* +0x38, which end a generate takes
+                                          when the two disagree */
     int32_t                unknown_3c;
 } delta_stmt;
 
@@ -480,6 +565,14 @@ void bspush_ca_scan(delta_state *d, int16_t tag);
 
 int  testeq(delta_state *d);
 int  testneq(delta_state *d);
+int  testgt(delta_state *d);
+int  testge(delta_state *d);
+int  testlt(delta_state *d);
+int  testle(delta_state *d);
+int  test_time(delta_state *d, int16_t tag);
+int  test_fence(delta_state *d, int16_t tag, uint8_t n, const uint8_t *chars);
+int  test_eof(delta_state *d, int32_t lf);
+int  test_hasval(delta_state *d);
 
 void  fence(delta_state *d, int8_t n, const uint8_t *chars);
 void *TFLDS(void *p);
@@ -504,6 +597,34 @@ void SETALLNSQ(delta_node *t);
 void SETNONSEQ(delta_node *t);
 void CLRONESTM(delta_node *t);
 void CLRALLNSQ(delta_node *t);
+void CLRNONSEQ(delta_node *t);
+int  visnonseq(delta_state *d, uint8_t f, int32_t l, int32_t r);
+int  vmergable(delta_state *d, int32_t l, int32_t r);
+int  insert_2pt(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+                uint8_t mode);
+int32_t merge(delta_state *d);
+void *TVFLDS(void *p);
+const char *streamName(int8_t st);
+void noop1(delta_state *d);
+void code_end(delta_state *d);
+void goto_1(delta_state *d);
+void c_code(delta_state *d);
+void call(delta_state *d);
+void call2(delta_state *d);
+void execcmd(delta_state *d);
+void startcmd(delta_state *d);
+void startstmt(delta_state *d);
+void startstmt_e(delta_state *d);
+void startstmt_l(delta_state *d);
+void tag(delta_state *d);
+void tag_e(delta_state *d);
+void tag_l(delta_state *d);
+void nullines(delta_state *d);
+void nullines_l(delta_state *d);
+void fail(delta_state *d);
+void halt(delta_state *d);
+void abort_1(delta_state *d);
+void prt_tvar(delta_state *d);
 void bsclear(delta_state *d);
 void *bspop_boa(delta_state *d);
 void starttest_e(delta_state *d, int16_t tag);
@@ -517,8 +638,36 @@ int  emptyDeltaStack(delta_state *d);
 void *popDeltaStackFrame(delta_state *d, uint8_t *to);
 void vnspush(delta_state *d, const delta_operand *v);
 void vadd(delta_state *d, const delta_operand *a, const delta_operand *b);
+int32_t vgen_frame(delta_state *d);
+int32_t vgen_time(delta_state *d);
+int32_t vgen_params(delta_state *d);
+int32_t vgen_copy(delta_state *d);
+void gendef_framedur(delta_state *d, delta_loc *loc);
+void gendef_timestm(delta_state *d, uint8_t when);
+void gendef_params(delta_state *d, uint8_t count, uint8_t n,
+                   const uint8_t *str);
+void gencur_framedur(delta_state *d, delta_loc *loc);
+void gencur_timestm(delta_state *d, uint8_t when);
+void gencur_params(delta_state *d, uint8_t count, uint8_t n,
+                   const uint8_t *str);
+int32_t gen_copy(delta_state *d);
+void vsub(delta_state *d, const delta_operand *a, const delta_operand *b);
+void vmult(delta_state *d, const delta_operand *a, const delta_operand *b);
+void vdiv(delta_state *d, const delta_operand *a, const delta_operand *b);
+void divzero(delta_state *d);
+void vnegate(delta_state *d, const delta_operand *a);
+int32_t vcompareTypeCheck(delta_state *d, const delta_operand *a,
+                          const delta_operand *b);
 int32_t VLSYNC(const delta_node *t, int8_t i);
 int32_t VRSYNC(delta_state *d, const int32_t *t, int8_t i);
+int32_t gcql(delta_state *d, int32_t at, int8_t f, int8_t i);
+int32_t gcqr(delta_state *d, int32_t at, int8_t f, int8_t i);
+int  chksyncsflags(delta_state *d);
+int  vctxtinit(delta_state *d);
+int  vclrctxt(delta_state *d, int32_t unused);
+void mapsyncs(delta_state *d, int32_t t);
+int  vredoctxt(delta_state *d, int32_t arg);
+int32_t etiwinMain(delta_state *d, int32_t argc, char **argv);
 
 /* Two sixteen-bit halves; resetting one clears the second. */
 typedef struct {
@@ -541,6 +690,7 @@ void bspush_ca_boa(delta_state *d, int16_t tag);
 void bspush_ca_scan_boa(delta_state *d, int16_t tag);
 void forceErrorBacktrack(delta_state *d);
 void push_ptr_init(delta_state *d, delta_loc *p);
+void set_saved_ptrs(delta_state *d, int32_t was, int32_t now);
 void npush_i(delta_state *d, int32_t x);
 void npush_s(delta_state *d, int32_t x);
 void vscaninit(delta_state *d);
@@ -571,6 +721,12 @@ int  get_parm(delta_state *d, delta_loc *out, delta_loc *loc, int16_t kind);
 int  test_synch(delta_state *d, int16_t tag, uint8_t n, const uint8_t *list);
 int  test_string_i(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str);
 int  test_string_s(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str);
+int  test_string(delta_state *d, uint8_t st, uint8_t n,
+                 const uint8_t *str);
+int  test_string_l(delta_state *d, uint8_t st, uint8_t n,
+                   const uint8_t *str);
+int  test_string_lng(delta_state *d, uint8_t st, uint8_t n,
+                     const uint8_t *str);
 int32_t ctxlook(delta_state *d, int32_t t, uint8_t f, int32_t right);
 
 int vnormalize(delta_state *d, delta_tpos *p);
@@ -580,7 +736,10 @@ int vtsttmark_tv(delta_state *d, delta_tpos *p, uint8_t back);
 int test_ptr(delta_state *d);
 void lpta_movel(delta_state *d, uint8_t f);
 void lpta_mover(delta_state *d, uint8_t f);
+void rpta_mover(delta_state *d, uint8_t f);
 int  lpta_tstmover(delta_state *d, uint8_t f);
+int  rpta_tstmover(delta_state *d, uint8_t f);
+int  rpta_tstmovel(delta_state *d, uint8_t f);
 int  setscan_l(delta_state *d, uint8_t f);
 int  setscan_r(delta_state *d, uint8_t f);
 int  setscan_nof_l(delta_state *d, uint8_t f);
@@ -627,6 +786,9 @@ DELTA_FASTCALL void  freeDeltaHeapObject(delta_state *d, void *p);
 /* Giving the heap and the stack back, and setting the stack up. */
 void  deltaHeapCleanup(delta_state *d);
 int32_t initializeDeltaStack(delta_state *d, int32_t size);
+int32_t peekDeltaStackStart(delta_state *d);
+int32_t peekDeltaStackNext(delta_state *d);
+void    resetDeltaStack(delta_state *d);
 void  freeDeltaHeapTo(delta_state *d, uint8_t *pos, int32_t release);
 int32_t getDeltaHeapSegNumber(delta_state *d, uint8_t *p, int32_t unit);
 int   recordDeltaHeapPos(delta_state *d);
@@ -652,6 +814,10 @@ int  ins_tokens_s(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
                   int32_t arg);
 int  ins_tokens_i(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
                   int32_t arg);
+int  ins_tokens_l(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
+                  int32_t arg);
+int  ins_tokens_lng(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
+                    int32_t arg);
 int32_t vsplit_time(delta_state *d, uint8_t f, int32_t t, int32_t off);
 int  vsync_tv(delta_state *d, delta_tpos *p);
 int  vtmark_tv(delta_state *d, delta_tpos *p, uint8_t back);
@@ -672,6 +838,10 @@ void insert_r(delta_state *d, int8_t f, uint8_t n, const uint8_t *str,
               uint8_t dup);
 int  insert_2pt_s(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
                   uint8_t mode);
+int  insert_2pt_l(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+                  uint8_t mode);
+int  insert_2pt_lng(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+                    uint8_t mode);
 int  insert_2pt_i(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
                   uint8_t mode);
 int  delete_2pt(delta_state *d, uint8_t f, uint8_t mode);
@@ -690,9 +860,17 @@ int  ventproc(delta_state *d, delta_actrec *rec, uint8_t *index,
 int  vretproc(delta_state *d, int32_t tag);
 int  succeed(delta_state *d);
 void move_i(delta_state *d, delta_loc *loc, int16_t value);
+void move_lng(delta_state *d, delta_loc *loc, int32_t value);
 void pause(delta_state *d);
 int  actd_goto(delta_state *d);
 void npush_lng(delta_state *d, int32_t v);
+void npush_l(delta_state *d, int32_t x);
+void ncompare(delta_state *d);
+int  back(delta_state *d);
+int  back_nboa(delta_state *d);
+void bsclr_pushca(delta_state *d, int16_t tag);
+void bspush_vbot(delta_state *d);
+void bspop_vbot(delta_state *d);
 void npush_v(delta_state *d, delta_loc *loc);
 void npush_vf(delta_state *d, delta_loc *loc);
 void c_assvar(delta_state *d, delta_loc *loc);
@@ -705,8 +883,23 @@ int  lpta_tstmovel(delta_state *d, uint8_t f);
 void rpta_storep(delta_state *d, delta_loc *loc);
 void lpta_loadv(delta_state *d, uint8_t f, const delta_loc *loc);
 void lpta_loadi(delta_state *d, uint8_t f, int32_t v);
+void lpta_loadlng(delta_state *d, uint8_t f, int32_t v);
+void rpta_loadv(delta_state *d, uint8_t f, const delta_loc *loc);
+void rpta_loadi(delta_state *d, uint8_t f, int32_t v);
+void rpta_loadl(delta_state *d, uint8_t f, int32_t v);
+void lpta_leftmost(delta_state *d, uint8_t f);
+void rpta_leftmost(delta_state *d, uint8_t f);
+void lpta_rightmost(delta_state *d, uint8_t f);
+void rpta_rightmost(delta_state *d, uint8_t f);
 void settvar_i(delta_state *d, delta_loc *loc, int32_t v);
 void settvar_s(delta_state *d, delta_loc *loc, int32_t v);
+void settvar_l(delta_state *d, delta_loc *loc, int32_t v);
+void settvar_lng(delta_state *d, delta_loc *loc, int32_t v);
+void settvar_v(delta_state *d, delta_loc *loc, delta_loc *src);
+void assok(delta_state *d, delta_loc *loc);
+void noass(delta_state *d, delta_loc *loc);
+void chkvars(delta_state *d);
+void chkokass(delta_state *d);
 int  vnegative(delta_state *d, const delta_operand *v);
 void compare_tvars(delta_state *d, delta_loc *a, delta_loc *b);
 int  if_testeq(delta_state *d);
@@ -720,13 +913,27 @@ void ncompare_s(delta_state *d, uint8_t c);
 int  forall_to_test(delta_state *d, delta_loc *a, delta_loc *b);
 int  mark_i(delta_state *d, uint8_t st, uint8_t fld, const void *v,
             uint8_t mode);
+int  mark_l(delta_state *d, uint8_t st, uint8_t fld, const void *v,
+            uint8_t mode);
+int  mark_lng(delta_state *d, uint8_t st, uint8_t fld, const void *v,
+              uint8_t mode);
+void SETCTXL(delta_state *d, int32_t *table, uint8_t idx, int32_t bits);
+void SETCTXR(delta_state *d, int32_t *table, uint8_t idx, int32_t bits);
 int  vctxt_tv(delta_state *d, delta_tpos *p);
 int  testeq_tvars(delta_state *d, delta_loc *a, delta_loc *b);
+int  testneq_tvars(delta_state *d, delta_loc *a, delta_loc *b);
 int  if_testeq_v_i(delta_state *d, delta_loc *loc, int32_t x);
 int  if_testneq_v_i(delta_state *d, delta_loc *loc, int32_t x);
 int  if_testlt_v_i(delta_state *d, delta_loc *loc, int32_t x);
 int  if_testgt_v_i(delta_state *d, delta_loc *loc, int32_t x);
 int  if_testge_v_i(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testle_v_i(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testeq_v_lng(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testneq_v_lng(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testlt_v_lng(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testgt_v_lng(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testge_v_lng(delta_state *d, delta_loc *loc, int32_t x);
+int  if_testle_v_lng(delta_state *d, delta_loc *loc, int32_t x);
 void proj_def_mult(delta_state *d, uint8_t n, const uint8_t *str,
                    const delta_token *p);
 void lpta_ctxtl(delta_state *d, uint8_t f);
@@ -779,10 +986,24 @@ int  forall_adv_over_r(delta_state *d, int16_t tag, int16_t loop,
                        int16_t bound, uint8_t f, delta_token *tok);
 int  forall_adv_upto_r(delta_state *d, int16_t tag, int16_t loop,
                        int16_t bound, uint8_t f, delta_token *tok);
+int  forall_adv_over_l(delta_state *d, int16_t tag, int16_t loop,
+                       int16_t bound, uint8_t f, delta_token *tok);
+int  forall_adv_upto_l(delta_state *d, int16_t tag, int16_t loop,
+                       int16_t bound, uint8_t f, delta_token *tok);
+int  forto_adv_over_l(delta_state *d, int16_t tag, int16_t loop,
+                      int16_t bound, uint8_t f, delta_token *tok,
+                      const delta_token *end);
+int  forto_adv_over_r(delta_state *d, int16_t tag, int16_t loop,
+                      int16_t bound, uint8_t f, delta_token *tok,
+                      const delta_token *end);
+int  for_cont_from(delta_state *d, int16_t tag, int16_t loop, int32_t unused,
+                   delta_loc *dst, const delta_loc *src);
 void insert_lv(delta_state *d, uint8_t st, delta_loc *loc, uint8_t mode);
 int  vtstctx_tv(delta_state *d, delta_tpos *p, int32_t back);
 int  lpta_tstctxtl(delta_state *d, uint8_t f);
 int  lpta_tstctxtr(delta_state *d, uint8_t f);
+int  rpta_tstctxtl(delta_state *d, uint8_t f);
+int  rpta_tstctxtr(delta_state *d, uint8_t f);
 int  f0_stepi(delta_state *d, const delta_loc *n, const delta_loc *f0,
               const delta_loc *step, const delta_loc *count, delta_loc *out);
 
@@ -790,8 +1011,21 @@ int  f0_stepi(delta_state *d, const delta_loc *n, const delta_loc *f0,
    See src/delta_trace.c for what that costs and why. */
 int32_t dur2(delta_state *d, const delta_tpos *a, const delta_tpos *b,
              int8_t f, int32_t back);
+int32_t durcalc(delta_state *d, delta_tpos *a, delta_tpos *b, int8_t f,
+                int32_t *cache, int32_t direct);
+int32_t firstdefd(delta_state *d, int8_t f, int32_t t, uint8_t st,
+                  int32_t back);
+int32_t val_expr2(delta_state *d, delta_tpos *p, int8_t st, uint8_t fld,
+                  int32_t which, int32_t mode, int32_t *out);
+int32_t val_expr(delta_state *d, delta_tpos *p, int8_t st, uint8_t fld,
+                 int32_t which);
+void    val_expr1(delta_state *d, delta_loc *loc, uint8_t st, uint8_t fld);
 int32_t vdur(delta_state *d, const delta_tpos *a, const delta_tpos *b,
              int8_t f);
+int32_t vgen(delta_state *d, delta_tpos *l, delta_tpos *r,
+             const delta_gencell *g, int32_t lf);
+int32_t vgenerate(delta_state *d);
+void    generate(delta_state *d, int32_t lf);
 int  vdur_ass(delta_state *d, delta_tpos *a, delta_tpos *b, int8_t f,
               int32_t total);
 int  dur_ass(delta_state *d, int8_t f, delta_loc *field, uint8_t mode);
@@ -856,7 +1090,11 @@ void print_var(delta_state *d, ...);
 void print_stream(delta_state *d, ...);
 void vprt_var(delta_state *d, ...);
 void vprt_strm(delta_state *d, ...);
-void disptok(delta_state *d, ...);
+/* Spell one field of one token as the language names it, which is what the
+   phoneme callback reports and what a person reads a token by. The pointer is
+   the token four bytes in, as the original's own caller hands it over. */
+void disptok(delta_state *d, const void *at, int32_t stream, int32_t field,
+             char *out);
 void lithex(const char *in, char *out, int32_t max);
 int8_t getbksl(delta_state *d, int32_t f);
 void readErrorReport(delta_state *d, ...);
@@ -925,6 +1163,7 @@ extern const int32_t delta_frequencyInST[122];
    range the caller has already opened. */
 int ins_tokens(delta_state *d, int8_t f, const uint8_t *str, uint8_t n,
                int32_t arg);
+int ins_rdtoks(delta_state *d, uint8_t f, int32_t l, int32_t r, int32_t arg);
 void *vins_sync(delta_state *d, uint8_t f, int32_t l, int32_t r);
 
 /* Supplied by the language, not the runtime: match the span between the two

@@ -52,8 +52,9 @@ class BreakCommand(_Command):
 
 
 class _Prosody(_Command):
-    def __init__(self, newValue):
+    def __init__(self, newValue, isDefault=False):
         self.newValue = newValue
+        self.isDefault = isDefault
 
 
 class PitchCommand(_Prosody):
@@ -244,6 +245,8 @@ class FakeEngine:
         self.voiceParams = {0: 0, 1: 50, 2: 65, 3: 30, 4: 0, 5: 0, 6: 50, 7: 92}
         self.version = "test"
         self.player = None
+        #: Whether each batch arrived as speech or as a setting.
+        self.kinds = []
 
     def open(self):
         pass
@@ -263,6 +266,13 @@ class FakeEngine:
                 self.language = args[0]
                 self.voiceNames = self.voiceNamesByLanguage[args[0]]
 
+    def control(self, batch):
+        # A control step runs the same way as speech here; what the driver is
+        # being held to is that it sends settings as control and utterances as
+        # speech, which the check below reads off self.kinds.
+        self.kinds.append(("control", len(batch)))
+        self.post(batch)
+
     def cancel(self):
         self.calls.append(("cancel",))
 
@@ -271,6 +281,9 @@ class FakeEngine:
 
     # The names the driver posts. They are never run; posting records them.
     def addText(self, text):
+        pass
+
+    def synthesizePart(self, expectAudio=True):
         pass
 
     def index(self, n):
@@ -329,6 +342,20 @@ def spoken(d, sequence):
     d._engine.calls = []
     d.speak(sequence)
     return d._engine.calls
+
+
+def _endsPlainSentence(text):
+    """Whether a piece ends where a sentence does, rather than after an
+    abbreviation or an initial. Written out here rather than imported, so that
+    the driver's own rule is held against a statement of what it should be."""
+    if text.endswith(("?", "!")):
+        return True
+    if not text.endswith("."):
+        return False
+    word = text.split()[-1][:-1] if text.split() else ""
+    return bool(word) and "." not in word and not (
+        len(word) <= 3 and word[:1].isupper()
+    ) and not word[-1:].isdigit()
 
 
 def main():
@@ -504,6 +531,131 @@ def main():
     d.cancel()
     check("pausing and cancelling go straight through",
           d._engine.calls, [("pause", True), ("cancel",)])
+
+    # Every setting goes as a control step and not as speech. Sent as speech
+    # it is dropped by any cancel that overtakes it, and since every keystroke
+    # cancels, a rate or a voice chosen at the wrong moment silently did not
+    # happen -- with the dialog still showing what was asked for.
+    d._engine.kinds = []
+    d.rate = 60
+    d.pitch = 40
+    d.volume = 80
+    d.inflection = 55
+    d.headSize = 45
+    d.roughness = 10
+    d.breathiness = 20
+    d.abbreviations = True
+    d.voice = "3"
+    check("every setting is sent as a control step, never as speech",
+          [kind for kind, _ in d._engine.kinds], ["control"] * 9)
+
+    d._engine.kinds = []
+    d.speak(["a sentence"])
+    check("and an utterance still goes as speech", d._engine.kinds, [])
+
+    # ---- long text is handed over in pieces ----------------------------
+    #
+    # The engine cannot be interrupted, so asking for silence means waiting
+    # out the utterance in flight. Whole, a long chat message costs the best
+    # part of a second and a half on this engine, and every item a reader
+    # arrows onto inside that wait says nothing at all. In pieces the wait is
+    # one piece.
+
+    d._engine.calls = []
+    d.speak(["Richard Loyie, I told him, Sent at 12:32"])
+    check("a line of a list is one piece, as it always was",
+          [name for name, *_ in d._engine.calls], ["addText", "synthesize"])
+
+    long_text = "Hello everyone, TableEx 3.2.0 is here. " * 8
+    d._engine.calls = []
+    d.speak([long_text])
+    names = [name for name, *_ in d._engine.calls]
+    check("a long message is handed over in more than one piece",
+          names.count("synthesize") + names.count("synthesizePart") > 1, True)
+    check("every piece but the last is a part", names.count("synthesize"), 1)
+    check("and the last one is the whole utterance's end", names[-1], "synthesize")
+
+    said = b"".join(
+        args[0] for name, *args in d._engine.calls if name == "addText"
+    )
+    check("the split changes no word of the text",
+          said.decode("utf-8").split(), long_text.split())
+
+    # Splitting inside a word would have the engine speak two fragments.
+    # Boundaries therefore carry their following whitespace with them.
+    parts = [args[0] for name, *args in d._engine.calls if name == "addText"]
+    check("no piece begins or ends inside a word",
+          [p for p in parts if p[:1].isalnum() and p[-1:].isalnum()], [])
+
+    check("a version number is not mistaken for the end of a sentence",
+          [p for p in parts if p.rstrip().endswith(b"3.2.0")], [])
+
+    # An abbreviation and an initial end in a dot and do not end a sentence,
+    # and the engine knows it: cutting there puts a full stop where it had
+    # none. "Mr. Jones asked whether the header is read first, and Mrs. Adams
+    # said it is." measured 0.70 s longer cut after the two titles, and "The
+    # book by J. R. R. Tolkien is on the shelf by the door." measured 1.48 s
+    # longer than 3.72 cut at every initial.
+    for text, what in (
+        ("Mr. Jones asked whether the header is read first, and Mrs. Adams"
+         " said it is. " * 4, "a title"),
+        ("The book by J. R. R. Tolkien is on the shelf by the door. " * 4,
+         "an initial"),
+        ("Use a smaller step, e.g. two, and the sorting holds. " * 6,
+         "a dotted abbreviation"),
+    ):
+        d._engine.calls = []
+        d.speak([text])
+        cut = [
+            args[0].decode("utf-8").rstrip()
+            for name, *args in d._engine.calls if name == "addText"
+        ]
+        # And it does still cut, or there would be nothing to be right about.
+        check("%s is still handed over in pieces" % what, len(cut) > 1, True)
+        check("no piece is cut after %s" % what,
+              [c for c in cut[:-1] if not _endsPlainSentence(c)], [])
+
+
+    # Sentence ends cost no extra silence: the engine already ends its clause
+    # there. A stretch without one is allowed to grow much larger before the
+    # whitespace fallback keeps it bounded.
+    no_sentence = "word " * 120
+    d._engine.calls = []
+    d.speak([no_sentence])
+    no_sentence_parts = [
+        args[0] for name, *args in d._engine.calls if name == "addText"
+    ]
+    check("an unpunctuated stretch falls back to whitespace past the cap",
+          len(no_sentence_parts) > 1, True)
+    check("and it is not cut at the old eighty-character limit",
+          len(no_sentence_parts[0]) > 80, True)
+
+    # A cancel drops whole queue items. A spelling or prosody restore must
+    # therefore remain in the same item as the command that opened it.
+    d._engine.calls = []
+    d.speak([
+        CharacterModeCommand(True),
+        "spelled words. " * 60,
+        CharacterModeCommand(False),
+    ])
+    check("spelling kept open refuses every boundary",
+          [name for name, *_ in d._engine.calls].count("synthesizePart"), 0)
+
+    d._engine.calls = []
+    d.speak([
+        PitchCommand(80),
+        "raised words. " * 60,
+        PitchCommand(50, isDefault=True),
+    ])
+    check("prosody kept open refuses every boundary",
+          [name for name, *_ in d._engine.calls].count("synthesizePart"), 0)
+
+    # A sequence of nothing but commands still has to reach the engine, or
+    # whatever waits on it waits for ever.
+    d._engine.calls = []
+    d.speak([IndexCommand(9)])
+    check("an utterance of nothing but an index still ends in a synthesize",
+          [name for name, *_ in d._engine.calls][-1], "synthesize")
 
     # ---- and the same driver over a library with two languages in it ----
     #

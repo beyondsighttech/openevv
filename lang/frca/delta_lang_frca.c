@@ -32,6 +32,11 @@ extern void frca_act_dict_delete(delta_state *d);
 
 extern const delta_rule_c frca_delta_rule_native[];
 
+extern const delta_store frca_delta_authored_store[];
+
+extern const delta_codepoint frca_delta_codepoints[];
+extern const int32_t frca_delta_codepoints_n;
+
 /* The two slots the runtime fills in for this language: the symbol table,
    once delta_syms_bind has copied the stores into the arena, and the index
    of whichever rules are written as C. Not const, unlike everything else
@@ -49,6 +54,7 @@ extern int32_t frca_DeltaProc_end(int32_t d);
 extern int32_t frca_DeltaProc_flush(int32_t d);
 extern int32_t frca_DeltaProc_process_sentences(int32_t d);
 extern int32_t frca_DeltaProc_process_remaining(int32_t d);
+extern int32_t frca_DeltaProc_main(int32_t d);
 
 static int32_t proc_start(delta_state *d)
 {
@@ -75,6 +81,11 @@ static int32_t proc_process_remaining(delta_state *d)
     return frca_DeltaProc_process_remaining(EVV_REF(d));
 }
 
+static int32_t proc_main(delta_state *d)
+{
+    return frca_DeltaProc_main(EVV_REF(d));
+}
+
 
 /* Not const, because the numbers below cannot go in an initialiser: each
    lives in another file as a const object, which C does not count as a
@@ -99,6 +110,9 @@ delta_language delta_lang_frca = {
     &frca_delta_native_index,
 
     frca_delta_const_store,
+    frca_delta_authored_store,
+    frca_delta_codepoints,
+    0,                   /* how many of those */
     &frca_delta_sym_ref,
 
     frca_vstmtbl,
@@ -120,6 +134,7 @@ delta_language delta_lang_frca = {
     proc_flush,
     proc_process_sentences,
     proc_process_remaining,
+    proc_main,
 
     0, 0,                /* the settings blob and its size */
 };
@@ -135,6 +150,7 @@ void delta_lang_bind_frca(void)
     l->rule_count     = frca_delta_rule_count;
     l->rule_setjmp    = frca_delta_rule_setjmp;
     l->globals_n      = frca_delta_globals_n;
+    l->codepoints_n   = frca_delta_codepoints_n;
     l->ini            = frca_eciIni;
     l->ini_size       = frca_eciIniSize;
 }

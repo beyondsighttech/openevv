@@ -189,6 +189,201 @@ int32_t sync_to_right(delta_state *d, int8_t f, int32_t at)
     return VRSYNC(d, NODE(at), f);
 }
 
+/* How many fields a statement type declares. The table says; this is the
+   name the outside asks by. */
+int32_t num_fields_in_stream(int8_t st)
+{
+    return vstmtbl[st].nfields;
+}
+
+/* Where a context begins, either side. A node that already carries the
+   field is its own context; otherwise it is the mark next to it. The two
+   differ in nothing but which way they look. */
+int32_t left_context(delta_state *d, int8_t f, int32_t at)
+{
+    if ((NODE(at)[EVV_AT(delta_vars *, d->vars)->fence_base + f] & 1) != 0)
+        return at;
+    return sync_to_left(d, f, at);
+}
+
+int32_t right_context(delta_state *d, int8_t f, int32_t at)
+{
+    if ((NODE(at)[EVV_AT(delta_vars *, d->vars)->fence_base + f] & 1) != 0)
+        return at;
+    return sync_to_right(d, f, at);
+}
+
+/* Whether a context may be taken from here to there: every step of the way
+   has to be a mark in the field, and the walk stops when it arrives. A node
+   that does not carry the field at all is allowed, since there is no context
+   to be wrong about.
+
+   The two are one body in the original as well as here. Reading the right
+   one expecting the mirror of the left is the mistake to guard against: it
+   follows the same word of the node as the left one does, and this is not a
+   transcription slip but what its own code says. */
+static int allow_ctxt(delta_state *d, int32_t at, int8_t f, int32_t stop)
+{
+    int32_t base = EVV_AT(delta_vars *, d->vars)->fence_base;
+
+    if (at == stop)
+        return 1;
+    if ((NODE(at)[base + f] & 1) == 0)
+        return 1;
+
+    for (;;) {
+        int32_t next;
+
+        if (at == stop)
+            return 1;
+
+        next = NODE(at)[base + f] & LINK_MASK;
+        if (next == 0)
+            return 0;
+        if ((*NODE(next) & IS_SYNC) == 0)
+            return 0;
+
+        at = next;
+    }
+}
+
+int allow_left_ctxt(delta_state *d, int32_t at, int8_t f, int32_t stop)
+{
+    return allow_ctxt(d, at, f, stop);
+}
+
+int allow_right_ctxt(delta_state *d, int32_t at, int8_t f, int32_t stop)
+{
+    return allow_ctxt(d, at, f, stop);
+}
+
+/* Two the outside asks for as yes or no where the machine answers with a
+   number. */
+int init_stream(delta_state *d, int8_t f)
+{
+    return vinit_stm(d, f) != 0;
+}
+
+int divide_time(delta_state *d, uint8_t f, int32_t t, int16_t off)
+{
+    return vsplit_time(d, f, t, off) != 0;
+}
+
+/* Carry a mark from one node to another, leftwards or rightwards as asked.
+   Neither end may be nothing. */
+int project_sync(delta_state *d, int32_t l, int8_t f, int32_t r, int32_t back)
+{
+    if (l == 0 || r == 0)
+        return 0;
+
+    if (back) {
+        if (!vproj_l(d, (delta_node *)(intptr_t)l, (delta_node *)(intptr_t)r,
+                     (uint8_t)f))
+            return 0;
+    } else {
+        if (!vproj_r(d, (delta_node *)(intptr_t)l, (delta_node *)(intptr_t)r,
+                     (uint8_t)f))
+            return 0;
+    }
+
+    return 1;
+}
+
+/* Whether joining two marks would leave the spine sound.
+ *
+ * A mark may always be joined with itself, and the spine's own two ends may
+ * never be joined with each other. Past that it is a question asked of every
+ * field in turn, and the four cases are which of the two marks carries that
+ * field:
+ *
+ * both -- one has to link straight to the other, either way round;
+ * one of them -- whatever the other one links to has to be on the right side
+ *   of the one that carries it, which is what visleft and visright answer;
+ * neither -- the two must not be threaded past each other, which is the same
+ *   pair of questions asked the other way about.
+ *
+ * A field that fails any of those is a join that would cross something, and
+ * the answer is no.
+ */
+static int safe_mergable(delta_state *d, int32_t l, int32_t r)
+{
+    delta_stack   *s = EVV_AT(delta_stack *, d->stack);
+    int32_t        base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    const int32_t *L = NODE(l);
+    const int32_t *R = NODE(r);
+    int32_t        i;
+
+    if (l == r)
+        return 1;
+
+    if (l == s->spine_l && r == s->spine_r)
+        return 0;
+    if (l == s->spine_r && r == s->spine_l)
+        return 0;
+
+    for (i = 0; i < d->nstmts; i++) {
+        int32_t a;
+        int32_t b;
+
+        if ((L[base + i] & 1) != 0 && (R[base + i] & 1) != 0) {
+            if ((L[OWN_WORDS + i] & LINK_MASK) == r)
+                continue;
+            if ((L[base + i] & LINK_MASK) == r)
+                continue;
+            return 0;
+        }
+
+        if ((L[base + i] & 1) != 0) {
+            a = R[OWN_WORDS + i] & LINK_MASK;
+            b = R[base + i] & LINK_MASK;
+
+            if (l != a && !visleft(d, a, l))
+                return 0;
+            if (l != b && !visright(d, b, l))
+                return 0;
+            continue;
+        }
+
+        if ((R[base + i] & 1) != 0) {
+            a = L[OWN_WORDS + i] & LINK_MASK;
+            b = L[base + i] & LINK_MASK;
+
+            if (r != a && !visleft(d, a, r))
+                return 0;
+            if (r != b && !visright(d, b, r))
+                return 0;
+            continue;
+        }
+
+        if (visleft(d, L[base + i] & LINK_MASK, R[OWN_WORDS + i] & LINK_MASK))
+            return 0;
+        if (visright(d, L[OWN_WORDS + i] & LINK_MASK, R[base + i] & LINK_MASK))
+            return 0;
+    }
+
+    return 1;
+}
+
+/* Carry a mark across and then join the two, which is what a rule asks for
+   when it wants one statement where there were two. The mark has to be there
+   to begin with, the carry has to take, and the join has to be sound. */
+int merge_sync(delta_state *d, int32_t l, int8_t f, int32_t r)
+{
+    if ((NODE(r)[EVV_AT(delta_vars *, d->vars)->fence_base + f] & 1) == 0)
+        return 0;
+
+    if (!project_sync(d, l, f, r, 0))
+        return 0;
+
+    if (!safe_mergable(d, l, r))
+        return 0;
+
+    if (!vmerge(d, r, l))
+        return 0;
+
+    return 1;
+}
+
 /* Whether a sync mark stands at this field of a node. The language's
    fields do not start at zero in a node's words; the machine says where
    they do. */
@@ -321,6 +516,62 @@ static int strprefix(const char *s, const char *pre)
     return 1;
 }
 
+/* Walking the names a field can take.
+ *
+ * A field whose values are named rather than numbered carries the list in
+ * its descriptor, and this is how the outside reads it: first_fieldval sets
+ * the walk up and answers the first name, next_fieldval answers each one
+ * after it, and nothing is answered when the list runs out. Where the walk
+ * stands lives in the stack block rather than in the caller's hands, so only
+ * one walk can be under way at a time -- the original's arrangement, kept.
+ *
+ * The prefix filters: a name is answered only if it starts with it. An empty
+ * prefix answers every name, which is the fast arm at the top. A prefix that
+ * is nothing but dashes is the odd one: it answers whatever the field calls
+ * its undefined value, and that is what the flag set up beside it is for.
+ */
+const char *next_fieldval(delta_state *d)
+{
+    delta_stack           *s = EVV_AT(delta_stack *, d->stack);
+    const delta_fielddesc *fd = FD(s->vals_stm, s->vals_fld);
+    const char *const     *names = (const char *const *)fd->values;
+    const char            *want = EVV_AT(const char *, s->vals_str);
+
+    s->vals_at++;
+
+    if (s->vals_at < fd->nvalues && (want == 0 || *want == 0))
+        return names[s->vals_at];
+
+    for (;;) {
+        if (s->vals_at >= fd->nvalues)
+            return 0;
+
+        if (strprefix(names[s->vals_at], want))
+            return names[s->vals_at];
+
+        if (s->vals_dashes != 0
+            && strcmp(names[s->vals_at], "undefined") == 0)
+            return names[s->vals_at];
+
+        s->vals_at++;
+    }
+}
+
+const char *first_fieldval(delta_state *d, int8_t stm, int32_t fld,
+                           const char *want)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+
+    s->vals_stm = stm;
+    s->vals_fld = fld;
+    s->vals_str = EVV_REF(want);
+    s->vals_at = -1;
+    s->vals_dashes = want != 0 ? allchrs(want, '-') : 0;
+
+    return next_fieldval(d);
+}
+
+
 /* A whole string read as a number, with nothing left over and nothing out
    of range. errno is set to something of its own first so a range failure
    left behind by somebody else does not count against this one. */
@@ -430,6 +681,165 @@ int non_unique_value(delta_state *d, int8_t f, int32_t fld, const char *s,
     }
 
     return 1;
+}
+
+/* The same question asked strictly: a name only counts if it is the only one
+ * the string could mean.
+ *
+ * Where non_unique_value takes the first name the string is a prefix of and
+ * stops, this one goes on looking and gives up the moment a second matches.
+ * Two smaller differences follow from that. The run of dashes and the
+ * ordinary prefix are not alternatives here -- the dash pass runs and then
+ * the prefix pass runs over the whole list as well, so a string that is both
+ * is two matches and therefore none. And nothing breaks out of either loop
+ * early, since finding one match is not the end of the question.
+ *
+ * The statics are the original's: what is answered is a pointer into them,
+ * so a second call overwrites what the first handed back.
+ */
+int unique_value(delta_state *d, int8_t f, int32_t fld, const char *s,
+                 const char **out_name, void **out_value)
+{
+    static int16_t lfound;
+    static int8_t  sfound;
+    static long    lval;
+    static int     ival;
+
+    const char *const *names;
+    int32_t            kind;
+    int16_t            j;
+
+    if (*s == 0)
+        return 0;
+
+    kind = FD(f, fld)->kind;
+
+    if (kind == KIND_INT) {
+        if (!legal_int(s, &ival))
+            return 0;
+        *out_name  = s;
+        *out_value = &ival;
+        return 1;
+    }
+    if (kind == KIND_LONG) {
+        if (!legal_long(s, &lval))
+            return 0;
+        *out_name  = s;
+        *out_value = &lval;
+        return 1;
+    }
+    if (kind < KIND_LONG || kind >= 0)
+        return 0;
+
+    names  = (const char *const *)FD(f, fld)->values;
+    lfound = -1;
+
+    if (allchrs(s, '-')) {
+        for (j = 0; j < FD(f, fld)->nvalues; j++)
+            if (strcmp(names[j], UNDEFINED) == 0) {
+                if (lfound != -1)
+                    return 0;
+                lfound = j;
+            }
+    }
+
+    for (j = 0; j < FD(f, fld)->nvalues; j++)
+        if (strprefix(names[j], s)) {
+            if (lfound != -1)
+                return 0;
+            lfound = j;
+        }
+
+    if (lfound == -1)
+        return 0;
+
+    *out_name = names[lfound];
+    if (strcmp(*out_name, UNDEFINED) == 0)
+        *out_name = EVV_AT(const char *,
+                           EVV_AT(delta_stack *, d->stack)->undefined_text);
+
+    if (FD(f, fld)->kind == KIND_NAMED8) {
+        sfound     = (int8_t)lfound;
+        *out_value = &sfound;
+    } else {
+        *out_value = &lfound;
+    }
+
+    return 1;
+}
+
+/* Whether a string could still become a value of this field, and whether a
+ * single character could still be the start of one.
+ *
+ * These are what something offering a person a choice asks as the text is
+ * typed: not "is this a value" but "could it yet be one". A numbered field
+ * answers by whether the text reads as a number at all, and a character by
+ * whether it is a digit or the minus sign. A named field answers by whether
+ * any of its names begins that way, with a run of dashes standing for the
+ * undefined one as everywhere else here.
+ *
+ * Neither takes the machine: the answer is in the language's own table and
+ * nothing about the spine comes into it.
+ */
+int valid_prefix(int8_t f, int32_t fld, const char *s)
+{
+    const char *const *names;
+    int32_t            kind = FD(f, fld)->kind;
+    int32_t            j;
+    int                ok = 0;
+
+    if (kind == KIND_INT)
+        return legal_int(s, 0);
+    if (kind == KIND_LONG)
+        return legal_long(s, 0);
+    if (kind < KIND_LONG || kind >= 0)
+        return 0;
+
+    names = (const char *const *)FD(f, fld)->values;
+
+    if (allchrs(s, '-')) {
+        for (j = 0; j < FD(f, fld)->nvalues; j++)
+            if (strcmp(names[j], UNDEFINED) == 0) {
+                ok = 1;
+                break;
+            }
+    }
+
+    for (j = 0; j < FD(f, fld)->nvalues; j++)
+        if (strprefix(names[j], s)) {
+            ok = 1;
+            break;
+        }
+
+    return ok;
+}
+
+int valid_prefix_char(int8_t f, int32_t fld, char c)
+{
+    const char *const *names;
+    int32_t            kind = FD(f, fld)->kind;
+    int32_t            j;
+
+    if (kind < KIND_INT)
+        return 0;
+    if (kind <= KIND_LONG)
+        return c == '-' || isdigit((unsigned char)c) ? 1 : 0;
+    if (kind >= 0)
+        return 0;
+
+    names = (const char *const *)FD(f, fld)->values;
+
+    if (c == '-') {
+        for (j = 0; j < FD(f, fld)->nvalues; j++)
+            if (strcmp(names[j], UNDEFINED) == 0)
+                return 1;
+    }
+
+    for (j = 0; j < FD(f, fld)->nvalues; j++)
+        if (names[j][0] == c)
+            return 1;
+
+    return 0;
 }
 
 

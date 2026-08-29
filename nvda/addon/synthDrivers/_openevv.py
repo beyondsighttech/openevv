@@ -53,6 +53,7 @@ import os
 import queue
 import sys
 import threading
+import time
 
 import config
 import nvwave
@@ -67,6 +68,25 @@ FRAME = 2048
 #: How much audio to gather before handing any to the player, in bytes. Small
 #: enough that speech starts promptly, large enough not to feed in dribbles.
 FEED_AT = FRAME * 2
+
+#: How long the engine's thread may sit inside the player before that is taken
+#: as a stall rather than as back pressure.
+#:
+#: Blocking in the player is the design and not a fault: a full player is what
+#: stops the engine running ahead of the speech. But there is one thread and
+#: the player has no timeout, so a player that stops draining blocks it for
+#: ever -- and with it every utterance queued behind, with nothing said to the
+#: reader and nothing written down. Speech then stays stopped until something
+#: else asks for silence and stops the player as a side effect.
+#:
+#: Longer than any buffer can honestly take to play, so back pressure never
+#: trips it: the player holds a few hundred milliseconds and this is five
+#: seconds.
+STUCK_AFTER = 5.0
+
+#: How often to look. Cheap enough to leave running and short enough that a
+#: reader notices a recovery rather than a silence.
+WATCH_EVERY = 0.5
 
 # What the callback is told.
 MSG_WAVEFORM = 0
@@ -221,6 +241,19 @@ class Engine:
 		self._pendingIndexes = []
 		self._discarding = False
 		self._produced = 0
+		#: Whether the utterance in flight has already been reported
+		#: finished. Nothing is in flight to begin with.
+		self._finished = True
+		#: When the engine's thread went into the player and what for, or None
+		#: when it is not in there. Written by that thread and read by the
+		#: watchdog; a stale read costs one more look round the loop.
+		self._blockedSince = None
+		self._blockedIn = ""
+		#: Whether the reader asked for the pause. A paused player does not
+		#: drain and blocking on one is meant, so the watchdog leaves it alone.
+		self._paused = False
+		self._watchdog = None
+		self._stopWatching = threading.Event()
 		self.player = None
 		self.voiceNames = {}
 		#: Every language the library has, and the one in force.
@@ -241,6 +274,10 @@ class Engine:
 		self._ready.wait()
 		if self._failure is not None:
 			raise self._failure
+		self._watchdog = threading.Thread(
+			target=self._watch, name="openevv.watchdog", daemon=True
+		)
+		self._watchdog.start()
 
 	def alive(self):
 		return self._thread.is_alive()
@@ -253,6 +290,7 @@ class Engine:
 		still running is how a screen reader ends up with a synthesiser that
 		will not speak after this one has been switched away.
 		"""
+		self._stopWatching.set()
 		self.cancel()
 		self._work.put(None)
 		self._thread.join(timeout=5)
@@ -269,6 +307,16 @@ class Engine:
 	def post(self, batch):
 		"""Run these calls on the engine's thread, in this order."""
 		self._work.put((SPEECH, batch))
+
+	def control(self, batch):
+		"""The same, for something that is not speech.
+
+		A setting is asked for once and has to arrive. Queued as speech it is
+		thrown away by any cancel that overtakes it -- and since every
+		keystroke cancels, a voice or a rate chosen at the wrong moment simply
+		did not happen, with the dialog still showing what was asked for.
+		"""
+		self._work.put((CONTROL, batch))
 
 	def cancel(self):
 		"""Stop now, and throw away what has not been spoken.
@@ -300,20 +348,28 @@ class Engine:
 		self._work.put((CONTROL, [(self._resume, ())]))
 
 	def pause(self, switch):
+		self._paused = switch
 		if self.player is not None:
 			self.player.pause(switch)
 
 	def _drain(self):
+		"""Drop the utterances that have not started, and only those.
+
+		A control step is not speech and is not silenced: it is put back in the
+		order it was in, along with the closing sentinel, which is not ours to
+		drop either.
+		"""
+		keep = []
 		while True:
 			try:
 				item = self._work.get_nowait()
 			except queue.Empty:
-				return
+				break
 			self._work.task_done()
-			if item is None:
-				# Closing down: put it back, it is not ours to drop.
-				self._work.put(None)
-				return
+			if item is None or item[0] == CONTROL:
+				keep.append(item)
+		for item in keep:
+			self._work.put(item)
 
 	# ---- the calls themselves, all on this thread --------------------
 
@@ -330,22 +386,41 @@ class Engine:
 		if not self._dll.eciInsertIndex(self._instance, n):
 			log.debugWarning("openevv: the engine refused an index mark")
 
+	def synthesizePart(self, expectAudio=True):
+		"""Speak a piece of an utterance that is not the end of it.
+
+		The audio goes to the player as it always does; what does not happen is
+		waiting for the player to run dry and saying the utterance finished,
+		because it has not.
+		"""
+		self._speak(expectAudio, last=False)
+
 	def synthesize(self, expectAudio=True):
-		"""Speak what has been added, and do not come back until it is done.
+		"""Speak what has been added, and do not come back until it is done."""
+		self._speak(expectAudio, last=True)
+
+	def _speak(self, expectAudio, last):
+		"""Hand what has been added to the engine and wait it out.
 
 		eciSynthesize only starts the utterance; eciSynchronize is what drives
 		it and returns once the last buffer has been handed over. Blocking here
 		is wanted: it is what makes the end of an utterance a fact rather than
 		something to be inferred from a mark, and the callback's own blocking in
 		the player is what paces it.
+
+		Waiting it out is also what a cancel costs, since the engine cannot be
+		interrupted, which is why the driver hands long text over in pieces:
+		the wait is then one piece and not the whole message.
 		"""
 		self._held = bytearray()
 		self._pendingIndexes = []
 		self._produced = 0
+		self._finished = False
 
 		if not self._dll.eciSynthesize(self._instance):
 			log.error("openevv: the engine refused to speak")
-			self._finish()
+			if last:
+				self._finish()
 			return
 
 		self._dll.eciSynchronize(self._instance)
@@ -369,8 +444,12 @@ class Engine:
 			log.warning("openevv: the engine took the text and made no audio;"
 			            " something was dropped and it does not say so")
 
-		self._flush(last=True)
-		self._finish()
+		# Every piece hands over what it gathered, or its tail is thrown away
+		# by the next one; only the last waits for the player to run dry and
+		# says the utterance is over.
+		self._flush(last=last)
+		if last:
+			self._finish()
 
 	def setParam(self, which, value):
 		return self._dll.eciSetParam(self._instance, which, value)
@@ -432,6 +511,53 @@ class Engine:
 		self._held = bytearray()
 		self._pendingIndexes = []
 		self._discarding = False
+
+	# ---- the watchdog ------------------------------------------------
+
+	def _enteringPlayer(self, what):
+		self._blockedIn = what
+		self._blockedSince = time.monotonic()
+
+	def _leftPlayer(self):
+		self._blockedSince = None
+
+	def _watch(self):
+		"""Break a stall in the player, and say that there was one.
+
+		The engine's thread blocks in the player on purpose and usually for a
+		fraction of a second. What it cannot do is tell a full player from one
+		that has stopped taking audio, and there is no timeout to find out
+		with, so a player in the second state holds the only thread there is
+		and every utterance queued behind it. To the reader that is silence
+		with nothing in the log, lasting until something else asks for silence
+		and stops the player as a side effect.
+
+		Stopping the player is what unblocks it, which is what cancelling
+		already does, so the recovery here is the one the reader would
+		otherwise have to find. Having abandoned the utterance, whatever was
+		waiting on it is told it finished, or it waits for ever.
+		"""
+		while not self._stopWatching.wait(WATCH_EVERY):
+			since = self._blockedSince
+			# A pause is meant to stop the player draining, so blocking on one
+			# is not a stall. Nor is a wait that has not gone on long enough.
+			if since is None or self._paused:
+				continue
+			waited = time.monotonic() - since
+			if waited < STUCK_AFTER:
+				continue
+			log.error("openevv: the engine's thread has been in the player's %s"
+			          " for %.1f seconds with no pause asked for; abandoning the"
+			          " utterance so speech can go on"
+			          % (self._blockedIn, waited))
+			self._blockedSince = None
+			try:
+				self.cancel()
+			except Exception:  # noqa: BLE001
+				log.error("openevv: the stall would not clear", exc_info=True)
+			# Nobody asked for this silence, so nobody is resetting on the far
+			# side of it: say the utterance finished.
+			self._finish()
 
 	# ---- the thread --------------------------------------------------
 
@@ -615,6 +741,7 @@ class Engine:
 			del self._held[:]
 			marks = self._pendingIndexes
 			self._pendingIndexes = []
+			self._enteringPlayer("feed")
 			try:
 				if marks:
 					self.player.feed(audio, onDone=lambda m=marks: self._report(m))
@@ -623,6 +750,8 @@ class Engine:
 			except Exception:  # noqa: BLE001
 				log.error("openevv: a buffer would not play", exc_info=True)
 				self._report(marks)
+			finally:
+				self._leftPlayer()
 		else:
 			# A mark with no audio in front of it still has to be reported, or
 			# whatever is waiting on it waits for ever.
@@ -633,10 +762,13 @@ class Engine:
 		# nothing in hand, and saying it is finished before the last buffer has
 		# played cuts the next one in over it.
 		if last:
+			self._enteringPlayer("idle")
 			try:
 				self.player.idle()
 			except Exception:  # noqa: BLE001
 				log.debugWarning("openevv: the player would not go idle", exc_info=True)
+			finally:
+				self._leftPlayer()
 
 	def _reportIndexes(self):
 		marks = self._pendingIndexes
@@ -648,4 +780,17 @@ class Engine:
 			self._onIndex(mark)
 
 	def _finish(self):
+		"""Say the utterance is over, once, whoever gets there first.
+
+		Two threads can be the one to say it. Where the watchdog breaks a
+		stall inside the last player.idle(), it abandons the utterance and
+		reports it finished -- and the engine's thread then comes out of
+		the player anyway, past the point where it checks whether it was
+		cancelled, and reports it finished as well. Two reports of one
+		utterance leave NVDA's speech manager a step ahead of itself, so
+		the second is dropped here rather than at either caller.
+		"""
+		if self._finished:
+			return
+		self._finished = True
 		self._onIndex(None)

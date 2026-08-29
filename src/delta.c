@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -118,6 +119,44 @@ void bspush_ca(delta_state *d, int16_t tag)
     slot->value = tag;
 }
 
+/* Clearing back to the mark and pushing a context record in one, which is
+   what starttest does the long way round. */
+void bsclr_pushca(delta_state *d, int16_t tag)
+{
+    delta_stack *s;
+    delta_frame *slot;
+
+    clearDeltaStackBack(d);
+
+    s = EVV_AT(delta_stack *, d->stack);
+    slot = bs_push(s, s->ca_size);
+    slot->kind = 0;
+    slot->value = tag;
+}
+
+/* Where the variable bottom was, kept on the stack so that a backtrack can
+   put it back. The record carries the old bottom and becomes the new one. */
+void bspush_vbot(delta_state *d)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+    delta_frame *slot = bs_push(s, s->size_b8);
+
+    slot->kind = 5;
+    slot->value = EVV_REF(getDeltaStackVBot(d));
+    setDeltaStackVBot(d, slot);
+}
+
+/* And taking it off again: the bottom goes back to what the record says
+   before the record itself is dropped. */
+void bspop_vbot(delta_state *d)
+{
+    const delta_frame *slot =
+        EVV_AT(const delta_frame *, EVV_AT(delta_stack *, d->stack)->top);
+
+    setDeltaStackVBot(d, EVV_AT(void *, slot->value));
+    popDeltaStackTop(d);
+}
+
 /* The two markers a rule leaves where an alternative begins. */
 void bspush_boa(delta_state *d)
 {
@@ -139,6 +178,182 @@ int testneq(delta_state *d)
     return EVV_AT(delta_vars *, d->vars)->compared_equal == 0;
 }
 
+/* The four orderings, read off the same byte the last comparison left. They
+   answer the way every test here answers: nought when the test held and one
+   when it did not, which is what the caller backtracks on. The `if_' forms
+   compare first and then read; these only read, and no rule in the languages
+   IBM shipped calls one, which is why they arrive now. */
+int testgt(delta_state *d)
+{
+    return EVV_AT(delta_vars *, d->vars)->compared_equal != 1;
+}
+
+int testge(delta_state *d)
+{
+    return EVV_AT(delta_vars *, d->vars)->compared_equal == -1;
+}
+
+int testlt(delta_state *d)
+{
+    return EVV_AT(delta_vars *, d->vars)->compared_equal != -1;
+}
+
+int testle(delta_state *d)
+{
+    return EVV_AT(delta_vars *, d->vars)->compared_equal == 1;
+}
+
+/* A timing mark on the spine, and the record a rule leaves so a backtrack
+ * can put the scan back.
+ *
+ * The mark test is asked of a copy of the left register rather than of the
+ * register, so a rule that asks does not move. What follows walks the scan
+ * forward until it reaches the position the register names, comparing the
+ * two as it goes; a comparison that comes out unequal advances and asks
+ * again, and a comparison that will not be made at all is a failure.
+ *
+ * When it arrives, two records go on the stack: the tag the rule is testing
+ * against, and the scan's own eight bytes, so that a backtrack restores where
+ * the scan had got to. The last line arms the fence for the register's own
+ * field, which is what keeps the scan inside the run the rule is looking at.
+ */
+int test_time(delta_state *d, int16_t tag)
+{
+    delta_vars  *v = EVV_AT(delta_vars *, d->vars);
+    delta_stack *s;
+    delta_frame *slot;
+    delta_tpos   p;
+
+    memcpy(&p, &d->lpta, sizeof p);
+    if (vtsttmark_tv(d, &p, 0))
+        return 1;
+
+    d->rpta.flags = 1;
+    d->rpta.node = v->scan_ptr;
+
+    for (;;) {
+        if (vcomp_pta(d, &d->lpta, &d->rpta))
+            return 1;
+        if (v->compared_equal == 0)
+            break;
+        if (!vscanadv(d, 0, 1))
+            return 1;
+        d->rpta.node = v->scan_ptr;
+    }
+
+    s = EVV_AT(delta_stack *, d->stack);
+
+    slot = bs_push(s, s->ca_size);
+    slot->kind = 3;
+    slot->value = tag;
+
+    slot = bs_push(s, s->size_b0);
+    slot->kind = 1;
+    memcpy((uint8_t *)slot + 4, &v->scan_ptr, 8);
+
+    EVV_AT(uint8_t *, d->fence_marks)
+        [EVV_AT(uint8_t *, d->fence_index)[(uint8_t)d->lpta.field]] = 1;
+
+    return 0;
+}
+
+/* Walk the scan forward until every field asked about is fenced where it
+ * stands, and then hold it there.
+ *
+ * With no characters named it is every field the language declares except
+ * the one the scan is walking, and only those the fence table does not
+ * already carry; with characters named it is those, and the scan's own field
+ * is not exempt. Either way a field that is not fenced at the scan's position
+ * advances the scan and starts the sweep again, because moving may unfence
+ * one that was fenced a moment ago. A scan that will not advance is a
+ * failure.
+ *
+ * The two records left behind are test_time's, and what the tail does with
+ * them is where the two forms part: with no characters the scan is simply
+ * held, and with characters each of their fences is armed instead.
+ */
+int test_fence(delta_state *d, int16_t tag, uint8_t n, const uint8_t *chars)
+{
+    delta_vars  *v = EVV_AT(delta_vars *, d->vars);
+    delta_stack *s;
+    delta_frame *slot;
+    int32_t settled = 0;
+    int8_t  i;
+
+    if (n == 0) {
+        while (settled == 0) {
+            settled = 1;
+            for (i = 0; i < d->nstmts && settled != 0; i++) {
+                if (i == (int8_t)v->scan_field)
+                    continue;
+                if (EVV_AT(uint8_t *, d->fence_index)[i] != d->nstmts)
+                    continue;
+                if (FENCED(d, EVV_AT(const int32_t *, v->scan_ptr), i))
+                    continue;
+
+                settled = 0;
+                if (!vscanadv(d, 0, 1))
+                    return 1;
+            }
+        }
+    } else {
+        while (settled == 0) {
+            settled = 1;
+            for (i = 0; i < n && settled != 0; i++) {
+                if (EVV_AT(uint8_t *, d->fence_index)[chars[i]] != d->nstmts)
+                    continue;
+                if (FENCED(d, EVV_AT(const int32_t *, v->scan_ptr),
+                           (int8_t)chars[i]))
+                    continue;
+
+                settled = 0;
+                if (!vscanadv(d, 0, 1))
+                    return 1;
+            }
+        }
+    }
+
+    s = EVV_AT(delta_stack *, d->stack);
+
+    slot = bs_push(s, s->ca_size);
+    slot->kind = 3;
+    slot->value = tag;
+
+    slot = bs_push(s, s->size_b0);
+    slot->kind = 1;
+    memcpy((uint8_t *)slot + 4, &v->scan_ptr, 8);
+
+    if (n == 0) {
+        v->scan_held = 1;
+        return 0;
+    }
+
+    for (i = 0; i < n; i++)
+        EVV_AT(uint8_t *, d->fence_marks)
+            [EVV_AT(uint8_t *, d->fence_index)[chars[i]]] = 1;
+
+    return 0;
+}
+
+/* Whether a logical file has run out. */
+int test_eof(delta_state *d, int32_t lf)
+{
+    return vf_eof(d, lf) == 0;
+}
+
+/* This one tests nothing. It clears the two fields in the owner block that
+   the save layer clears and reports that the test did not hold, whatever was
+   asked; the answer to "has a value" is arrived at elsewhere. Kept because a
+   rule may call it and because what it writes is observable. */
+int test_hasval(delta_state *d)
+{
+    delta_owner *o = EVV_AT(delta_owner *, d->owner);
+
+    o->unknown_1a8 = 0;
+    o->unknown_14 = 0;
+    return 1;
+}
+
 AT(fence_chars, 0x0084);
 AT(fence_index, 0x008c);
 AT(nstmts, 0x0098);
@@ -150,6 +365,13 @@ AT_VARS(ctx_both, 0x1120);
 AT_VARS(relink, 0x1124);
 AT_VARS(nsq_marks, 0x116c);
 AT_VARS(fence_base, 0x1174);
+AT_VARS(gen_stmt, 0x0fb4);
+AT_VARS(gen_now, 0x0fe4);
+AT_VARS(gen_done, 0x0ff4);
+AT_VARS(gen_len, 0x1004);
+AT_VARS(gen_at, 0x1030);
+AT_VARS(gen_src, 0x106c);
+AT_VARS(gen_dst, 0x1074);
 
 /* A context record and a saved scan position together, which is what a rule
    pushes when it is about to try a match it may need to unwind. */
@@ -445,6 +667,61 @@ void SETONESTM(delta_node *t)     { t->link |= 1; }
 void SETALLNSQ(delta_node *t)     { t->link |= 2; }
 void SETNONSEQ(delta_node *t)     { t->flags8 |= 2; }
 void CLRONESTM(delta_node *t)     { t->link &= ~1; }
+
+/* Two more of the same, and one that answers what a statement type is
+   called. CLRNONSEQ clears the bit its neighbours set; TVFLDS hands back
+   what it was given, which is what the original does -- the fields of a
+   timing statement start where the statement does, where an ordinary one's
+   start eight bytes in. */
+void CLRNONSEQ(delta_node *t)     { t->flags8 &= ~2; }
+
+/* Whether the run between two nodes is anything but a plain sequence.
+ *
+ * It is, if some field other than the one being worked in has a mark at both
+ * ends and the left one's mark does not lead straight to the right one --
+ * which means something else is threaded through the run and an insert has
+ * to be told so. */
+int visnonseq(delta_state *d, uint8_t f, int32_t l, int32_t r)
+{
+    int32_t base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    int8_t  i;
+
+    for (i = 0; i < d->nstmts; i++) {
+        if (i == (int8_t)f)
+            continue;
+        if ((*(const int32_t *)(intptr_t)(l + (base + i) * 4) & 1) == 0)
+            continue;
+        if ((*(const int32_t *)(intptr_t)(r + (base + i) * 4) & 1) == 0)
+            continue;
+        if (VRSYNC(d, (const int32_t *)(intptr_t)l, i) == r)
+            continue;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+/* Whether two marks may be joined. Anything may when the machine is not
+   looking both ways, and a mark may always be joined with itself; what may
+   not is the pair that are the two ends of the spine, in either order,
+   since joining those would leave nothing to hold. */
+int vmergable(delta_state *d, int32_t l, int32_t r)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+
+    if (EVV_AT(delta_vars *, d->vars)->ctx_both == 0 || l == r)
+        return 1;
+
+    if (l == s->spine_l && r == s->spine_r)
+        return 0;
+    if (l == s->spine_r && r == s->spine_l)
+        return 0;
+
+    return 1;
+}
+void *TVFLDS(void *p)             { return p; }
+const char *streamName(int8_t st) { return vstmtbl[st].name; }
 void CLRALLNSQ(delta_node *t)     { t->link &= ~2; }
 
 void bsclear(delta_state *d)
@@ -555,6 +832,347 @@ void vadd(delta_state *d, const delta_operand *a, const delta_operand *b)
     }
 }
 
+/* Collecting a frame.
+ *
+ * A generate statement comes in three parts -- the frame, the moment it
+ * covers, and the parameters that go with it -- and the machine reads them
+ * one at a time, each call putting its part into the cell and setting its
+ * own bit. The statement's first byte says which part it is, and the byte
+ * decides which of the two cells is written: its own marker means the one
+ * being filled, anything else means the one already finished. That is the
+ * original's arrangement and it is what lets a rule generate one frame while
+ * the last is still being written out.
+ *
+ * None of the four is called by any rule in the nine languages IBM shipped,
+ * which is why they were missing. A language's acoustic rules are what would
+ * want them.
+ */
+
+/* Which cell this part belongs in. */
+static delta_gencell *gen_cell(delta_state *d, uint8_t marker)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+
+    if (*EVV_AT(const uint8_t *, v->gen_stmt) == marker)
+        return &v->gen_now;
+    return &v->gen_done;
+}
+
+int32_t vgen_frame(delta_state *d)
+{
+    delta_vars    *v = EVV_AT(delta_vars *, d->vars);
+    delta_gencell *cell = gen_cell(d, 0xc3);
+    delta_operand  dst;
+    delta_operand  src;
+
+    v->gen_dst.ptr = EVV_REF(&cell->value);
+    v->gen_dst.kind = DK_SHORT2;
+    v->gen_dst.flag = 0;
+
+    dst.ptr = EVV_AT(void *, v->gen_dst.ptr);
+    dst.kind = v->gen_dst.kind;
+    dst.flag = v->gen_dst.flag;
+
+    src.ptr = EVV_AT(void *, v->gen_src.ptr);
+    src.kind = v->gen_src.kind;
+    src.flag = v->gen_src.flag;
+
+    vassign(d, &dst, &src);
+
+    cell->flags |= 1;
+    return 0;
+}
+
+int32_t vgen_time(delta_state *d)
+{
+    delta_vars    *v = EVV_AT(delta_vars *, d->vars);
+    delta_gencell *cell = gen_cell(d, 0xc4);
+
+    cell->time = v->gen_len;
+    cell->flags |= 2;
+    return 0;
+}
+
+/* The parameters are copied a byte at a time out of the statement into a
+   buffer the cell keeps, which is made the first time round and reset every
+   time after. The count is the statement's, and the bytes come from where
+   the read has got to, which this steps as it goes. */
+int32_t vgen_params(delta_state *d)
+{
+    delta_vars    *v = EVV_AT(delta_vars *, d->vars);
+    delta_gencell *cell = gen_cell(d, 0xc5);
+    int32_t        i;
+
+    cell->nparams = v->gen_len;
+
+    if ((cell->flags & 4) == 0)
+        cell->params = EVV_REF(dynaBufNew(v->gen_nparams));
+
+    dynaBufReset(EVV_AT(DynaBuf *, cell->params));
+
+    for (i = 1; i <= (int32_t)v->gen_nparams; i++) {
+        char c = *EVV_AT(const char *, v->gen_at);
+
+        v->gen_at = EVV_REF(EVV_AT(const char *, v->gen_at) + 1);
+        dynaBufAddChar(EVV_AT(DynaBuf *, cell->params), c, 0);
+    }
+
+    cell->flags |= 4;
+    return 0;
+}
+
+/* And moving the finished frame across, which is refused unless all three
+   parts have arrived. The buffer is copied character by character rather
+   than by taking the other cell's, so the two go on owning their own. */
+int32_t vgen_copy(delta_state *d)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+    int32_t     i;
+
+    if ((v->gen_now.flags & 1) == 0)
+        return 0xf5;
+    if ((v->gen_now.flags & 2) == 0)
+        return 0xf5;
+    if ((v->gen_now.flags & 4) == 0)
+        return 0xf5;
+
+    v->gen_done.value = v->gen_now.value;
+    v->gen_done.time = v->gen_now.time;
+    v->gen_done.nparams = v->gen_now.nparams;
+
+    v->gen_len = (uint8_t)dynaBufLength(EVV_AT(DynaBuf *, v->gen_now.params));
+
+    /* Where the buffer would be made if it had none. It never is: the
+       original tests `!flags & 4' where it means `!(flags & 4)', and the
+       first of those is nought or one and never has the bit set, so the
+       compiler folded the whole branch away. The reset below therefore runs
+       on whatever the cell already holds -- which on a first call is
+       nothing. Nothing reaches this: no rule in the nine languages calls
+       vgen_copy at all. Written the way the original runs rather than the
+       way it reads, with the branch left here in words so that the next
+       person to read both does not think this an oversight. */
+
+    dynaBufReset(EVV_AT(DynaBuf *, v->gen_done.params));
+
+    for (i = 0; i < (int32_t)v->gen_len; i++)
+        dynaBufAddChar(EVV_AT(DynaBuf *, v->gen_done.params),
+                       dynaBufChar(EVV_AT(DynaBuf *, v->gen_now.params), i),
+                       0);
+
+    v->gen_done.flags |= 1;
+    v->gen_done.flags |= 2;
+    v->gen_done.flags |= 4;
+
+    return 0;
+}
+
+/* The same three parts again, said the way a rule says them.
+ *
+ * Where the vgen_ calls read the generate statement and work out which cell
+ * to fill, these are told outright: the `gendef' three fill the cell being
+ * collected and the `gencur' three the one already finished. Otherwise they
+ * are the same three parts -- a frame assigned from a location, a moment
+ * taken as a byte, and a run of parameter bytes copied into the cell's own
+ * buffer -- and each sets its own bit as it arrives.
+ *
+ * The frame comes in as a long here rather than a short, which is the only
+ * difference in what is written. */
+static void gen_framedur(delta_state *d, delta_gencell *cell, delta_loc *loc)
+{
+    delta_operand dst;
+    delta_operand src;
+
+    dst.ptr = &cell->value;
+    dst.kind = DK_LONG;
+    dst.flag = 0;
+
+    vinitloc_new(d, &src, loc);
+    vassign(d, &dst, &src);
+
+    cell->flags |= 1;
+    reset_field(loc);
+}
+
+static void gen_timestm(delta_gencell *cell, uint8_t when)
+{
+    cell->time = when;
+    cell->flags |= 2;
+}
+
+static void gen_params(delta_gencell *cell, uint8_t count, uint8_t n,
+                       const uint8_t *str)
+{
+    int32_t i;
+
+    cell->nparams = count;
+
+    if ((cell->flags & 4) == 0)
+        cell->params = EVV_REF(dynaBufNew(n));
+
+    dynaBufReset(EVV_AT(DynaBuf *, cell->params));
+
+    for (i = 1; i <= (int32_t)n; i++) {
+        dynaBufAddChar(EVV_AT(DynaBuf *, cell->params), (char)*str, 0);
+        str++;
+    }
+
+    cell->flags |= 4;
+}
+
+void gendef_framedur(delta_state *d, delta_loc *loc)
+{
+    gen_framedur(d, &EVV_AT(delta_vars *, d->vars)->gen_now, loc);
+}
+
+void gendef_timestm(delta_state *d, uint8_t when)
+{
+    gen_timestm(&EVV_AT(delta_vars *, d->vars)->gen_now, when);
+}
+
+void gendef_params(delta_state *d, uint8_t count, uint8_t n,
+                   const uint8_t *str)
+{
+    gen_params(&EVV_AT(delta_vars *, d->vars)->gen_now, count, n, str);
+}
+
+void gencur_framedur(delta_state *d, delta_loc *loc)
+{
+    gen_framedur(d, &EVV_AT(delta_vars *, d->vars)->gen_done, loc);
+}
+
+void gencur_timestm(delta_state *d, uint8_t when)
+{
+    gen_timestm(&EVV_AT(delta_vars *, d->vars)->gen_done, when);
+}
+
+void gencur_params(delta_state *d, uint8_t count, uint8_t n,
+                   const uint8_t *str)
+{
+    gen_params(&EVV_AT(delta_vars *, d->vars)->gen_done, count, n, str);
+}
+
+/* And the name a rule calls the copy by. */
+int32_t gen_copy(delta_state *d)
+{
+    return vgen_copy(d);
+}
+
+/* The other three arithmetic operations, in the same shape as vadd: the left
+   operand says which width the answer is written in, the right is widened or
+   narrowed to meet it, and any other pair of types is left alone. They are
+   here after the rest of the machine because no rule in the nine languages
+   IBM shipped calls one; a rule of ours that does arithmetic wants them. */
+void vsub(delta_state *d, const delta_operand *a, const delta_operand *b)
+{
+    (void)d;
+
+    if (a->kind == DK_LONG) {
+        if (b->kind == DK_LONG)
+            *(int32_t *)a->ptr = *(int32_t *)a->ptr - *(int32_t *)b->ptr;
+        else if (b->kind == DK_SHORT2)
+            *(int32_t *)a->ptr = *(int32_t *)a->ptr - *(int16_t *)b->ptr;
+    } else if (a->kind == DK_SHORT2) {
+        if (b->kind == DK_LONG)
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr - *(int32_t *)b->ptr);
+        else if (b->kind == DK_SHORT2)
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr - *(int16_t *)b->ptr);
+    }
+}
+
+void vmult(delta_state *d, const delta_operand *a, const delta_operand *b)
+{
+    (void)d;
+
+    if (a->kind == DK_LONG) {
+        if (b->kind == DK_LONG)
+            *(int32_t *)a->ptr = *(int32_t *)a->ptr * *(int32_t *)b->ptr;
+        else if (b->kind == DK_SHORT2)
+            *(int32_t *)a->ptr = *(int16_t *)b->ptr * *(int32_t *)a->ptr;
+    } else if (a->kind == DK_SHORT2) {
+        if (b->kind == DK_LONG)
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr * *(int32_t *)b->ptr);
+        else if (b->kind == DK_SHORT2)
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr * *(int16_t *)b->ptr);
+    }
+}
+
+/* Where a division by nought goes. The original's is empty -- it announces
+   nothing, stops nothing, and the division that follows it faults exactly as
+   it would have without the call. It is kept because it is the one place a
+   port could decide otherwise, and because vdiv calls it by name. */
+void divzero(delta_state *d)
+{
+    (void)d;
+}
+
+void vdiv(delta_state *d, const delta_operand *a, const delta_operand *b)
+{
+    if (a->kind == DK_LONG) {
+        if (b->kind == DK_LONG) {
+            if (*(int32_t *)b->ptr == 0)
+                divzero(d);
+            *(int32_t *)a->ptr = *(int32_t *)a->ptr / *(int32_t *)b->ptr;
+        } else if (b->kind == DK_SHORT2) {
+            if (*(int16_t *)b->ptr == 0)
+                divzero(d);
+            *(int32_t *)a->ptr = *(int32_t *)a->ptr / *(int16_t *)b->ptr;
+        }
+    } else if (a->kind == DK_SHORT2) {
+        if (b->kind == DK_LONG) {
+            if (*(int32_t *)b->ptr == 0)
+                divzero(d);
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr / *(int32_t *)b->ptr);
+        } else if (b->kind == DK_SHORT2) {
+            if (*(int16_t *)b->ptr == 0)
+                divzero(d);
+            *(int16_t *)a->ptr =
+                (int16_t)(*(int16_t *)a->ptr / *(int16_t *)b->ptr);
+        }
+    }
+}
+
+/* Negation is a multiplication by minus one in the original, which matters
+   only at the one value where the two differ: the short case computes in
+   thirty-two bits and keeps the low sixteen, so -32768 comes back as itself
+   rather than saturating. */
+void vnegate(delta_state *d, const delta_operand *a)
+{
+    (void)d;
+
+    if (a->kind == DK_LONG)
+        *(int32_t *)a->ptr = *(int32_t *)a->ptr * -1;
+    else if (a->kind == DK_SHORT2)
+        *(int16_t *)a->ptr = (int16_t)((int32_t)*(int16_t *)a->ptr * -1);
+}
+
+/* Whether two operands may be compared at all. The negative kinds have to
+   match, except that the two integer widths are interchangeable with each
+   other; a kind that is not negative is a statement type, and all that is
+   asked of it is that the language declares it. The right operand is not
+   looked at in that last case, which is the original's doing. */
+int32_t vcompareTypeCheck(delta_state *d, const delta_operand *a,
+                          const delta_operand *b)
+{
+    switch (a->kind) {
+    case DK_UBYTE:
+        return b->kind == DK_UBYTE;
+    case DK_SHORT:
+        return b->kind == DK_SHORT;
+    case DK_LONG:
+    case DK_SHORT2:
+        return b->kind >= DK_SHORT2 && b->kind <= DK_LONG;
+    case DK_SYNC:
+        return b->kind == DK_SYNC;
+    default:
+        return a->kind >= 0 && a->kind < d->nstmts;
+    }
+}
+
 /* Follow a field's left sync link. A link that is itself marked as a sync is
    the answer; otherwise the answer is one step further on. */
 int32_t VLSYNC(const delta_node *t, int8_t i)
@@ -579,6 +1197,574 @@ int32_t VRSYNC(delta_state *d, const int32_t *t, int8_t i)
     if ((*(int32_t *)p & 2) != 0)
         return p;
     return *(int32_t *)(p + 4) & ~3;
+}
+
+/* Walk to the mark that carries a field, one link at a time.
+ *
+ * A position that already carries it is the answer; otherwise the walk
+ * follows the sync links of another field -- the one named separately --
+ * until it finds one that does. The two differ in which way they walk and
+ * in nothing else. Only vgen calls them, which is why they arrive with it.
+ */
+int32_t gcql(delta_state *d, int32_t at, int8_t f, int8_t i)
+{
+    int32_t base = EVV_AT(delta_vars *, d->vars)->fence_base;
+
+    while ((*(const int32_t *)(intptr_t)(at + (base + f) * 4) & 1) == 0)
+        at = VLSYNC((const delta_node *)(intptr_t)at, i);
+
+    return at;
+}
+
+int32_t gcqr(delta_state *d, int32_t at, int8_t f, int8_t i)
+{
+    int32_t base = EVV_AT(delta_vars *, d->vars)->fence_base;
+
+    while ((*(const int32_t *)(intptr_t)(at + (base + f) * 4) & 1) == 0)
+        at = VRSYNC(d, (const int32_t *)(intptr_t)at, i);
+
+    return at;
+}
+
+/* A generate statement written out, which is the largest thing the machine
+ * does and the only one that produces text rather than spine.
+ *
+ * The collected cell carries three things: the frame, whose value is how
+ * long one step lasts; the field the moment is measured in, which arrives
+ * as the cell's time; and the parameter bytes, which are a little program.
+ * That program is a count of statement types, and for each one its number,
+ * how many of its fields follow, and those field numbers.
+ *
+ * vgen walks the span the two registers mark, one frame at a time, and
+ * writes a line for every frame: each field asked for, worked out at that
+ * moment by val_expr2, with the frame's own duration put in at whichever
+ * position of the line the cell names. A first pass over the program settles
+ * where each statement type's value is to be read from, and those two ends
+ * are kept in the stack's own arrays so that val_expr2 can find them; the
+ * answers are cached across frames whenever neither end has moved, which is
+ * what makes a long span affordable. checkInterrupt is asked between fields,
+ * so a caller who has stopped listening stops the walk.
+ *
+ * Nothing in the nine languages IBM shipped generates frames, so no rule
+ * reaches it. A language whose acoustic rules do would.
+ *
+ * Three things here are the original's and are kept rather than corrected.
+ * The buffer is not given back on the two paths that fail before the working
+ * table exists. The gap count is compared the wrong way round, so one to ten
+ * gaps give up at once and the branch meant to let ten through can never be
+ * taken, which makes the test after the loop unreachable as well. And the
+ * fourth of the five arrays is allocated and never checked.
+ */
+int32_t vgen(delta_state *d, delta_tpos *l, delta_tpos *r,
+             const delta_gencell *g, int32_t lf)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+    int32_t      base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    DynaBuf     *buf;
+    int32_t     *cache;
+    const char  *p;
+    char         line[20];
+    int32_t      taken = 0, mode = 0, gaps = 0;
+    int32_t      dur, left, first;
+    int8_t       f, i, nstm, st;
+    uint8_t      total = 0, nfld, k, j;
+
+    if ((g->flags & 1) == 0)
+        return 0;
+    if ((g->flags & 2) == 0)
+        return 0;
+    if ((g->flags & 4) == 0)
+        return 0;
+
+    l->field  = (int8_t)g->time;
+    f         = l->field;
+    l->flags  = 2;
+    l->offset = 0;
+
+    buf = dynaBufNew(0x28);
+    if (buf == 0)
+        return 0;
+
+    /* Five arrays a statement type wide, made once and kept on the stack:
+       where each type's value is read from at the left and at the right,
+       and three caches durcalc works in. */
+    if (s->expr_l == 0) {
+        s->expr_l      = EVV_REF(malloc((size_t)d->nstmts * 4));
+        s->expr_r      = EVV_REF(malloc((size_t)d->nstmts * 4));
+        s->dur_cache_b = EVV_REF(malloc((size_t)d->nstmts * 12));
+        s->dur_cache_a = EVV_REF(malloc((size_t)d->nstmts * 12));
+        s->dur_cache_c = EVV_REF(malloc((size_t)d->nstmts * 12));
+
+        if (s->expr_l == 0 || s->expr_r == 0
+            || s->dur_cache_b == 0 || s->dur_cache_c == 0) {
+            if (s->expr_l != 0)
+                free(EVV_AT(void *, s->expr_l));
+            if (s->expr_r != 0)
+                free(EVV_AT(void *, s->expr_r));
+            if (s->dur_cache_b != 0)
+                free(EVV_AT(void *, s->dur_cache_b));
+            if (s->dur_cache_a != 0)
+                free(EVV_AT(void *, s->dur_cache_a));
+            if (s->dur_cache_c != 0)
+                free(EVV_AT(void *, s->dur_cache_c));
+            return 0;
+        }
+    }
+
+    for (i = 0; i < (int32_t)d->nstmts; i++) {
+        int32_t *a = EVV_AT(int32_t *, s->dur_cache_a);
+        int32_t *b = EVV_AT(int32_t *, s->dur_cache_b);
+        int32_t *c = EVV_AT(int32_t *, s->dur_cache_c);
+
+        EVV_AT(int32_t *, s->expr_r)[i] = 0;
+        EVV_AT(int32_t *, s->expr_l)[i] = 0;
+
+        b[i * 3] = b[i * 3 + 1] = a[i * 3] = a[i * 3 + 1]
+                 = c[i * 3] = c[i * 3 + 1] = s->spine_l;
+
+        c[i * 3 + 2] = 0;
+        a[i * 3 + 2] = 0;
+        b[i * 3 + 2] = 0;
+    }
+
+    /* First pass: for every statement type the program names, find the two
+       marks its value is to be read between, and count how many numbers a
+       line will hold. */
+    p    = dynaBufContents(EVV_AT(DynaBuf *, g->params));
+    nstm = (int8_t)*p++;
+
+    for (i = 0; i < nstm; i++) {
+        int32_t at, at2, next, walk;
+
+        st = (int8_t)*p++;
+
+        at = vgetsc(d, 1, 1, l->node, (uint8_t)st);
+        if (at != 0) {
+            next = ((const int32_t *)(intptr_t)at)[3 + st] & ~3;
+            while (at != 0 && next != 0
+                   && (*(const int32_t *)(intptr_t)next & 2) != 0) {
+                at   = next;
+                next = ((const int32_t *)(intptr_t)at)[3 + st] & ~3;
+            }
+        }
+
+        at2 = vgetsc(d, 0, 1, r->node, (uint8_t)st);
+        if (at2 != 0) {
+            next = ((const int32_t *)(intptr_t)at2)[base + st] & ~3;
+            while (at2 != 0 && next != 0
+                   && (*(const int32_t *)(intptr_t)next & 2) != 0) {
+                at2  = next;
+                next = ((const int32_t *)(intptr_t)at2)[base + st] & ~3;
+            }
+        }
+
+        /* Every mark between the two has to carry the field being timed. */
+        walk = at;
+        while (walk != 0) {
+            if ((((const int32_t *)(intptr_t)walk)[base + f] & 1) == 0) {
+                gaps++;
+                if (gaps <= 10) {
+                    dynaBufDelete(buf);
+                    return 0;
+                }
+            }
+
+            walk = VRSYNC(d, (const int32_t *)(intptr_t)walk, st);
+            if (walk == 0 || walk == at2)
+                break;
+        }
+
+        if (gaps == 0) {
+            EVV_AT(int32_t *, s->expr_l)[st] = gcql(d, l->node, st, f);
+            EVV_AT(int32_t *, s->expr_r)[st] = gcqr(d, l->node, st, f);
+        }
+
+        nfld = (uint8_t)*p++;
+        for (j = 0; j < nfld; j++) {
+            if (total == g->nparams)
+                total++;
+            total++;
+            p++;
+        }
+    }
+
+    if (gaps != 0) {
+        dynaBufDelete(buf);
+        return 0;
+    }
+
+    cache = malloc((size_t)(d->nstmts * 4) * total);
+    if (cache == 0) {
+        dynaBufDelete(buf);
+        return 0;
+    }
+
+    dur   = vdur(d, l, r, (uint8_t)g->time);
+    first = 1;
+
+    for (left = dur; left > 0; left -= g->value) {
+        int32_t skip = 0;
+        int32_t stop = l->node;
+
+        if (!first && mode == 3)
+            stop = (int32_t)(intptr_t)
+                   lmost(d, f, (delta_node *)(intptr_t)stop);
+
+        mode = vnormalize(d, l);
+
+        switch (mode) {
+        case 2:
+            if (l->offset > taken)
+                skip = 1;
+            break;
+
+        case 3:
+        case 4:
+            break;
+
+        default:
+            dynaBufDelete(buf);
+            free(cache);
+            return 0;
+        }
+
+        taken = left < g->value ? left : g->value;
+
+        buf  = dynaBufReset(buf);
+        p    = dynaBufContents(EVV_AT(DynaBuf *, g->params));
+        k    = 0;
+        nstm = (int8_t)*p++;
+
+        for (i = 0; i < nstm; i++) {
+            int32_t saved_l, saved_r, at, at2, found, same;
+
+            st   = (int8_t)*p++;
+            nfld = (uint8_t)*p++;
+
+            saved_l = EVV_AT(int32_t *, s->expr_l)[st];
+            saved_r = EVV_AT(int32_t *, s->expr_r)[st];
+
+            at  = l->node;
+            at2 = at;
+
+            switch (mode) {
+            case 3:
+                at2 = firstdefd(d, f, at, (uint8_t)st, 0);
+                at  = firstdefd(d, f, (int32_t)(intptr_t)
+                                lmost(d, f, (delta_node *)(intptr_t)at),
+                                (uint8_t)st, 1);
+                /* fall through */
+
+            case 4:
+                if ((((const int32_t *)(intptr_t)at)[base + st] & 1) != 0) {
+                    EVV_AT(int32_t *, s->expr_r)[st] = at2;
+                    EVV_AT(int32_t *, s->expr_l)[st] = at;
+                    break;
+                }
+                /* fall through */
+
+            case 2:
+                found = 0;
+                if (!skip) {
+                    for (;;) {
+                        if ((((const int32_t *)(intptr_t)at)[base + st] & 1)
+                                != 0) {
+                            found = at;
+                            break;
+                        }
+                        if (at == stop)
+                            break;
+                        at = VLSYNC((const delta_node *)(intptr_t)at, f);
+                    }
+                }
+
+                if (found != 0) {
+                    EVV_AT(int32_t *, s->expr_l)[st] = found;
+                    EVV_AT(int32_t *, s->expr_r)[st] =
+                        VRSYNC(d, (const int32_t *)(intptr_t)found, st);
+                }
+                break;
+
+            default:
+                dynaBufDelete(buf);
+                free(cache);
+                return 0;
+            }
+
+            /* Neither end moved since the last frame, so last frame's
+               answers still stand. */
+            same = mode == 2 && !first
+                && saved_l == EVV_AT(int32_t *, s->expr_l)[st]
+                && saved_r == EVV_AT(int32_t *, s->expr_r)[st];
+
+            for (j = 0; j < nfld; j++) {
+                int32_t sel, v;
+                uint8_t fld;
+
+                if (k == g->nparams) {
+                    sprintf(line, "%d ", taken);
+                    dynaBufAddString(buf, line, 0);
+                    k++;
+                }
+
+                sel = left == dur ? vstmtbl[g->time].gen_sel : 0;
+                fld = (uint8_t)*p++;
+
+                if (same && cache[k] != (int32_t)0x80000000) {
+                    v = cache[k];
+                } else {
+                    int32_t worked = 0;
+
+                    v = val_expr2(d, l, st, fld, sel, mode, &worked);
+                    cache[k] = worked ? (int32_t)0x80000000 : v;
+                }
+
+                if (v == (int32_t)0x80000001) {
+                    dynaBufDelete(buf);
+                    free(cache);
+                    return 0;
+                }
+
+                sprintf(line, "%d ", v);
+                dynaBufAddString(buf, line, 0);
+                k++;
+
+                if (checkInterrupt(d))
+                    break;
+            }
+
+            if (checkInterrupt(d))
+                break;
+        }
+
+        if (checkInterrupt(d))
+            break;
+
+        if (k == g->nparams) {
+            sprintf(line, "%d ", taken);
+            dynaBufAddString(buf, line, 0);
+            k++;
+        }
+
+        dynaBufAddChar(buf, '\n', 0);
+        dynaBufAddChar(buf, 0, 0);
+        vf_puts(d, lf, dynaBufContents(buf), 1);
+
+        l->flags  = 2;
+        l->offset = l->offset + g->value;
+        first     = 0;
+    }
+
+    dynaBufDelete(buf);
+    free(cache);
+    return 1;
+}
+
+/* The two names a rule calls it by, which differ only in where the count of
+   numbers a line holds comes from and in what a failure costs. Both check
+   first that the range the two registers mark is one that may be printed. */
+int32_t vgenerate(delta_state *d)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+
+    if (!vprt_range(d, &d->lpta, &d->rpta)
+        || !vgen(d, &d->lpta, &d->rpta, &v->gen_done, v->gen_len))
+        return 0xf5;
+
+    return 0;
+}
+
+void generate(delta_state *d, int32_t lf)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+
+    if (!vprt_range(d, &d->lpta, &d->rpta)
+        || !vgen(d, &d->lpta, &d->rpta, &v->gen_done, lf))
+        forceErrorBacktrack(d);
+}
+
+/* The check that a spine's context marks are consistent.
+ *
+ * This is the Delta debugger's, not the engine's: `vredoctxt' ends by saying
+ * "The delta is correct." on the command layer's own stream. Nothing in this
+ * engine calls any of the four, and the display they belong to is not here --
+ * src/delta_trace.c says why. They are written because the machine is being
+ * finished rather than because something wants them.
+ *
+ * vctxtinit takes the six tables the check works in, four of a word per
+ * statement type and two of a byte, and gives them all back if any one of
+ * them cannot be had. vclrctxt walks every field's chain from the spine's
+ * right-hand end and clears the pointer out of every link whose field is not
+ * marked, keeping the two flag bits and remembering that it did. mapsyncs
+ * numbers the syncs it can reach, marking each so it is not counted twice.
+ */
+int vctxtinit(delta_state *d)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+
+    if (d->nstmts == 0)
+        return 1;
+
+    s->ctxt_a = EVV_REF(malloc((size_t)d->nstmts * 4));
+    s->ctxt_b = EVV_REF(malloc((size_t)d->nstmts * 4));
+    s->ctxt_c = EVV_REF(malloc((size_t)d->nstmts * 4));
+    s->ctxt_d = EVV_REF(malloc((size_t)d->nstmts * 4));
+    s->ctxt_e = EVV_REF(malloc((size_t)d->nstmts));
+    s->ctxt_f = EVV_REF(malloc((size_t)d->nstmts));
+
+    if (s->ctxt_a != 0 && s->ctxt_b != 0 && s->ctxt_c != 0
+        && s->ctxt_d != 0 && s->ctxt_e != 0 && s->ctxt_f != 0)
+        return 1;
+
+    if (s->ctxt_a != 0)
+        free(EVV_AT(void *, s->ctxt_a));
+    if (s->ctxt_b != 0)
+        free(EVV_AT(void *, s->ctxt_b));
+    if (s->ctxt_c != 0)
+        free(EVV_AT(void *, s->ctxt_c));
+    if (s->ctxt_d != 0)
+        free(EVV_AT(void *, s->ctxt_d));
+    if (s->ctxt_e != 0)
+        free(EVV_AT(void *, s->ctxt_e));
+    if (s->ctxt_f != 0)
+        free(EVV_AT(void *, s->ctxt_f));
+
+    return 0;
+}
+
+
+/* What the check looks at before the clearing: a node whose two link words
+ * carry anything but their own two flag bits is inconsistent, and the first
+ * one found stops the walk. Asking whether the caller has interrupted is
+ * what lets a long spine be given up on; an interrupt turns the report off
+ * and the walk goes on clearing.
+ *
+ * Then the clearing itself, which is the same five bits every time: the
+ * sync bit and the mark bit out of both words, and whatever is above the
+ * bottom two out of both.
+ */
+int chksyncsflags(delta_state *d)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+    int32_t      base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    int8_t       i;
+
+    for (i = 0; i < d->nstmts; i++) {
+        int32_t t = s->spine_r;
+
+        while (t != 0) {
+            int32_t *node = (int32_t *)(intptr_t)t;
+
+            if (s->ctxt_arg != 0
+                && ((node[base - 3] & 2) != 0
+                    || (node[0] & 1) != 0
+                    || (node[base - 3] & 1) != 0
+                    || (node[0] & ~3) != 0
+                    || (node[base - 3] & ~3) != 0)) {
+                if (checkInterrupt(d))
+                    s->ctxt_arg = 0;
+
+                if (s->ctxt_arg != 0) {
+                    s->ctxt_cleared = 1;
+                    return 0;
+                }
+            }
+
+            node[base - 3] &= ~2;
+            node[0] &= ~1;
+            node[base - 3] &= ~1;
+            node[0] &= 3;
+            node[base - 3] &= 3;
+
+            t = VLSYNC((const delta_node *)(intptr_t)t, i);
+        }
+    }
+
+    return 1;
+}
+int vclrctxt(delta_state *d, int32_t unused)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+    int32_t      base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    int8_t       i;
+
+    (void)unused;
+
+    for (i = 0; i < d->nstmts; i++) {
+        int32_t t = s->spine_r;
+
+        while (t != 0) {
+            int8_t j;
+
+            for (j = 0; j < d->nstmts; j++) {
+                int32_t *node = (int32_t *)(intptr_t)t;
+
+                if ((node[base + j] & 1) != 0)
+                    continue;
+
+                node[3 + j] &= 3;
+                node[base + j] &= 3;
+                s->ctxt_cleared = 1;
+            }
+
+            t = VLSYNC((const delta_node *)(intptr_t)t, i);
+        }
+    }
+
+    return 1;
+}
+
+void mapsyncs(delta_state *d, int32_t t)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+    int32_t      base = EVV_AT(delta_vars *, d->vars)->fence_base;
+    int32_t      n = absoluteSyncNum(d, (uint8_t *)(intptr_t)t);
+    int8_t       i;
+
+    /* The word three before the fenced fields begin, which is what the
+       original computes; marking it is how a sync already counted is known
+       from one that is not. */
+    ((int32_t *)(intptr_t)t)[base - 3] |= 2;
+
+    EVV_AT(int16_t *, s->sync_map)[n] = (int16_t)s->sync_next;
+    s->sync_next++;
+
+    for (i = 0; i < d->nstmts; i++) {
+        int32_t next;
+
+        if ((((const int32_t *)(intptr_t)t)[base + i] & 1) == 0)
+            continue;
+
+        next = VRSYNC(d, (const int32_t *)(intptr_t)t, i);
+        if (next == 0)
+            continue;
+        if ((((const int32_t *)(intptr_t)next)[base - 3] & 2) != 0)
+            continue;
+
+        mapsyncs(d, next);
+    }
+}
+
+int vredoctxt(delta_state *d, int32_t arg)
+{
+    delta_stack *s = EVV_AT(delta_stack *, d->stack);
+
+    s->ctxt_done = 0;
+    s->ctxt_cleared = 0;
+    s->ctxt_arg = arg;
+
+    chksyncsflags(d);
+
+    if (!vclrctxt(d, arg))
+        return 0;
+
+    if (arg != 0 && s->ctxt_cleared == 0)
+        vf_printf(d, *(const int8_t *)((const char *)
+                      EVV_AT(const void *, d->logio) + 4),
+                  1, "The delta is correct.\n");
+
+    s->ctxt_done = 1;
+    return 1;
 }
 
 void reset_field(delta_loc *f)
@@ -848,6 +2034,45 @@ void push_ptr_init(delta_state *d, delta_loc *p)
     p->value = 0;
     p->kind = DK_SYNC;
     push_ptr(d, EVV_REF(p));
+}
+
+/* One position becomes another everywhere the machine has written it down.
+   Two places hold one: a word variable, which holds a position as its whole
+   value, and the pointers a rule has pushed, each of which is a location
+   whose value word is the position. The pushed ones are walked a frame at a
+   time -- from the active record up to the top, then back to the frame below
+   it, whose extent the entry under each record says -- so that a rule's own
+   pushes and its callers' are all seen.
+
+   Nothing in this tree calls it. It is the save layer's, which reads a
+   machine back from a file: every position in it is a pointer that will land
+   somewhere else next time, so each has to be told where it went. */
+void set_saved_ptrs(delta_state *d, int32_t was, int32_t now)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+    int32_t i, at, end;
+
+    for (i = 0; i < d->nword; i++) {
+        int32_t *cell = EVV_AT(int32_t **, d->word)[i];
+
+        if (*cell == was)
+            *cell = now;
+    }
+
+    at  = v->active_record;
+    end = v->ptr_count;
+
+    while (end > 0) {
+        for (i = at; i < end; i++) {
+            delta_loc *p = EVV_AT(delta_loc *, v->ptr_stack[i]);
+
+            if (p->value == was)
+                p->value = now;
+        }
+
+        end = at - 2;
+        at  = v->ptr_stack[at - 1];
+    }
 }
 
 /* The two-byte and one-byte name pushes. Each builds an operand pointing at
@@ -1401,6 +2626,14 @@ int forall_cont_from(delta_state *d, int16_t tag, int16_t loop,
     return 2;
 }
 
+/* And the same body under a second name, which is what the original has:
+   for_cont_from and forall_cont_from are the same bytes. */
+int for_cont_from(delta_state *d, int16_t tag, int16_t loop, int32_t unused,
+                  delta_loc *dst, const delta_loc *src)
+{
+    return forall_cont_from(d, tag, loop, unused, dst, src);
+}
+
 /* A context record naming what is being tried, then a copy of where the scan
    had got to. Anything that may have to be unwound pushes this pair. */
 static void push_ca_and_scan(delta_state *d, int16_t tag)
@@ -1627,6 +2860,211 @@ int test_string_s(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str)
             if (!vscanadv(d, 1, 1))
                 return 1;
         }
+    }
+
+    return 0;
+}
+
+/* The same test where a token in the string is wider than a byte.
+ *
+ * A record holds one code per character of the alphabet its statement type
+ * declares, and an alphabet larger than 256 does not fit in a byte, so the
+ * string a rule carries spells each code across two bytes or four. The top
+ * bit of the first byte is the sign and the rest is the value, most
+ * significant part first, which is the one place in the machine where a
+ * number is not laid down the way the host lays one down.
+ *
+ * Neither is called by any rule in the nine languages IBM shipped, all of
+ * whose alphabets fit in a byte. A language of ours with a larger one would
+ * want them, and so would a rule comparing against a field that is not a
+ * character at all.
+ *
+ * Everything else is test_string_s: peek at the scan, skip a sync, compare
+ * the code against what the record holds, and advance. */
+int test_string_l(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str)
+{
+    const delta_stmt *e = &vstmtbl[st];
+    const uint8_t *p = str;
+    const uint8_t *end = str + n;
+    int16_t value = 0;
+    delta_operand a, b;
+
+    a.kind = DK_SHORT;
+    a.ptr = &value;
+    a.flag = e->fields[0].flag;
+    b.kind = e->fields[0].kind;
+    b.flag = e->fields[0].flag;
+
+    while (p < end) {
+        int32_t node = scan_peek(d);
+
+        if (node == 0)
+            return 1;
+
+        if ((*(int32_t *)(intptr_t)node & 2) == 0) {
+            value = (int16_t)(((p[0] & 0x7f) << 8) | p[1]);
+            if ((p[0] & 0x80) != 0)
+                value = (int16_t)(value * -1);
+            p += 2;
+
+            b.ptr = e->get[0](TFLDS((void *)(intptr_t)node));
+            vcompare(d, &a, &b);
+            if (EVV_AT(delta_vars *, d->vars)->compared_equal != 0)
+                return 1;
+        }
+
+        if (!vscanadv(d, 1, 1))
+            return 1;
+    }
+
+    return 0;
+}
+
+int test_string_lng(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str)
+{
+    const delta_stmt *e = &vstmtbl[st];
+    const uint8_t *p = str;
+    const uint8_t *end = str + n;
+    int32_t value = 0;
+    delta_operand a, b;
+
+    a.kind = DK_LONG;
+    a.ptr = &value;
+    a.flag = e->fields[0].flag;
+    b.kind = e->fields[0].kind;
+    b.flag = e->fields[0].flag;
+
+    while (p < end) {
+        int32_t node = scan_peek(d);
+
+        if (node == 0)
+            return 1;
+
+        if ((*(int32_t *)(intptr_t)node & 2) == 0) {
+            value = (int32_t)(((uint32_t)(p[0] & 0x7f) << 24)
+                              | ((uint32_t)p[1] << 16)
+                              | ((uint32_t)p[2] << 8)
+                              | (uint32_t)p[3]);
+            if ((p[0] & 0x80) != 0)
+                value = value * -1;
+            p += 4;
+
+            b.ptr = e->get[0](TFLDS((void *)(intptr_t)node));
+            vcompare(d, &a, &b);
+            if (EVV_AT(delta_vars *, d->vars)->compared_equal != 0)
+                return 1;
+        }
+
+        if (!vscanadv(d, 1, 1))
+            return 1;
+    }
+
+    return 0;
+}
+
+/* The string test that carries its own width.
+ *
+ * Here the first byte of the string is a marker saying how wide the tokens
+ * after it are: 199 a byte apiece, 202 two and 201 four, the wide ones sign
+ * first as in the two forms above. A length of nothing is not a comparison
+ * at all but a step -- the scan moves over one token and the answer is
+ * whether it could.
+ *
+ * Marker 200 is a defect, and it is worth saying out loud because it cannot
+ * be reproduced. Its head takes the two-byte cell for the operand and its
+ * body decodes four bytes into the four-byte one, so what it compares is a
+ * cell nothing has written; in the original that is whatever the stack
+ * happened to hold. Ours holds nought there. Nothing reaches it: no rule in
+ * the nine languages IBM shipped calls test_string at all, which is why it
+ * was missing from this engine, and a rule of ours would use one of the
+ * three markers that work.
+ */
+int test_string(delta_state *d, uint8_t st, uint8_t n, const uint8_t *str)
+{
+    const delta_stmt *e = &vstmtbl[st];
+    const uint8_t *p = str;
+    const uint8_t *end = str + n;
+    int32_t marker;
+    int16_t v16 = 0;
+    int32_t v32 = 0;
+    delta_operand a, b;
+
+    if (n == 0)
+        return vscanadvOverToken(d, 1) ? 0 : 1;
+
+    marker = *p;
+    p++;
+
+    a.ptr = 0;
+    a.kind = 0;
+    switch (marker) {
+    case 199:
+        a.kind = DK_UBYTE;
+        break;
+    case 200:
+        a.kind = DK_SHORT;
+        a.ptr = &v16;
+        break;
+    case 201:
+        a.kind = DK_LONG;
+        a.ptr = &v32;
+        break;
+    case 202:
+        a.kind = DK_SHORT2;
+        a.ptr = &v16;
+        break;
+    default:
+        break;
+    }
+    a.flag = e->fields[0].flag;
+    b.kind = e->fields[0].kind;
+    b.flag = e->fields[0].flag;
+
+    while (p < end) {
+        int32_t node = scan_peek(d);
+
+        if (node == 0)
+            return 1;
+
+        if ((*(int32_t *)(intptr_t)node & 2) == 0) {
+            switch (marker) {
+            case 199:
+                /* The operand points into the string itself rather than at
+                   a cell, so a byte is compared where it lies. */
+                a.ptr = (void *)(intptr_t)p;
+                p++;
+                break;
+
+            case 200:
+            case 201:
+                v32 = (int32_t)(((uint32_t)(p[0] & 0x7f) << 24)
+                                | ((uint32_t)p[1] << 16)
+                                | ((uint32_t)p[2] << 8)
+                                | (uint32_t)p[3]);
+                if ((p[0] & 0x80) != 0)
+                    v32 = v32 * -1;
+                p += 4;
+                break;
+
+            case 202:
+                v16 = (int16_t)(((p[0] & 0x7f) << 8) | p[1]);
+                if ((p[0] & 0x80) != 0)
+                    v16 = (int16_t)(v16 * -1);
+                p += 2;
+                break;
+
+            default:
+                break;
+            }
+
+            b.ptr = e->get[0](TFLDS((void *)(intptr_t)node));
+            vcompare(d, &a, &b);
+            if (EVV_AT(delta_vars *, d->vars)->compared_equal != 0)
+                return 1;
+        }
+
+        if (!vscanadv(d, 1, 1))
+            return 1;
     }
 
     return 0;
@@ -2083,6 +3521,14 @@ void lpta_mover(delta_state *d, uint8_t f)
     d->lpta.node = EVV_REF(vmover(d, (int32_t *)(intptr_t)d->lpta.node, f));
 }
 
+void rpta_mover(delta_state *d, uint8_t f)
+{
+    if (!vmove_tv(d, &d->rpta))
+        forceErrorBacktrack(d);
+
+    d->rpta.node = EVV_REF(vmover(d, (int32_t *)(intptr_t)d->rpta.node, f));
+}
+
 /* The same rightward walk, but as a test: it only moves if the position was
    already on a timing mark. */
 int lpta_tstmover(delta_state *d, uint8_t f)
@@ -2091,6 +3537,27 @@ int lpta_tstmover(delta_state *d, uint8_t f)
         return 1;
 
     d->lpta.node = EVV_REF(vmover(d, (int32_t *)(intptr_t)d->lpta.node, f));
+    return 0;
+}
+
+/* The right register's two, where the third argument of the mark test says
+   which register is being asked about rather than which way it walks: the
+   left pair pass nought and these pass one. */
+int rpta_tstmover(delta_state *d, uint8_t f)
+{
+    if (vtsttmark_tv(d, &d->rpta, 1) != 0)
+        return 1;
+
+    d->rpta.node = EVV_REF(vmover(d, (int32_t *)(intptr_t)d->rpta.node, f));
+    return 0;
+}
+
+int rpta_tstmovel(delta_state *d, uint8_t f)
+{
+    if (vtsttmark_tv(d, &d->rpta, 1) != 0)
+        return 1;
+
+    d->rpta.node = EVV_REF(vmovel((delta_node *)(intptr_t)d->rpta.node, f));
     return 0;
 }
 
@@ -3219,7 +4686,7 @@ int vinit_stm(delta_state *d, int8_t f)
    between each pair. Both spellings share everything but how they read a
    value; a string of nothing is a plain delete. */
 static int ins_tokens_run(delta_state *d, uint8_t f, const uint8_t *str,
-                          uint8_t n, int32_t arg, int wide)
+                          uint8_t n, int32_t arg, int16_t kind)
 {
     delta_operand a;
     delta_operand b;
@@ -3246,24 +4713,40 @@ static int ins_tokens_run(delta_state *d, uint8_t f, const uint8_t *str,
 
     end = str + n;
 
-    if (wide) {
-        b.kind = DK_SHORT2;
-        b.ptr = &shrt;
-    } else {
-        b.kind = DK_UBYTE;
-        b.ptr = &ch;
+    /* Which cell the string is decoded into, and therefore how much of the
+       string one token takes: a byte, two bytes or four, the wide ones sign
+       first. The four entry points below differ in nothing else. */
+    b.kind = kind;
+    switch (kind) {
+    case DK_LONG:   b.ptr = &lng; break;
+    case DK_UBYTE:  b.ptr = &ch; break;
+    default:        b.ptr = &shrt; break;
     }
     b.flag = vstmtbl[f].fields[0].flag;
 
     while (str < end) {
-        if (wide) {
+        switch (kind) {
+        case DK_UBYTE:
+            ch = *str;
+            str++;
+            break;
+
+        case DK_LONG:
+            lng = (int32_t)(((uint32_t)(str[0] & 0x7f) << 24)
+                            | ((uint32_t)str[1] << 16)
+                            | ((uint32_t)str[2] << 8)
+                            | (uint32_t)str[3]);
+            if ((str[0] & 0x80) != 0)
+                lng = -lng;
+            str += 4;
+            break;
+
+        default:
             shrt = (int16_t)(((str[0] & 0x7f) << 8) | str[1]);
             if ((str[0] & 0x80) != 0)
                 shrt = (int16_t)(-shrt);
             str += 2;
-        } else {
-            ch = *str;
-            str++;
+            break;
         }
 
         if (a.kind != b.kind)
@@ -3288,13 +4771,28 @@ static int ins_tokens_run(delta_state *d, uint8_t f, const uint8_t *str,
 int ins_tokens_s(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
                  int32_t arg)
 {
-    return ins_tokens_run(d, f, str, n, arg, 0);
+    return ins_tokens_run(d, f, str, n, arg, DK_UBYTE);
 }
 
 int ins_tokens_i(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
                  int32_t arg)
 {
-    return ins_tokens_run(d, f, str, n, arg, 1);
+    return ins_tokens_run(d, f, str, n, arg, DK_SHORT2);
+}
+
+/* The other two widths. No rule in the nine languages IBM shipped names a
+   string in either of them, which is why they were missing; a language whose
+   alphabet does not fit in a byte would want them. */
+int ins_tokens_l(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
+                 int32_t arg)
+{
+    return ins_tokens_run(d, f, str, n, arg, DK_SHORT);
+}
+
+int ins_tokens_lng(delta_state *d, uint8_t f, const uint8_t *str, uint8_t n,
+                   int32_t arg)
+{
+    return ins_tokens_run(d, f, str, n, arg, DK_LONG);
 }
 
 /* Split a run of time in two at a given offset, on whichever side of the
@@ -3624,6 +5122,60 @@ int insert_2pt_s(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
         return 1;
 
     ins_tokens_s(d, f, str, n, 0);
+    return 0;
+}
+
+/* The insert a rule writes when the string is bytes and the range may have
+   something else threaded through it: what visnonseq answers is handed to
+   the language's own inserter, which is what tells it to keep whatever is
+   there rather than lay the tokens down flat. */
+int insert_2pt(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+               uint8_t mode)
+{
+    int32_t arg;
+
+    if (vrange_2pt(d, &d->lpta, &d->rpta, (int8_t)f, mode))
+        return 1;
+
+    arg = visnonseq(d, f, d->lpta.node, d->rpta.node);
+
+    if (!ins_tokens(d, (int8_t)f, str, n, arg))
+        return 0xf5;
+
+    return 0;
+}
+
+/* Join the marks the two registers name. Both have to be marks, and the
+   pair has to be one the machine allows; either way it is a fault rather
+   than an answer, so the rule backtracks. */
+int32_t merge(delta_state *d)
+{
+    if (!vsync_tv(d, &d->lpta) || !vsync_tv(d, &d->rpta))
+        forceErrorBacktrack(d);
+
+    if (!vmergable(d, d->lpta.node, d->rpta.node))
+        forceErrorBacktrack(d);
+
+    return vmerge(d, d->lpta.node, d->rpta.node);
+}
+
+int insert_2pt_l(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+                 uint8_t mode)
+{
+    if (vrange_2pt(d, &d->lpta, &d->rpta, (int8_t)f, mode))
+        return 1;
+
+    ins_tokens_l(d, f, str, n, 0);
+    return 0;
+}
+
+int insert_2pt_lng(delta_state *d, uint8_t f, uint8_t n, const uint8_t *str,
+                   uint8_t mode)
+{
+    if (vrange_2pt(d, &d->lpta, &d->rpta, (int8_t)f, mode))
+        return 1;
+
+    ins_tokens_lng(d, f, str, n, 0);
     return 0;
 }
 
@@ -3982,6 +5534,42 @@ int succeed(delta_state *d)
 /* Put a small integer into a rule's variable. A variable of one of the sized
    kinds takes it directly; one the language declares goes through vassign.
    A kind below those is a fault and backtracks. */
+/* The same as move_i with the value taken whole: what it writes into a
+   location the language declared is a long rather than a short, and the
+   value it puts into the two kinds it handles outright is not narrowed on
+   the way. */
+void move_lng(delta_state *d, delta_loc *loc, int32_t value)
+{
+    delta_operand a;
+    delta_operand b;
+
+    if (EVV_AT(delta_vars *, d->vars)->testing)
+        save_var(d, loc);
+
+    if (loc->kind == DK_SYNC || loc->kind == DK_LONG) {
+        loc->value = value;
+        return;
+    }
+
+    if (loc->kind == DK_SHORT2) {
+        loc->field = (int16_t)value;
+        return;
+    }
+
+    if (loc->kind < 0) {
+        forceErrorBacktrack(d);
+        return;
+    }
+
+    a.kind = DK_LONG;
+    a.ptr = &value;
+    a.flag = 0;
+
+    vinitloc_new(d, &b, loc);
+    vassign(d, &b, &a);
+    reset_field(loc);
+}
+
 void move_i(delta_state *d, delta_loc *loc, int16_t value)
 {
     delta_operand a;
@@ -4038,6 +5626,45 @@ void npush_lng(delta_state *d, int32_t v)
     op.kind = DK_LONG;
     op.flag = 0;
     vnspush(d, &op);
+}
+
+/* The fourth width. The name stack carries the type beside the value, so
+   these four differ in nothing but which type they say. */
+void npush_l(delta_state *d, int32_t x)
+{
+    delta_operand v;
+
+    v.ptr = &x;
+    v.kind = DK_SHORT;
+    v.flag = 0;
+    vnspush(d, &v);
+}
+
+/* Take the top two off the name stack and compare them, the later push
+   being the left operand. */
+void ncompare(delta_state *d)
+{
+    delta_operand a;
+    delta_operand b;
+
+    vnspop(d, &a);
+    vnspop(d, &b);
+    vcompare(d, &a, &b);
+}
+
+/* Backtrack, and backtrack out of an alternative. The first says only that
+   it happened; the second leaves a word behind that the rule's return
+   clears. */
+int back(delta_state *d)
+{
+    (void)d;
+    return 1;
+}
+
+int back_nboa(delta_state *d)
+{
+    EVV_AT(delta_vars *, d->vars)->unknown_11e8 = 1;
+    return 1;
 }
 
 /* And push a variable, which leaves its field unselected afterwards. */
@@ -4175,6 +5802,103 @@ void lpta_loadi(delta_state *d, uint8_t f, int32_t v)
     }
 }
 
+/* The right register's twin of it, and of the two loads beside it. Three
+   things about these are the original's and are kept.
+ *
+ * Each asks the statement table about the *left* register's field and not its
+ * own -- 0x44 where 0x54 was meant -- which is a slip in the original that
+ * cannot show: both arms of the switch write the same thing, so all the wrong
+ * question can do is decide whether the offset is written at all.
+ *
+ * The long forms take the immediate whole where the short ones narrow it to
+ * sixteen bits first, and neither faults on a kind it does not handle.
+ *
+ * No rule in the nine languages IBM shipped calls any of these, which is why
+ * they were missing; a rule of ours that walks rightwards wants them. */
+void rpta_loadi(delta_state *d, uint8_t f, int32_t v)
+{
+    d->rpta.flags = 2;
+    d->rpta.field = (int8_t)f;
+
+    switch (STMTYP(d->lpta.field)) {
+    case -4:
+    case -3:
+        d->rpta.offset = (int16_t)v;
+        break;
+    default:
+        break;
+    }
+}
+
+void lpta_loadlng(delta_state *d, uint8_t f, int32_t v)
+{
+    d->lpta.flags = 2;
+    d->lpta.field = (int8_t)f;
+
+    switch (STMTYP(d->lpta.field)) {
+    case -4:
+    case -3:
+        d->lpta.offset = v;
+        break;
+    default:
+        break;
+    }
+}
+
+void rpta_loadl(delta_state *d, uint8_t f, int32_t v)
+{
+    d->rpta.flags = 2;
+    d->rpta.field = (int8_t)f;
+
+    switch (STMTYP(d->lpta.field)) {
+    case -4:
+    case -3:
+        d->rpta.offset = v;
+        break;
+    default:
+        break;
+    }
+}
+
+void rpta_loadv(delta_state *d, uint8_t f, const delta_loc *loc)
+{
+    d->rpta.flags = 2;
+    d->rpta.field = (int8_t)f;
+
+    if (loc->kind == DK_LONG)
+        d->rpta.offset = loc->value;
+    else if (loc->kind == DK_SHORT2)
+        d->rpta.offset = loc->field;
+    else
+        forceErrorBacktrack(d);
+}
+
+/* Where a register is told to sit: at the left end of a run, or the right.
+   Nothing is read and nothing moves -- the flag is what a later move reads. */
+void lpta_leftmost(delta_state *d, uint8_t f)
+{
+    d->lpta.flags = 6;
+    d->lpta.field = (int8_t)f;
+}
+
+void rpta_leftmost(delta_state *d, uint8_t f)
+{
+    d->rpta.flags = 6;
+    d->rpta.field = (int8_t)f;
+}
+
+void lpta_rightmost(delta_state *d, uint8_t f)
+{
+    d->lpta.flags = 0xa;
+    d->lpta.field = (int8_t)f;
+}
+
+void rpta_rightmost(delta_state *d, uint8_t f)
+{
+    d->rpta.flags = 0xa;
+    d->rpta.field = (int8_t)f;
+}
+
 /* Set a timing variable. The two names are the same code in the original. */
 void settvar_i(delta_state *d, delta_loc *loc, int32_t v)
 {
@@ -4190,6 +5914,69 @@ void settvar_s(delta_state *d, delta_loc *loc, int32_t v)
         save_var(d, loc);
 
     vinitflds(d, (uint8_t)*(const int8_t *)loc, &loc->value, &v);
+}
+
+/* And two more names for it. The original compiles the same body into four
+   entry points -- one per width a rule may name the value in -- and none of
+   them looks at the width, so all four are this. */
+void settvar_l(delta_state *d, delta_loc *loc, int32_t v)
+{
+    if (EVV_AT(delta_vars *, d->vars)->testing)
+        save_var(d, loc);
+
+    vinitflds(d, (uint8_t)*(const int8_t *)loc, &loc->value, &v);
+}
+
+void settvar_lng(delta_state *d, delta_loc *loc, int32_t v)
+{
+    if (EVV_AT(delta_vars *, d->vars)->testing)
+        save_var(d, loc);
+
+    vinitflds(d, (uint8_t)*(const int8_t *)loc, &loc->value, &v);
+}
+
+/* The same again where the value comes out of another location rather than
+   as a constant: the source is opened as an operand and what it points at is
+   what goes in. The source's field is reset afterwards and the target's is
+   not, which is the original's doing. */
+void settvar_v(delta_state *d, delta_loc *loc, delta_loc *src)
+{
+    delta_operand v;
+
+    if (EVV_AT(delta_vars *, d->vars)->testing)
+        save_var(d, loc);
+
+    vinitloc_new(d, &v, src);
+    vinitflds(d, (uint8_t)*(const int8_t *)loc, &loc->value, v.ptr);
+    reset_field(src);
+}
+
+/* What the machine calls when an assignment was allowed and when it was
+   refused. They are the same: put the field back and say nothing. */
+void assok(delta_state *d, delta_loc *loc)
+{
+    (void)d;
+    reset_field(loc);
+}
+
+void noass(delta_state *d, delta_loc *loc)
+{
+    (void)d;
+    reset_field(loc);
+}
+
+/* Two that do nothing at all. Their bodies read no argument, so how many a
+   rule passes cannot be recovered from the original; the state is given
+   because every other primitive takes it, and the convention lets a caller
+   push more than is read. */
+void chkvars(delta_state *d)
+{
+    (void)d;
+}
+
+void chkokass(delta_state *d)
+{
+    (void)d;
 }
 
 /* Is a number negative? Only the two number kinds can be; anything else
@@ -4343,6 +6130,46 @@ int mark_i(delta_state *d, uint8_t st, uint8_t fld, const void *v,
     return 0;
 }
 
+/* The same mark in the other two widths. Each refuses a field whose kind is
+   not the one it is named for, and no rule in the nine languages IBM shipped
+   names either -- their fields are bytes and short2s. */
+int mark_l(delta_state *d, uint8_t st, uint8_t fld, const void *v,
+           uint8_t mode)
+{
+    if (vrange_2pt(d, &d->lpta, &d->rpta, (int8_t)st, mode))
+        return 1;
+
+    if (vstmtbl[st].fields[fld].kind == DK_SHORT)
+        vmark(d, st, fld, d->lpta.node, d->rpta.node, &v);
+
+    return 0;
+}
+
+int mark_lng(delta_state *d, uint8_t st, uint8_t fld, const void *v,
+             uint8_t mode)
+{
+    if (vrange_2pt(d, &d->lpta, &d->rpta, (int8_t)st, mode))
+        return 1;
+
+    if (vstmtbl[st].fields[fld].kind == DK_LONG)
+        vmark(d, st, fld, d->lpta.node, d->rpta.node, &v);
+
+    return 0;
+}
+
+/* Where a context begins and where it ends, which is one call into the
+   context table with the direction said as a number. The two differ in that
+   number and in nothing else. */
+void SETCTXL(delta_state *d, int32_t *table, uint8_t idx, int32_t bits)
+{
+    vsetsc(d, 1, 1, table, idx, bits);
+}
+
+void SETCTXR(delta_state *d, int32_t *table, uint8_t idx, int32_t bits)
+{
+    vsetsc(d, 0, 1, table, idx, bits);
+}
+
 /* Can a timing pointer take a context? One already flagged can, and
    otherwise it depends on what normalising it makes of it. */
 int vctxt_tv(delta_state *d, delta_tpos *p)
@@ -4367,6 +6194,12 @@ int testeq_tvars(delta_state *d, delta_loc *a, delta_loc *b)
 {
     compare_tvars(d, a, b);
     return testeq(d);
+}
+
+int testneq_tvars(delta_state *d, delta_loc *a, delta_loc *b)
+{
+    compare_tvars(d, a, b);
+    return testneq(d);
 }
 
 /* A variable against a constant: push both and run the ordinary test. */
@@ -4403,6 +6236,58 @@ int if_testge_v_i(delta_state *d, delta_loc *loc, int32_t x)
     npush_v(d, loc);
     npush_i(d, x);
     return if_testge(d);
+}
+
+int if_testle_v_i(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_i(d, x);
+    return if_testle(d);
+}
+
+/* The same six with the constant taken whole rather than narrowed to sixteen
+   bits, which is the only thing that distinguishes them. No rule in the
+   languages IBM shipped names a constant that needs the width. */
+int if_testeq_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testeq(d);
+}
+
+int if_testneq_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testneq(d);
+}
+
+int if_testlt_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testlt(d);
+}
+
+int if_testgt_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testgt(d);
+}
+
+int if_testge_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testge(d);
+}
+
+int if_testle_v_lng(delta_state *d, delta_loc *loc, int32_t x)
+{
+    npush_v(d, loc);
+    npush_lng(d, x);
+    return if_testle(d);
 }
 
 /* Give a run of statements their default projections, one per letter of the
@@ -5505,6 +7390,117 @@ int forall_adv_upto_r(delta_state *d, int16_t tag, int16_t loop, int16_t bound,
     return 2;
 }
 
+/* The same four walks leftwards rather than rightwards.
+ *
+ * A loop over a run of tokens comes in four spellings: whether it stops at
+ * the far end or steps over it, and which way it walks. This tree had the
+ * two that walk right and one of the two that walk to a marker, because
+ * those are the ones the nine languages IBM shipped use; these are their
+ * mirrors, and the mirror is two lines -- which way the scan is told it is
+ * going, and which of a node's two link words the peek reads.
+ */
+static int forall_adv_leftwards(delta_state *d, int16_t tag, int16_t loop,
+                                int16_t bound, uint8_t f, delta_token *tok,
+                                int twice)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+    int32_t nx;
+
+    if (!for_loop_preamble(d, tag, loop, f, tok))
+        return 1;
+
+    v->scan_rev = 0;
+
+    vscanadvUptoToken(d, 0);
+
+    nx = scan_back(d);
+    if (nx == 0)
+        return 0;
+    if ((*(const int32_t *)(intptr_t)nx & 2) != 0)
+        return 0;
+
+    if (!vscanadv(d, 1, 0))
+        return 0;
+
+    if (twice) {
+        vscanadvUptoToken(d, 0);
+
+        nx = scan_back(d);
+        if (nx == 0)
+            return 0;
+        if ((*(const int32_t *)(intptr_t)nx & 2) != 0)
+            return 0;
+    }
+
+    clearDeltaStackBack(d);
+    EVV_AT(delta_stack *, d->stack)->unknown_9c = 0;
+    v->testing = 1;
+    d->unknown_3c = bound;
+    tok->value = v->scan_ptr;
+    return 2;
+}
+
+int forall_adv_over_l(delta_state *d, int16_t tag, int16_t loop, int16_t bound,
+                      uint8_t f, delta_token *tok)
+{
+    return forall_adv_leftwards(d, tag, loop, bound, f, tok, 0);
+}
+
+int forall_adv_upto_l(delta_state *d, int16_t tag, int16_t loop, int16_t bound,
+                      uint8_t f, delta_token *tok)
+{
+    return forall_adv_leftwards(d, tag, loop, bound, f, tok, 1);
+}
+
+/* And the two that step over the far end while walking to a marker, which
+   is forto_adv_upto_l without its second look. */
+static int forto_adv_over(delta_state *d, int16_t tag, int16_t loop,
+                          int16_t bound, uint8_t f, delta_token *tok,
+                          const delta_token *end, int rev)
+{
+    delta_vars *v = EVV_AT(delta_vars *, d->vars);
+    int32_t nx;
+
+    if (!for_loop_preamble(d, tag, loop, f, tok))
+        return 1;
+
+    v->scan_rev = (uint8_t)rev;
+
+    vscanadvUptoTokenOrMarker(d, end->value, 0);
+    if (v->scan_ptr == end->value)
+        return 0;
+
+    nx = rev ? scan_here(d) : scan_back(d);
+    if (nx == 0)
+        return 0;
+    if ((*(const int32_t *)(intptr_t)nx & 2) != 0)
+        return 0;
+
+    if (!vscanadv(d, 1, 0))
+        return 0;
+    if (v->scan_ptr == end->value)
+        return 0;
+
+    clearDeltaStackBack(d);
+    EVV_AT(delta_stack *, d->stack)->unknown_9c = 0;
+    v->testing = 1;
+    d->unknown_3c = bound;
+    tok->value = v->scan_ptr;
+    return 2;
+}
+
+int forto_adv_over_l(delta_state *d, int16_t tag, int16_t loop, int16_t bound,
+                     uint8_t f, delta_token *tok, const delta_token *end)
+{
+    return forto_adv_over(d, tag, loop, bound, f, tok, end, 0);
+}
+
+int forto_adv_over_r(delta_state *d, int16_t tag, int16_t loop, int16_t bound,
+                     uint8_t f, delta_token *tok, const delta_token *end)
+{
+    return forto_adv_over(d, tag, loop, bound, f, tok, end, 1);
+}
+
 /* Insert a statement of a given type carrying a variable's value. A
    variable whose kind already matches the type goes in as it stands; one
    that does not is copied through a scratch slot of the right width first.
@@ -5631,29 +7627,42 @@ int vtstctx_tv(delta_state *d, delta_tpos *p, int32_t back)
 
    The two directions hand the settling step and the lookup opposite
    answers, which is why one argument is the other's complement. */
-static int lpta_tstctxt(delta_state *d, uint8_t f, int32_t back)
+static int pta_tstctxt(delta_state *d, delta_pta *p, uint8_t f, int32_t back)
 {
     const int32_t *node;
 
-    if (vtstctx_tv(d, &d->lpta, back))
+    if (vtstctx_tv(d, p, back))
         return 1;
 
-    node = (const int32_t *)(intptr_t)d->lpta.node;
+    node = (const int32_t *)(intptr_t)p->node;
     if (node[EVV_AT(delta_vars *, d->vars)->fence_base + f] & 1)
         return 0;
 
-    d->lpta.node = vgetsc(d, back ? 0 : 1, 1, d->lpta.node, f);
+    p->node = vgetsc(d, back ? 0 : 1, 1, p->node, f);
     return 0;
 }
 
 int lpta_tstctxtl(delta_state *d, uint8_t f)
 {
-    return lpta_tstctxt(d, f, 0);
+    return pta_tstctxt(d, &d->lpta, f, 0);
 }
 
 int lpta_tstctxtr(delta_state *d, uint8_t f)
 {
-    return lpta_tstctxt(d, f, 1);
+    return pta_tstctxt(d, &d->lpta, f, 1);
+}
+
+/* And the right register's two. In the original these are four functions
+   with one body each, the register being the only thing that differs; the
+   direction argument is the same in both pairs. */
+int rpta_tstctxtl(delta_state *d, uint8_t f)
+{
+    return pta_tstctxt(d, &d->rpta, f, 0);
+}
+
+int rpta_tstctxtr(delta_state *d, uint8_t f)
+{
+    return pta_tstctxt(d, &d->rpta, f, 1);
 }
 
 /* The logarithm table read at a sixteenth of a step, straight when the

@@ -98,8 +98,8 @@ obtainable, and not needed to build.
 is the one that says the text is the source rather than a second copy. It reads
 `lang/enus/rules`, opens no object at all, and writes what the engine compiles
 -- `delta_rules_enus.c` and `delta_rules.h` -- into a directory of its own, then
-holds both against the files in the tree. Both match byte for byte: 4,932,041
-bytes and 168,178.
+holds both against the files in the tree. Both match byte for byte: 4,999,473
+bytes and 168,881, measured on 23 August 2026.
 
 What made that possible was one small table. A rule names a constant by a
 symbol; the bytes behind it are a whole data section of the object it was
@@ -161,6 +161,402 @@ The other use of an upper layer is the one that has nothing to be identical to:
 writing rules that do not exist yet, which is what Polish needs. There the check
 is the suite and an ear, not a byte comparison, so the constraint above does not
 bind.
+
+## Writing a rule
+
+One trap in the decompiler before any of this. `delta-decompile.py` with no arguments writes the hundred smallest rules, and it writes them to the same file `all` writes to -- so reading its usage by running it truncates the language's rules-as-C from every rule to a hundred. That file is gitignored, so nothing says so, and the next default build links it and aborts on the first rule that is missing: `init_platform was not written as C and this build has no bytecode to run it as`. The answer is `delta-decompile.py all` again, and the lesson is to read the usage in the file.
+
+`lang/enus/rules/*.up` beside the `.dr` files is the form to write a rule in. It is the same rule: every call is the same entry with the same arguments in the same order, because a form that reworded what a rule calls would be describing the rule rather than being it. What it takes over is the machine.
+
+That is where the length of the lower form goes. Of the 322,890 operations in English's 1,042 real rules, 97,071 are pushes, 60,947 calls and 43,893 pops -- two thirds of every rule is the argument stack being written out by hand -- and another 53,000 are a comparison setting the flags on one line and a branch reading them on the next. None of it says anything about a language. `eng_ph_F_dur` is 49 lines of the lower notation and this is all of it:
+
+    rule eng_ph_F_dur takes 1 from es_cdur.obj
+      call ZZfence_null
+      set global half 2226 to 20
+      set global half 3150 to 5
+      match
+    end
+
+The 43 lines that went are the landing place, the `ventproc` entry, the `vretproc` tail with its 94, the pushes, the pops, the register that carries the answer and the return.
+
+A line is a verb and then its words, one operation to a line, and a block ends at a bare `end`, so nothing depends on indentation and no line has to be read together with another. `tools/delta-upper.py lower <file>` prints what a file compiles to, which is the way to read what the compiler did.
+
+What a rule can say. `local <name>` gives it a word of its frame and `local <name> bytes <n>` gives it more; `variable <name> <width> <offset>` names a state variable so the body can call it something. `call <entry> <values>...` makes a call and leaves the answer in `answer`. `set <place> to <value>`, and `add`, `subtract`, `and`, `or`, `shift left`, `shift right`, `increment`, `decrement` and `negate` for the arithmetic. `put <value> into <value> at <n>` writes through a pointer, which is how a rule answers something to whatever called it: the machine cannot store from one place in memory to another, so both ends go through a register, and neither of them is the one the answer is in. `if <test>` with `else` and `end`, and `while <test>` with `leave` and `again`. `match` and `give up` are the two ways out, `answer <value>` for a rule that leaves something else, and `raw` takes a line of the lower notation for the operations too rare to have a word here -- the nine rules that read a table, the little floating point the Frenches have, and anything else.
+
+A value is one or two words: a number, `arg <n>`, a local by name, `addr <name>` for where a local is, `cell <name> <part>` for one of the three parts of a local the machine has written -- its `kind`, its `field` or its `value` -- `global <width> <offset>`, `sym <name>`, `answer`, `state`, or `unwind`. A test is two values with a comparison between them -- `is`, `is not`, `is less than`, `is at least`, `is more than`, `is at most`, and `is below`, `is above`, `is not below`, `is not above` for the unsigned ones -- or a value on its own, which means it is not nothing.
+
+Two things about it are the machine's and are easy to get wrong. `arg 1` is the first argument after the state, because the state is every rule's first argument and `takes 3` counts it: a rule that says `takes 3` has `arg 1` and `arg 2`. And a local the machine is handed the address of has to be as big as the machine writes -- `get_parm` fills in a compiled location, which is eight bytes, so it wants `local word bytes 8` and a four-byte local would take the next one with it. Nothing in the compiler knows how much any entry writes.
+
+### A phoneme, and the record that says what it is
+
+A phoneme is in three places and `tools/lang-phonemes.py <tag>` prints all three
+beside each other: its name is a value of the phone statement's first field,
+which is the list the rules index by; its numbers are a `Phoneme` line in the
+settings, four bytes of name and eleven values, read when a caller sends
+phonemes rather than text; and what it sounds like is a rule named for it which
+sets its source parameters and calls one locus rule, where the formant targets
+are.
+
+Beside those it carries a record, in the `variants` bytes of its own statement
+exactly as a letter does in the input statement's. The statement says how long
+one is -- `at start stride` -- and the fields it covers are its own, after the
+name and less `afterslash` where it has one. For the phone statement that is
+eight: class, voicing, sonority, manner of articulation, place of articulation,
+and the three a vowel wants. Those are not decoration. `place_of_artic` runs
+lab, alv, pal, vel and ret, and it is where a language says that its sz is
+retroflex and its s is not.
+
+    lang-phonemes.py set plpl L manner_of_artic=fric place_of_artic=ret
+
+writes one by name, which is the point: read eight bytes by eye and a fricative
+quietly becomes a lateral.
+
+What that is for is adding a sound, and the answer there is usually not to add
+one. A phoneme code is tested by name in some five hundred places in a module --
+every locus rule asks what its neighbours are, every vowel rule asks which
+consonant follows it, the durations and the syllabifier ask too -- and a code
+that has never existed is invisible to all of them, so its neighbours are
+coarticulated as if it were absent and its durations come from nowhere. A code
+that already exists has an arm in every one of those chains. Polish needed two
+sounds Italian has not got and took over two Italian has that no Polish word can
+reach, which cost two records, four call names and one rule.
+
+### The frame, and the places a rule backtracks to
+
+A rule hands the machine five places in its own frame and the machine writes to all five, so their sizes are not ours: the record `ventproc` saves is 92 bytes, the landing place is 64, and the three fence arrays are 12 each, which is a byte per statement type and ten is all English declares. Those five sit together as one block of 192 bytes, the locals above it, and the last word of the frame is the count `backtrack_function` is handed. All 1,042 of IBM's rules lay that block out the same way -- the record, then the landing 64 bytes in, then the three arrays at 156, 168 and 180 -- and what varies is only where the block sits and which of two arrays it hands over first, 532 rules one way and 510 the other, which says that pair is scratch either way. `eng_ph_F_dur` above comes out with the frame IBM gave it, 196 bytes with the landing at -104 and the record at -196, from a rule that says nothing about any of it.
+
+The backtracking is the other half. A rule plants a choice point carrying a small number and later asks `backtrack_function` what number came back; the answer says where to carry on, and -1, which is what the rule's own marker answers, says it has run out of alternatives. So `plant test <place>` plants one -- `plant choice <place>`, `plant scan <place>` and `with boa` on the end are the other kinds -- `place <name>` says where one carries on, `go to <place>` is a jump to one, and `backtrack` asks. `matched` and `gave_up` are places every rule has, so a plant may name either. The numbers are the compiler's business, which is the point: `has_lex_prefix` has six of them across two alternatives and a shared tail, and a wrong one there is a mispronunciation nobody would find by reading.
+
+A rule re-expressed from one of IBM's needs its numbers rather than ours, and they are not always ours to choose: `high_tone` plants 1, 2 and 4 and dispatches on 3 as well. `plant test <place> as <n>` states the number and `place <name> on <n>` binds a place to one that nothing in the rule plants. The chain the compiler writes then steps from 1 to the highest of them, which is how the answer is read -- a decrement leaves nothing when the answer was the number of decrements so far -- and a number with nowhere to go costs the decrement and no branch.
+
+`bare` in a rule's declarations gives it the shape the language's own wrappers have: no landing place, no `ventproc`, no `succeed`, no frame unless it declares a local, and `answer` as its only way out. 1,037 of Italian's 1,749 rules are that shape and a rule of ours that stands where one of them stands has to be too -- the choice points around the call belong to the rule that planted them, and a `succeed` of ours commits them. What that costs when it is missed is worth knowing: the first version of Polish's `pol_test_own_letters` was an ordinary rule, nothing was visibly wrong, and a word with no vowel in it crashed several rules later in the durations.
+
+`through wrappers` in a rule's declarations makes a plant call the wrapper rule of that name -- `ZZstarttest2` rather than `starttest 2`. That is only for a rule re-expressed from IBM's own: a wrapper is a rule, so a run says it was entered, and a rule that skipped it would do the same work and say something different.
+
+### Whether it is the same rule
+
+    make upper-check
+
+is what says so, and there is no byte comparison in it. There was never going to be: our compiler would have to make the same register choices and put the instructions in the same order as IBM's, which is a study of their compiler rather than of this engine, and it would forbid us writing anything they never wrote. `eng_ph_F_dur` says it in one line -- theirs pushes the state register, does the two stores and then calls `succeed`, and anything straightforward does the stores and then the push.
+
+So the standard is what the engine can observe. With tracing on it says every rule it enters and every call it makes with its arguments, and that is what the audio is made of. `upper-check.sh` speaks each case through a build carrying the authored rules and through one carrying IBM's, and those have to match, and the audio besides.
+
+Four rules are in the tree that way, chosen for their shapes rather than their size. `eng_ph_F_dur` is a body with no alternatives in it. `has_lex_prefix` is two alternatives, a tail they share and a dispatch through six planted places. `high_tone` carries a value from one alternative into a test they share, and has a gap in its planted numbers -- IBM's compiler planted 1, 2 and 4 and dispatches on 3 as well -- so its numbers are stated rather than allocated and one place is bound to a number nothing plants. `clear_delta` is the loop: the language's loops are backtracking loops, where the body is reached by the machine answering an alternative rather than by falling into it, so a place inside a `while` is what says one. All four come out the same, call for call, over 7,986,891 lines of trace.
+
+Polish's rules in `lang/plpl/rules/it_phone.up` are what exercise the rest of it: `if` with a call's answer in it, `plant test` and `backtrack` for a letter rule's alternatives, `go to` a shared tail, `put cell right value into arg 2 at 4` for the position a rule answers to its caller, and `bare`. What still nothing in the tree exercises is `else`, `leave`, `again` and the unsigned comparisons, because nothing IBM wrote has that shape and nothing written for Polish has needed it yet: those compile and can be read, and neither is the same as having run. Nothing in the machine is beyond the form -- what has no word here has `raw` -- but a statement proved through the engine and a statement merely compiled are not the same thing, and this says which is which.
+
+The sentences are the suite's seven plain ones and `test/cases/upper.txt`, which is this harness's own; `EVV_UPPER_CASES` names another list, which is how the workflow runs the short one. The seven were not enough, and why is worth more than the fix. `has_lex_prefix` takes one alternative when the word carries the prefix "re" and another when it does not, and not one of the seven has such a word: with its action number changed from 351 to 352 on purpose, all seven still passed. The way to know a case reaches the rule is to trace one sentence and look for the value -- `ZZlprp_load__setd(..., 0000015f)` comes up 28 times in "The rewritten prefix was remade and reopened" and never in the seven.
+
+Three things are left out of the comparison and all three are the harness. The interpreter prints every store it makes, and an authored rule may keep a value somewhere else -- `has_lex_prefix` keeps in a local what IBM's kept on the argument stack -- so the stores are held against each other and reported rather than required. It remarks when the depth a call carries disagrees with the area's, which is IBM's compiler batching its pops and ours not. And addresses in the arena are masked, because a frame with different locals in it lands somewhere else.
+
+The audio is the third comparison and it is not the weakest of them. A rule whose whole effect is to write a variable is invisible to a trace of calls, and that is not hypothetical: setting `eng_ph_F_dur`'s duration to 21 where IBM sets 20 passes the trace on every sentence and changes the sound of the second. Sabotage a rule and see which check answers, and if none of them does, the cases do not reach it.
+
+    make authored
+
+is how an authored rule gets into a build: it writes `delta_rules_enus.c` and `delta_rules_enus.h` out of the text with the upper form included, which is what `upper-check.sh` does before it builds. An ordinary build compiles what is in the tree, and what is in the tree is IBM's rules -- `make notation-regenerate` reads the lower form alone, so a rule written afresh does not turn that check red for as long as it exists. Once a module has been written with `authored`, as Polish has, the check for it is `authored-check`, which is the same comparison with the upper form in.
+
+### Bytes of our own
+
+A rule that tests text names the bytes it tests against by address, and until there was a compiler every one of those came out of IBM's objects with the rule that named it. `lang/<tag>/rules/constants` is where one of ours goes:
+
+    bytes lex_prefix_re 18 02
+
+`make constants` writes it into `delta_authored_<tag>.c`, which is the one file in a language module that no lifter writes, and records where it falls in `rules/symbols`. A rule then says `sym lex_prefix_re` and nothing else has to know. Startup copies that store into the arena beside the lifted ones, because the machine holds addresses in thirty-two bit values and an address in the program is not one of those; `src/delta_low.c` is where both lists are walked. A new store is named in the generated rules file as well, so `make notation-rewrite` goes with it.
+
+The bytes are bytes. A string a rule holds against the text being read is not ASCII: it is one code per character in the alphabet the statement type declares, which `tools/delta-lexicon.py` prints for a language. `text <name> "..."` is there for the ones that really are ASCII.
+
+`rules/symbols` names an address by the object that compiled it and the symbol it had there, which is what a rule holds; a constant of ours belongs to the language rather than to an object and is recorded against none, so any rule may name it. That file used to be a list in order, which was only right as long as no rule was ever added or written afresh -- a rule naming a constant nothing had named before would have been handed an index past the end of the table and read whatever lay after it. It says so now instead.
+
+What proves the naming, as against the linking, is a rule reading our copy of bytes IBM also has. `lex_prefix_re` is IBM's own two-byte prefix as `ZZstring278` holds it: the codes 24 and 2, which in the alphabet statement type 1 declares spell "re", and `tools/delta-lexicon.py` is what says so. A `has_lex_prefix` that calls `test_string_s 1 2 sym lex_prefix_re` where IBM's calls the wrapper for `ZZstring278` therefore has to sound exactly the same, and `tools/upper-check.sh -sound` is how that is asked: the audio is the standard and the trace is reported instead of required, since the wrapper is a rule and a run of IBM's says it was entered. On 23 August 2026 all nine sentences came out identical to the sample, with the traces 18 to 87 lines apart out of between 505,443 and 1,386,180 -- the wrapper being entered and answering, at each of the sites where it is called, and nothing else.
+
+How far apart is said with the running count of rules entered masked off, which is what that harness does. A trace one entry short differs in the count on every line after it, so the raw figure is the length of the trace rather than the size of the difference: the same sentences read as 178,356 to 475,222 lines apart before the mask went in, which is a hundredth of the truth about them.
+
+Nothing in the tree names the constant, so what every build proves is the path -- the store compiled, registered and copied into the arena -- and the measurement above is what proved the name.
+
+## The tables beside the rules
+
+A language module is the rules and five other things: the variables the machine declares for it, the settings it carries in its own image, the statement table the machine is parameterised by, the lookup sets its dictionary lives in, and the bytes its rules name by address. All five were generated out of IBM's objects and said so at the top. All five have a text form now, beside the dictionary that already had one:
+
+    lang/enus/enus.globals      the variables, 106 lines
+    lang/enus/enus.settings     the settings, 83
+    lang/enus/enus.statements   the statement table, 905
+    lang/enus/enus.sets         the sets and the dictionary actions, 9,750
+    lang/enus/enus.consts       the bytes the rules name, 445
+    lang/<tag>/<tag>.dict       the words, which tools/delta-dict.py writes
+
+    make tables-dump      writes the four
+    make tables-check     the C from each, held against the tree
+    make tables-write     the C from each, for real
+
+`tables-check` is the one to believe and it wants no objects: it writes each generated file out of its text into a directory of its own and holds it against what is in the tree, byte for byte. All five match for all nine languages, which is 45 of 45.
+
+Each of the four keeps one writer, and the tool that lifts is the tool that writes. That is the whole discipline: a lifter that reads objects and a reader that reads text hand the same model to the same emitter, so what the text says and what a lift says cannot come out differently formatted, and the round trip is exact rather than approximately right.
+
+What is deliberately not in the text is anything that follows from what is. The variables are a run of kinds -- `word 20`, `short 2`, `compound 1 5` -- and where each one lands and how big a machine of the language is are worked out from them by the same walk `delta_new` does, so English's 794 variables are 95 lines and the state size is derived rather than declared. The statement table's readers and writers are an offset and a width each, and their names follow the order the fields are in, exactly as the original's compiler numbered them: `vfg0000` upwards, one per field, no two fields sharing one across all 58 of English's. The settings' language number is the section that names it read as a family and a dialect. Nothing in any of the four is stated twice.
+
+The dictionaries read for any language now, not only English. `EVV_LANG_DIR`
+points `tools/delta-dict.py` and the two tools it leans on at one module, the
+same way it points the decompiler, so
+
+    EVV_LANG_DIR=lang/plpl python3 tools/delta-dict.py dump
+
+writes `lang/plpl/plpl.dict`. Italian declares 13 dictionaries with 892 entries
+where English declares 28 with 5,945, and the shapes are the same: words to
+action numbers, and what an action says in an arm of a rule.
+
+Two things about the sets are worth knowing before touching them. Its text is lifted from the C in the tree and not from IBM's objects, on purpose: the dictionary's three arrays in that file are laid down by `tools/delta-dict.py` out of the words, so the objects hold what the dictionary said before anything was ever added to it. Running the sets lifter over that file is the one thing this repository tells you not to do, and this is why. And its numbers are the language: English declares 511 sets and 28 dictionary actions in 274 kilobytes of entries where Italian declares 153 and 13 in 77.
+
+The statement table is the same shape in every language and that is a measurement rather than an assumption: ten types each, with 57 fields in Italian and both Spanishes, 58 in the two Englishes, 61 in German, 63 in Canadian French and 65 in French.
+
+One thing this found and fixed. `tools/delta-sets.py` had not been able to write the file it generates for some time: the copy in the tree had been brought to the arena's forms during the sixty-four bit work -- `EVV_REF(0)` where the tool still wrote `0` -- and the tool's own comment about the stores had gone stale with it, saying they are copied when what is copied is the table of pointers and the stores are handed over as they lie. English's file had the newer forms and the other seven the older ones. The tool now writes what English's says and the other seven have been brought into line: ten lines each, no data touched, and every one of the eight then regenerates byte for byte.
+
+So a language IBM never shipped is now five text files and a table. The rules in `rules/`, the four above, the words in `<tag>.dict`, and `tools/gen-lang.py` for the one table the engine knows a language by.
+
+## Adding a language
+
+`lang/plpl` is the ninth language in the tree and the first IBM never shipped.
+As it stands it is Italian: made by copying `lang/itit`'s text forms and
+renaming them, so it speaks Italian under a Polish name. That is not a
+placeholder, it is the chassis -- everything after this is a change with
+something audible on both sides of it -- and `NOTICE` says what the licence
+consequence is, which is that all of it is IBM's Italian until it has been
+replaced.
+
+Italian is the template for reasons rather than convenience. Its stress is
+predominantly penultimate and Polish's is almost always penultimate. Its five
+vowels have no reduction. Its consonants have the affricates ts and dz, tʃ and
+dʒ, the palatal nasal that is exactly Polish ń, and a trilled r -- which is the
+hardest part of Polish and the part Spanish only half has. And it is the
+smallest of the European modules, 1,749 rules against English's 3,377.
+
+What making one takes, in the order it was done:
+
+    EVV_NOTATION_LANG=itit make notation notation-symbols   the template's rules as text
+    cp the five text forms and rules/, with the tag renamed
+    a section naming the language, and a library name
+    "plpl": "Polish" in tools/gen-lang.py, then run it
+    make LANGS="lang/enus lang/plpl" tables-write             the C from the texts
+    EVV_NOTATION_LANG=plpl python3 tools/delta-notation.py rewrite
+
+and then it builds and speaks like any other. No object is opened at any point
+after the first line, which is the whole reason the text forms exist.
+
+### The number a language is
+
+A language is a family and a dialect packed into a word, and the family is not
+free. Three tables are indexed by it and all three hold eighteen: the standard
+voices in `src/eci_voicetable.c`, the dictionary in force in `src/eci_dict.c`
+and the romanizers in `src/eci_romanizer.c`. IBM used families one to five and
+eight. And four more are spoken for: `rz_isRomExist` says families 6, 10, 11
+and 16 have a romanizer, so an instance of one of those is refused outright
+when the romanizer is not there -- which is what happened when Polish was first
+given family sixteen, and `eciNewEx` answered -21 and nothing else. Polish is
+family seventeen, `0x110000`, which is clear of all of it with eighteen left
+spare.
+
+### What the language means by its variables
+
+IBM's names for the machine's variables are gone: the only record is a
+disassembly that carries kinds and not names. So a rule that sets a formant
+says `global half 2926` and nothing tells you what that is. `<tag>.globals` can
+now say:
+
+    name short 423 f2_in
+
+and a rule written in the upper form says `set f2_in to 2000`, which compiles
+to that same offset. `python3 tools/gen-globals.py where plpl 2926` is how one
+is worked out from the other: it answers `short number 423, 2 bytes into it`,
+two bytes being where a short cell keeps its value.
+
+The ten that are named in `lang/plpl/plpl.globals` are the formant targets a
+consonant is spoken with, each formant twice because the transition into it and
+the one out of it are separate numbers. They were read off Italian's own value
+rules: the trill sets the first to 450 and the second to 1250, the labials set
+the second to 850, the dentals and velars to 1700 and the palatals to 1800 --
+which is where a labial's low second formant and a palatal's high one belong,
+so the reading is the language's own rather than a guess.
+
+`lang/plpl/rules/is_val.up` is the first rule written for Polish rather than
+lifted for Italian, and all it does is say what the alveolo-palatals -- the
+series Polish has and Italian has not -- are spoken with. Nothing calls it yet.
+Its numbers are a starting point: ś and ź sit between Italian's palatal and its
+dentals with a higher third formant, and the ear settles the rest.
+
+### The alphabet, and what each letter says
+
+A language's alphabet is the value names of the input statement's first field:
+207 of them for Italian, from `GAP` and the five vowels through the consonants,
+the digits, the punctuation and the accented Latin-1 characters. And beside it,
+in the same statement, the `variants` bytes are one record of five bytes for
+every one of those names, in the same order -- 1,040 bytes for 208 -- holding
+what case the character is, whether it is a letter or a digit or punctuation,
+whether it is a vowel or a consonant or a glide, whether it carries an accent,
+and the phoneme it says on its own.
+
+That last field is letter-to-sound at its simplest, and it is data. `a` says a,
+`b` says b, `y` is a glide that says y, `ó` carries an accent and says nothing
+of its own because the rules decide it. A capital says nothing either: `B` and
+`A` both have GAP where `C` and `N` have C and N, which is the table having been
+filled by matching a phoneme's name to a character's, so the rules take a
+capital down to its own lower case before they ask.
+
+    python3 tools/lang-alphabet.py show plpl          every character
+    python3 tools/lang-alphabet.py show plpl a e y    only the ones named
+    python3 tools/lang-alphabet.py add plpl 82 case=lower type=letter \
+                                   letter=vow accent='~yes' phoneme=a
+
+reads and writes it by name, because a five-byte record read by eye in a hex
+blob is how a letter quietly becomes a digit.
+
+`add` puts a character at a byte value the alphabet does not claim yet and
+appends its record, rather than reusing a code: the dictionaries are keyed by
+these codes, so moving one moves every word that used it. Nineteen byte values
+between 0x20 and 0xff are claimed by no name in Italian's alphabet, and Polish
+needs sixteen.
+
+Those sixteen are in now, each starting from the nearest phoneme the module
+already has: `ł` says w, which is what Polish ł is; `ń` says N, which is the
+palatal nasal Italian spells gn and is exactly Polish ń; `ć` says C, `ś` says S,
+`ź` and `ż` say Z, `ą` says a and `ę` says e until the nasal vowels are read out
+of French. `ó` needed nothing, being already in the alphabet. The capitals say
+GAP as every other capital does.
+
+What that changed, measured rather than assumed. Before it, a Polish letter cost
+about thirteen thousand samples wherever it appeared, because the engine had no
+name for the byte and read it as a symbol -- eight of them alone came to 103,356
+samples, a second each. After it, `kąt` is 10,648 samples where `kat` is 8,107,
+and the two share the first 14,336 rule entries of their traces, which is what
+says ą is being handled as the vowel it now is rather than as an interruption.
+
+A Polish letter *alone* is still silent, and that is the next thing rather than a
+fault: a lone letter is spoken by its name -- Italian says esse for s -- and
+Polish's letters have no names yet.
+
+### How a character gets in
+
+A caller writes code points and the machine reads single bytes, and between
+them IBM's engine does almost nothing: the code set only ever mattered under
+the SSML filter, which recodes, and for the four families with a romanizer,
+which convert their own. On the ordinary path the caller's bytes are the
+characters. That was enough for the nine languages IBM shipped, because every
+letter any of them has is in the Windows Western byte set. It is not enough for
+a language whose letters are not, and a caller writing UTF-8 -- which is every
+caller now -- would hand over two bytes the machine reads as two characters.
+That is what `Zażółć gęślą jaźń` did: 120,714 samples, a minute of symbol names.
+
+So a language can say what its own characters arrive as, and
+`lang/<tag>/<tag>.codepoints` is where:
+
+    0105 82   # a with ogonek
+    0107 83   # c with acute
+
+    make EVVLANG=lang/plpl codepoints
+
+writes that into `delta_codepoints_<tag>.c`, and the language carries it in
+`delta_language` beside everything else it knows. `tools/lang-codepoints.py`
+refuses a byte the language's alphabet does not name, since a character
+arriving as a byte nothing names would simply be something else.
+
+`addTextRun` in `src/eci_synthtext.c` then converts the text on the way in --
+and this is a deliberate divergence from IBM's engine, the fourth in the tree.
+What makes it safe rather than merely careful is the guard: the conversion runs
+only for a language that declares characters of its own, and the nine IBM
+shipped declare none, so their behaviour cannot change. The suite says so
+rather than the argument: English's 81 cases, German's 80 and the samples hash
+are all untouched by it, on sixty-four bits and on thirty-two.
+
+What it buys, measured on the same pangram: 16,819 samples where there were
+120,714, and `kąt` written as UTF-8 comes out byte for byte identical to `kąt`
+written in the module's own bytes, which is what says the conversion is exact
+rather than approximately right.
+
+Text that is not UTF-8 after all is left alone, because the converter answers
+whether it was and the caller's own bytes are used when it was not. So a caller
+that sends the module's bytes directly still works, which is what the
+measurements above were taken with before any of this existed.
+
+### Reading what a language decided
+
+`build/probe <text> <file> p` asks for phonemes instead of sound: what the
+language decided the words are made of, under the names its own statement table
+gives them. It is the tool the whole of Polish wants, since it says what
+letter-to-sound answered without anybody listening.
+
+It does not report anything yet, and where it stops is written down rather than
+guessed at. The engine places its phonemes -- `placePhoneme` in
+`src/eci_deltacb.c` is reached, five times for one short word -- and returns at
+once because `ELOQ_WANT_PHONEMES` is nought. Registering a phoneme buffer sets
+the thread's state, parameter four sets the flag through
+`setPhonemeIndiciesRun`, and something puts it back before the utterance:
+`es_setCurrentState` sends `espr0` when the state says the engine is not in
+phoneme mode, and the text path sends the same on a fresh utterance. `disptok`,
+which spells a token and was an empty stub in this port, is written now -- so
+the names will be there the moment the flag stays on.
+
+### What a phoneme is made of
+
+A phoneme is in three places at once and none of them alone says what it is.
+Its name is a value of the phone statement's first field, which is the list the
+rules index by. Its numbers are a `Phoneme` line in the settings: four bytes of
+name and eleven values, which is what a caller handing the engine phonemes
+rather than text is read against. And what it sounds like is a rule named for
+it -- `ital_ph_S` -- which sets its source parameters and then calls one locus
+rule, `ital_pal_Fv` and its kin, where the formant targets are.
+
+    python3 tools/lang-phonemes.py plpl
+
+puts the three beside each other. Italian declares 35 in the statements, 34 in
+the settings and gives 21 a rule of their own; the vowels and a few consonants
+have none, being spoken by other machinery. It also says which place each one is
+spoken at, which is the thing to know before changing any of it: `ital_pal_Fv`
+is called by `ital_ph_S` and `ital_ph_Z` and also by `ital_ph_t` and
+`ital_ph_d`, so moving that rule moves four phonemes and moving the call inside
+two of them moves two.
+
+`registerPhoneme` takes nineteen arguments and all eighteen after the machine
+are addresses of the rule's own locals -- places the engine keeps that
+phoneme's numbers, not the numbers themselves. There are 34 of those calls for
+34 phonemes, in the order the settings declare them.
+
+### Changing a sound
+
+Polish speaks sz, ż, cz and dż as retroflexes, further back than the
+palato-alveolars Italian spells with sc and gi, and the signature of a retroflex
+is a low third formant. `lang/plpl/rules/is_val.up` is that, written in the
+upper form against the names in `plpl.globals`: `pol_retroflex_Fv` brings f3
+down from Italian's 2400 to 2200 and f2 from 1800 to 1700, and the two calls
+inside `ital_ph_S` and `ital_ph_Z` in Polish's own copy of `is_val.dr` point at
+it. Two lines of the lower notation changed and one rule written.
+
+What that proves, and what it does not. It proves the whole sound path from an
+authored rule to the samples: `sciarpa` spoken by Italian and by Polish is the
+same word at the same length -- 10,197 samples each -- with 17,448 of its 20,438
+bytes identical, so exactly one sound in it moved and nothing else did. That is
+the formant path end to end, and it is the first change to how Polish sounds
+rather than to what it accepts.
+
+It does not make a Polish word sound different, and the reason is the next piece
+of work. `sciarpa` reaches that locus three times; `szafa` reaches it not once.
+Polish spells its retroflexes as digraphs -- sz, cz, rz, dz, dź, dż -- and
+Italian's letter-to-sound knows sc, gi, gn and gl. So a Polish word today comes
+out as the letters it is spelled with, one at a time: `szafa` is s and z and a
+and f and a. The phonemes are in the module and the letters are in the alphabet;
+what is missing is the rules that say two letters make one sound, and those are
+rules to write rather than data to fill in.
+
+### Keeping the chassis honest
+
+    make EVVLANG=lang/plpl census
+
+says how much of the module is still the template's, rule by rule and table by
+table, out of the text forms alone. It reads 99% Italian today: 1,749 rules of
+1,750 character for character Italian's, one ours, the settings two lines apart
+and the variables named. The number falls as the work is done, and what it is
+there for is the failure it prevents -- Italian phonology coming out of
+something labelled Polish without anyone noticing.
+
+`TEMPLATE` says what to hold it against, and `lang-census.py <tag> <template>
+rules` lists every rule with which of the three it is.
 
 ## The rules, twice
 
@@ -426,6 +822,33 @@ index left inside a stretch of text, and a rate that maps to the wrong number.
 a library and a wave player that are stood in for, which is what reaches
 `_start`, the ctypes prototypes, the callback and the shutdown.
 
+What neither of those two can reach is the sound, and the add-on now makes a
+claim about it. A long message is handed over as several utterances so that
+asking for silence waits out one piece rather than the whole of it, and a piece
+boundary is a clause end to this engine: it ends the utterance there, with the
+pause a full stop gets. So a boundary in the wrong place is heard.
+
+    make pieces
+
+is that measurement. It speaks one text whole on one instance and in named
+pieces on another, and compares the samples -- a pause the engine did not mean
+to make is samples it did not mean to produce. A boundary at a sentence end
+costs nothing: 177,837 samples whole and 177,837 in five pieces, and the same
+after a closing quotation mark. Anywhere else costs about 0.40 s each: the same
+text cut every eighty characters at whitespace is 1.12 s longer, "Mr. Jones
+asked whether the header is read first, and Mrs. Adams said it is." cut after
+the two titles is 0.70 s longer, and "The book by J. R. R. Tolkien is on the
+shelf by the door." cut at every initial is 1.48 s longer than 3.72.
+
+That asymmetry is the whole of the driver's rule. It ends a piece at a sentence
+end, makes a dot argue that it is one -- a word with a dot inside it, or a short
+word starting with a capital, is an abbreviation or an initial -- and falls back
+to whitespace only past five hundred characters, where a stretch has no
+sentence end to offer. The cases that cost are in the harness as the evidence
+for declining them, and are printed rather than held to a number, since a
+number measured here is a number about English at one speaking rate. The ones
+that must cost nothing fail the target if they ever do.
+
 `nvda/build.py` adds one more before it packs anything: every entry point the
 driver names is looked up in both libraries' export tables, and a name that is
 not there stops the build. That matters because ctypes resolves a name when it
@@ -559,7 +982,29 @@ What it is proving is that nothing in the engine has quietly stayed global. Two 
 
 `make inikeys` is the check for the settings reader, and for the same class of thing as `make rate`: a fault neither suite can reach. It asks a reader for a key that is not in the section it names, over a blob written by hand with its sections deliberately butted together, and over the blob the build itself carries. An absent key has to come back as nothing; it used to come back holding the next section's first value, which killed every build with two languages in it on Linux. It also holds every dataset key this build carries to the shape the voice table reads -- eight numbers and then whatever else -- so it grows teeth as languages are added without being rewritten. It needs neither Wine nor IBM's objects, so it runs in CI.
 
+`make voices` is the check for the eight voices the caller may edit, and it exists because of an accident. Nothing the suite runs asks an instance about voice nine: `cli/probe.c` reads the eight parameters of voice nought and the seventeen environment ones, and neither it nor the reference ever mentions the editable eight. So the loop in `eo_newInstance` that copies the language's eight standard voices into them can be turned off altogether -- `for (i = 0; i < 0; i++)` -- and all 81 English cases, all 80 German ones and the samples hash still pass. That is not hypothetical: a stale script left in `/tmp` on 17 August made exactly that edit on 23 August, by being imported under a standard module's name, and every check in the tree passed with it in.
+
+What it holds an instance to is what a caller can tell. A fresh editable voice is the standard voice of the same position in all eight parameters, and it is called "User-Defined" where the standard ones are called things like Adult Male 1. Writing a parameter or a name into voice nine moves voice nine and leaves voice one and voice ten alone, which is what says the eight are copies in slots of their own rather than the language's own table. A voice the caller does not own refuses a write. Copying voice three onto voice nine makes them equal. And a second instance starts again, which is what says the eight belong to an instance. All of it twice, once in the engine's units and once in a person's, because those go through a conversion on the way out.
+
+Three sabotages are caught and each says which: the copy not happening names the parameter that differs, the renaming not happening names the voice that kept IBM's name, and making all eight the same slot shows on voice ten. It wants neither Wine nor IBM's objects, so it runs in CI.
+
+One thing it reports rather than fails on. In a person's units, two of the eight parameters will not take the value they themselves read back: IBM's real-world range starts at one for six of the eight, and the conversion answers nought for the roughness and the breathiness of a voice that has none. The suite already holds those numbers against IBM's binary over the twenty cases it reads the parameters back in a person's units for, so the nought is theirs; the refusal is their range meeting their own conversion.
+
 `make stopthread` is the check for a stop that crosses a thread, which is what a screen reader does and what `make interrupt` does not: that one answers `eciDataAbort` from the callback, on the engine's own thread. This one has a second thread call `eciStop` once the callback has taken a given number of buffers, a different number every turn, and requires the process to survive, the stop to have been made while the engine was still delivering, and every utterance afterwards to be worth exactly what a whole one is. `make win-stopthread` is the same binary under Wine, which is where it used to fail. The Linux half runs in the bytecode CI job, since like `make rate` and `make inikeys` it wants neither Wine nor IBM's objects. Taking the busy guard out of `es_engsynFlush` faults both, which is how the harness is known to see what it claims to. It does not require the interrupted utterance to come out short, and the comment at the top of `test/stopthread.c` says at length why that would be wrong.
+
+`test/prims.sh` is the check for a primitive the suite cannot reach at all. A call that no rule in the nine languages IBM shipped ever makes cannot be exercised by speaking a sentence, and those are exactly the calls this engine was missing: the arithmetic beyond addition, the bare ordering tests, the right pointer register's half of the loads. So they are held against IBM's own objects directly rather than through the audio. `test/prims.c` is a table of cases and is compiled twice -- `make prims` builds it against our engine and `make -C reference prims` against IBM's, which define these under plain C names -- and the script runs both and diffs what they print. What is compared is the bytes each call leaves behind, eight of an operand and sixteen of each pointer register, so a primitive writing four bytes where the original wrote two is a difference rather than a coincidence. It wants Wine and IBM's objects, like the suite.
+
+Two things about it are worth knowing. `vadd` is in the table although it was ported long ago: it is the control, and if it differed the harness would be what is wrong. And the one line the two builds do not share is which language is in force -- a table is a plain global in IBM's build and is reached through the language in force in ours -- which is what `EVV_PRIMS_OURS` is for.
+
+The machine is a real one and both sides build it with the same calls: `delta_new`, `etiwinMainDLL`, `initializeIO`, the language's `DeltaProc_start`, a sentence handed to the link with `eciLinkDataFromECI`, and `reset_sent_vars` and `get_tok` to read it in. All of those are IBM's own names and are in its objects too, which is what lets one file drive both; the only line the two builds do not share is which language is in force, since a table is a plain global there and is reached through the language in force here. What is on the spine is compared without being decoded: a record holds one code per character of the alphabet its statement type declares, so rather than spell it out the harness offers every code to the string test and prints the ones that match.
+
+The spine itself is compared as a shape rather than as a list of addresses. `show_spine` walks it from the token the rules left -- not from the spine's own end, which is on a different chain -- and asks every node the string test for every statement kind and every one-byte code, printing the pairs that answer. A node holding the same thing on both sides answers the same pairs, and nothing has to know what a pair means. That is what says where an insert put its tokens: the four widths leave the spine in four different shapes and the two engines agree on each. What it does not see is the value a wide insert decodes, since the nodes those make answer no string test of either width at any kind; putting the two-byte decode under the four-byte name passes, which was tried rather than assumed.
+
+Three cases come at the end, the last two of them because unlike the rest they take the machine apart. `vgen` is the largest thing in the machine and is given a cell built for the occasion: what is compared is what it answers and the two marks its first pass settled on, said as landmarks, since on a spine of two nodes there is no span to walk and the frame loop is not entered. `set_saved_ptrs` is given a word variable and two pushed locations carrying the same made-up value and asked to move one of them; the values are made up because nothing in that call dereferences a position, it compares and replaces, and the word variable is put back afterwards. `ins_rdtoks` is asked twice: once with the stack as the cases above it left it, where the record on top is the floor marker and it refuses, and once with a bottom marker and two pushed values built under it, where it lays a token for each and stops on the marker. That second round is the one that reaches `vins_tok` and `vins_sync`, and the spine printed after it is what says the tokens went where the original puts them -- where, and not what: reading the record one byte over changes nothing printed and neither does pushing different values, so the content is the same blind spot the wide inserts have. Nothing may be added after those two.
+
+Not everything it tests wants a spine. The walk over the names a field can take, the uniqueness test and the two prefix tests all read the language's own table, so those cases print whole answers rather than landmarks -- the alphabet, `undefined lower upper`, which characters could still begin a name -- and they are the strongest cases in the file for that reason.
+
+Three things it does not reach, and it says so where it stops. `get_tok` leaves two nodes rather than a sentence, so a call that walks the spine walks a short one, and the branch of the context pair that has to look for a mark is never taken -- putting the wrong walk under it changes nothing, which was checked rather than assumed. `init_stream` tears a stream down and builds it again, which on a machine with a sentence in it leaves nothing for the next call to stand on. And IBM's own `vsplit_time` faults on the only position the harness can offer `divide_time`, so that pair cannot be compared at all. A spine with statements on it wants the whole pipeline run with an output attached for the samples, and that is the next piece of this harness rather than something it does now.
 
 Every language module is built and spoken in the bytecode CI job, and then all eight are built into one binary and each spoken out of it. Neither wants Wine or IBM's objects -- only the comparison against IBM does -- so what that catches is a module that stops linking, or an engine change that suits one language and not another, and it requires samples rather than only a successful link.
 

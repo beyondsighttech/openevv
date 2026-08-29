@@ -17,15 +17,47 @@ Everything under `lang` is transcribed out of IBM's Embedded ViaVoice objects:
 `lang/enus` is US English, `lang/dede` is German, `lang/engb` is British
 English, `lang/eses` and `lang/esus` are the two Spanishes, `lang/frfr` and
 `lang/frca` the two Frenches and `lang/itit` is Italian, and any language added
-later will be the same. The rules as bytecode, the constants they read, the
+later will be the same.
+
+`lang/plpl` says Polish and is Italian. It was made by copying `lang/itit`'s
+text forms and renaming them, because a language IBM never shipped has to start
+from one it did, and every rule and every table in it is IBM's Italian data
+until it has been replaced by something written here. Nothing about the
+directory being called Polish makes any of it ours. `make EVVLANG=lang/plpl
+census` is what says how much of it is still Italian, and while that answers
+anything at all the answer above governs it.
+
+The rules as bytecode, the constants they read, the
 statement and field tables, the lookup sets, the variable declarations, the
 settings the engine carries in its own image, the voice presets and the
 dictionary, and where the engine's arithmetic depends on the exact bytes they
 are the exact bytes. The rule names in each directory's
 `delta_rules_<lang>.h` and `delta_rules_shim_<lang>.c` are IBM's names,
-because they are the names its own compiler left in the objects. The
-language in front of each is ours, and is there so that two languages can be
-linked into one program.
+because they are the names its own compiler left in the objects.
+
+Everything else in a module has a text form beside it now -- `<lang>.globals`,
+`<lang>.settings`, `<lang>.statements`, `<lang>.sets` and `<lang>.dict` -- and
+each of those is that same data written another way rather than anything of
+ours, so they are IBM's on the same terms as the C they regenerate.
+
+The same rules are in `lang/<lang>/rules` as text: one operation to a line in
+`.dr` files, what each wrapper stands for in `wrappers.up`, and a few of them
+written again as what they do in the `.up` files beside. Those are
+transcriptions of IBM's rules rather than anything said about them, so they are
+IBM's too, and so is anything of IBM's copied byte for byte into
+`rules/constants`. The tools that write and read all of it are in `tools` and
+are ours. The language in front of every name is ours as well, and is there so
+that two languages can be linked into one program.
+
+A rule written for a language rather than transcribed out of an object is ours,
+and `lang/plpl/rules/is_val.up` and `lang/plpl/rules/it_phone.up` are that:
+the formant targets of sounds Italian has not got, and the letter-to-sound
+rules for Polish's digraphs and for its own letters. What those rules name is
+still IBM's -- a phoneme number, a statement type and the code the alphabet
+gives a character are its numbering, and a byte in `lang/plpl/rules/constants`
+that stands for one of those stands for a number of its -- but what the rules
+say with them was written here. That does not soften the paragraph above:
+everything else in that module is IBM's Italian until it has been replaced.
 
 That data is IBM's work, not ours. The MIT licence does not cover it and we are
 in no position to license it to anyone. The SDK it was read out of says as much
@@ -58,6 +90,16 @@ IBM's Embedded ViaVoice 4.3 SDK for Windows, which IBM still serves at
 `docs/building.md` says what to do with it, and every tool that reads it is in
 `tools`, so anything under `lang` can be produced again from IBM's own file
 rather than taken on trust.
+
+Measured against
+----------------
+
+The Polish intonation numbers in `docs/status.md` were measured from FLEURS
+(https://huggingface.co/datasets/google/fleurs), read speech published by
+Google under CC BY 4.0, of which the Polish, US English and Italian
+development sets were used. Neither its audio nor its text is in this
+repository; what is here is the numbers derived from it and `tools/pitch.py`,
+which derived them.
 
 Names
 -----

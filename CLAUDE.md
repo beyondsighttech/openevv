@@ -22,6 +22,8 @@ Rebuild both sides before believing a difference. A stale binary reads as a bug,
 
 `make missing` has to keep answering zero. A name that reappears there is a call that has quietly gone back to IBM's objects.
 
+A rule written in the upper form is proved by `make upper-check`, and byte identity is not the standard there and cannot be: matching IBM's bytes would mean making its compiler's own register choices. What is required is that the engine cannot tell the difference -- every rule entered and every call made with its arguments, over both builds, and the audio besides. Two things that check taught, both worth keeping. A rule whose whole effect is to write a variable makes no call that shows it, so the audio is the only thing that catches a wrong value there. And the sentences have to reach the rule: the seven plain ones never take one of `has_lex_prefix`'s two alternatives, so its action number could be changed to anything and every case still passed, which is what `test/cases/upper.txt` is for.
+
 German has its own cases and its own oracle: `EVV_LANG=dede test/suite.sh`, against a reference built from German objects. It matches over all 80 of them, on its own and in one binary with English -- `make LANGS="lang/enus lang/dede"`, then the suite twice with `EVV_NATIVE` naming that binary. `docs/status.md` says in which configurations, and what has not been built from `lang/dede` at all.
 
 A build with two languages in it proves something a build with one cannot: that nothing has quietly stayed global. `test/langs.py build/eci.dll` is the cheap form of that -- every language spoken from one process, each held against what it says alone -- and it needs neither Wine nor IBM's objects. If a change makes only one language's suite pass, the language in force is being read from the wrong place.
@@ -37,6 +39,17 @@ The engine's second utterance is not its first, and that is faithful rather than
 ## What not to tidy
 
 File names in `src` are the names of IBM's objects. A file named for the object it came from can be checked against that object; renaming them would look tidier and cost real verification.
+
+`lang/plpl` says Polish and is Italian. It was copied from `lang/itit`'s text
+forms and renamed, so every rule and every table in it is IBM's Italian until
+something written here has replaced it -- which is what `make EVVLANG=lang/plpl
+census` counts, rule by rule. Two things follow. NOTICE governs it exactly as it
+governs `lang/itit`, and a change made there is only Polish when the census says
+so; a module that sounds plausible because it is still Italian is the failure
+that check exists to prevent. Polish is family seventeen, and the family is not
+free: three tables are indexed by it and hold eighteen, IBM used six, and four
+more are families its own code says have a romanizer, so an instance of one of
+those is refused when the romanizer is absent.
 
 `lang/enus` is transcribed data, not code to improve. It is what the engine sounds like. `tools/delta-sets.py` puts IBM's own dictionary tables back and loses anything added through `tools/delta-dict.py`, so do not run it to "regenerate" that file.
 

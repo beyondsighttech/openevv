@@ -32,6 +32,11 @@ extern void engb_act_dict_delete(delta_state *d);
 
 extern const delta_rule_c engb_delta_rule_native[];
 
+extern const delta_store engb_delta_authored_store[];
+
+extern const delta_codepoint engb_delta_codepoints[];
+extern const int32_t engb_delta_codepoints_n;
+
 /* The two slots the runtime fills in for this language: the symbol table,
    once delta_syms_bind has copied the stores into the arena, and the index
    of whichever rules are written as C. Not const, unlike everything else
@@ -49,6 +54,7 @@ extern int32_t engb_DeltaProc_end(int32_t d);
 extern int32_t engb_DeltaProc_flush(int32_t d);
 extern int32_t engb_DeltaProc_process_sentences(int32_t d);
 extern int32_t engb_DeltaProc_process_remaining(int32_t d);
+extern int32_t engb_DeltaProc_main(int32_t d);
 
 static int32_t proc_start(delta_state *d)
 {
@@ -75,6 +81,11 @@ static int32_t proc_process_remaining(delta_state *d)
     return engb_DeltaProc_process_remaining(EVV_REF(d));
 }
 
+static int32_t proc_main(delta_state *d)
+{
+    return engb_DeltaProc_main(EVV_REF(d));
+}
+
 
 /* Not const, because the numbers below cannot go in an initialiser: each
    lives in another file as a const object, which C does not count as a
@@ -99,6 +110,9 @@ delta_language delta_lang_engb = {
     &engb_delta_native_index,
 
     engb_delta_const_store,
+    engb_delta_authored_store,
+    engb_delta_codepoints,
+    0,                   /* how many of those */
     &engb_delta_sym_ref,
 
     engb_vstmtbl,
@@ -120,6 +134,7 @@ delta_language delta_lang_engb = {
     proc_flush,
     proc_process_sentences,
     proc_process_remaining,
+    proc_main,
 
     0, 0,                /* the settings blob and its size */
 };
@@ -135,6 +150,7 @@ void delta_lang_bind_engb(void)
     l->rule_count     = engb_delta_rule_count;
     l->rule_setjmp    = engb_delta_rule_setjmp;
     l->globals_n      = engb_delta_globals_n;
+    l->codepoints_n   = engb_delta_codepoints_n;
     l->ini            = engb_eciIni;
     l->ini_size       = engb_eciIniSize;
 }

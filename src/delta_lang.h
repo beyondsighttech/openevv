@@ -46,6 +46,17 @@ typedef void (*delta_rule_fn)(void);
 /* And one rule of the language written as C rather than left as bytecode. */
 typedef int32_t (*delta_rule_cfn)(void *state, const int32_t *args, int nargs);
 
+/* One character of the language's alphabet as a caller writes it: the code
+   point it arrives as, and the byte the machine knows it by. IBM's engine has
+   no such table -- it turns a code point into a single byte through one
+   Windows Western list and keeps the low byte of anything else, which is
+   nothing for a letter outside that set. A language IBM never shipped needs
+   somewhere to say what its own letters arrive as, and this is it. */
+typedef struct {
+    uint32_t cp;
+    uint8_t  byte;
+} delta_codepoint;
+
 /* One store of bytes the rules name by address. */
 typedef struct {
     uint8_t *at;
@@ -91,6 +102,16 @@ typedef struct delta_language {
     /* the bytes the rules name by address, and the same as values once
        delta_syms_bind has copied them into the arena */
     const delta_store  *const_store;
+    /* And the ones a rule of ours names rather than a rule of IBM's. Kept
+       apart because the lifted list is generated out of the objects and
+       anything added to it there would be lost the next time that ran. */
+    const delta_store  *authored_store;
+
+    /* What each of its own characters arrives as, for the text on the way
+       in. Empty for the languages IBM shipped: theirs are all in the
+       Western set already. */
+    const delta_codepoint *codepoints;
+    int32_t                codepoints_n;
     const int32_t     **sym_ref;
 
     /* the statement table, and the fixing-up the language does to it */
@@ -116,6 +137,11 @@ typedef struct delta_language {
     int32_t (*proc_flush)(struct delta_state *);
     int32_t (*proc_process_sentences)(struct delta_state *);
     int32_t (*proc_process_remaining)(struct delta_state *);
+    /* The command layer's entry. Nothing in the library path calls it --
+       etiwinMain is what does, and etiwinMainDLL is what this engine uses
+       instead -- but a language module has it and the table is where a
+       module's entries belong. */
+    int32_t (*proc_main)(struct delta_state *);
 
     /* the settings this language carries in the image */
     const char *ini;
