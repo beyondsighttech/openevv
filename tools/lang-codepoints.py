@@ -55,16 +55,30 @@ def out_path(tag):
     return os.path.join(ROOT, "lang", tag, "delta_codepoints_%s.c" % tag)
 
 
+def path_of_statements(tag):
+    return os.path.join(ROOT, "lang", tag, "%s.statements" % tag)
+
+
 def alphabet_bytes(tag):
     """Which byte values the language's alphabet names, so that a mapping to
-    one it does not can be refused rather than heard."""
-    p = os.path.join(ROOT, "lang", tag, "%s.statements" % tag)
+    one it does not can be refused rather than heard.
+
+    A name is usually the character itself, and then the byte is what that
+    character encodes to. A writing system with no place in Latin-1 cannot be
+    written that way at all -- Devanagari names its letters `dka', `dmaa' and
+    so on, since a rules file has to stay readable where there is no font for
+    them -- and then the spelling says nothing about which byte the slot
+    answers to. `lang/<tag>/<tag>.repointed' is what says: written by
+    tools/lang-repoint.py as it renames each slot, one line per slot, the byte
+    and the name.
+    """
+    p = path_of_statements(tag)
     if not os.path.exists(p):
         return None
     inside = False
     field = None
     out = set()
-    for line in open(p):
+    for line in open(p, encoding="utf-8"):
         if line.startswith("statement inp"):
             inside = True
             continue
@@ -81,6 +95,13 @@ def alphabet_bytes(tag):
             b = t.encode("latin-1", errors="replace")
             if len(b) == 1:
                 out.add(b[0])
+
+    note = os.path.join(ROOT, "lang", tag, "%s.repointed" % tag)
+    if os.path.exists(note):
+        for line in open(note, encoding="utf-8"):
+            line = line.split("#")[0].strip()
+            if line:
+                out.add(int(line.split()[0], 16))
     return out
 
 

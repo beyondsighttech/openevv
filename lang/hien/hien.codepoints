@@ -1,0 +1,72 @@
+# Which Devanagari character arrives as which byte of hien's alphabet.
+#
+# The machine reads one byte at a time. A caller writes code points --
+# U+0928 for na -- and the engine turns each into a byte before any
+# rule sees it, through one Windows Western list, keeping the low byte
+# of anything else. Devanagari is nowhere in that list, so U+0928
+# arrived as 0x28, an open bracket, and a Hindi word came out as a row
+# of punctuation. That is the whole of why Hindi spoke gibberish.
+#
+# Written by tools/hien-devanagari.py, which also points the alphabet
+# at these bytes: the two have to agree exactly, so one file holds the
+# facts and writes both.
+
+0905 80  # da_ says a
+0906 81  # daa says Aa
+0907 8a  # di says i
+0908 8c  # dii says I
+0909 93  # du says u
+090a 94  # duu says U
+090b 95  # dri says r, wants a vocalic r
+090f 96  # de says e
+0910 97  # dai says E
+0913 98  # do says o
+0914 99  # dau says O
+0915 9a  # dka says k
+0916 9c  # dkha says k, wants an aspirated k
+0917 9d  # dga says g
+0918 a1  # dgha says g, wants a breathy g
+0919 a2  # dnga says G
+091a a3  # dca says C
+091b a4  # dcha says C, wants an aspirated ch
+091c a5  # dja says J
+091d a6  # djha says J, wants a breathy j
+091e a7  # dnya says n, wants a palatal n
+091f a8  # dTa says t, wants a retroflex t
+0920 a9  # dTha says t, wants an aspirated retroflex t
+0921 aa  # dDa says d, wants a retroflex d
+0922 ab  # dDha says d, wants a breathy retroflex d
+0923 ac  # dNa says n, wants a retroflex n
+0924 ad  # dta says t
+0925 ae  # dtha says t, wants an aspirated t
+0926 af  # dda says d
+0927 b0  # ddha says d, wants a breathy d
+0928 b1  # dna says n
+092a b2  # dpa says p
+092b b3  # dpha says f
+092c b4  # dba says b
+092d b5  # dbha says b, wants a breathy b
+092e b6  # dma says m
+092f b7  # dya says y
+0930 b8  # dra says r
+0932 b9  # dla says l
+0935 ba  # dva says v
+0936 bb  # dsha says S
+0937 bc  # dSha says S, wants a retroflex sh
+0938 bd  # dsa says s
+0939 be  # dha says h
+093e bf  # dmaa says Aa
+093f c0  # dmi says i
+0940 c1  # dmii says I
+0941 c2  # dmu says u
+0942 c3  # dmuu says U
+0943 c4  # dmri says r, wants a vocalic r
+0947 c5  # dme says e
+0948 c6  # dmai says E
+094b c7  # dmo says o
+094c c8  # dmau says O
+0902 c9  # danu says n, wants a nasal on the vowel before
+0901 ca  # dcandra says n, wants a nasal on the vowel before
+0903 cb  # dvisarga says h
+094d cc  # dvirama says GAP
+0964 cd  # ddanda says GAP

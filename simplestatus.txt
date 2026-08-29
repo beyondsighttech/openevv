@@ -4,6 +4,56 @@ WHAT IS ACTUALLY DONE - Hindi in openevv
 Plain language. Newest entry at the top. Only real things, with proof.
 
 
+29 Aug 2026 - DEVANAGARI NOW ARRIVES PROPERLY. Half the gibberish fixed.
+-------------------------------------------------------------------------
+This is the real fix for yesterday's problem, and it works.
+
+Before: नमस्ते (6 letters) arrived as 18 separate junk bytes, because
+the engine had no idea Devanagari existed. It read out all 18.
+After: it arrives as 6 letters.
+
+Proof - the same word, before and after, in one run:
+  नमस्ते  through Hindi    18,557 samples
+  नमस्ते  through English  94,974 samples   (English still has no table)
+That is one fifth the length. The 18 junk characters are gone.
+
+How: Hindi's alphabet now has all 59 Devanagari characters in it -
+33 consonants, 11 vowels, 10 vowel signs, 4 signs, and the danda.
+Each has a byte, and a table says U+0928 arrives as that byte.
+
+Where the slots came from: Hindi's alphabet was copied from English
+and had 108 slots holding accented Latin letters that Hindi will
+never use. Those were taken. Plain letters, digits and punctuation
+were left alone, because Hindi text contains English words and
+numbers.
+
+BUT IT IS NOT FIXED YET, and I want to be straight about this.
+The letters arrive, and no rule knows what any of them SOUNDS like.
+So all three test words come out as the same 37,158 bytes - the same
+default noise. Shorter than before, but not yet Hindi.
+
+  namaste  18,557 samples  hash 47a8f230
+  raam     18,557 samples  hash 47a8f230   <- same
+  kamal    18,557 samples  hash 47a8f230   <- same
+
+Made a checker for exactly this, test/hien-arrives.py. It says in one
+line where the work stands. Right now it says: letters arrive and say
+nothing of their own.
+
+Also: test/hien-bless.sh now REFUSES to record hashes when different
+words hash the same. It nearly recorded this silence as the correct
+answer, which would have made the test permanently meaningless.
+
+Two other things had to be built to get here:
+  - Hindi's character records were English's 3-byte shape; the tool
+    needs 5 (it wants a sound per letter). Widened them. Getting one
+    byte of that wrong made all three hashes move - caught it, the
+    accent byte has to be 1 not 0.
+  - the tools could not tell "byte 0x80 is a real Hindi letter" from
+    "byte 0x80 is nothing", because renaming a slot loses its byte.
+    Added a small file that remembers.
+
+
 29 Aug 2026 - Merged the main repo in. Big win.
 ------------------------------------------------
 The original project had moved on 62 commits since your fork. Turns
@@ -12,8 +62,7 @@ problem as Hindi - and to do it they BUILT THE TOOLS I was about to
 write from scratch.
 
 What we now have that we did not before:
-  - a way to tell the engine "3 bytes = 1 Devanagari letter"
-    (this is exactly the gibberish problem from yesterday)
+  - a way to tell the engine that 3 bytes are 1 Devanagari letter
   - a way to add a new letter and say what sound it makes, by name
   - a way to add a new sound to the language
   - rules can now be written in near-English instead of raw
@@ -22,7 +71,7 @@ What we now have that we did not before:
 Size difference: my hand-written Hindi rule is 70 lines of machine
 operations. Polish's equivalent is 20 lines of readable text.
 
-Merged cleanly. Two small clashes, both just "my line vs their line"
+Merged cleanly. Two small clashes, both just my line vs their line
 in a list - kept both. Hindi is family 9, Polish is 17.
 
 Then everything broke: segfault, "no language in it". NOT the merge's
@@ -31,11 +80,6 @@ never noticed when a shared header changed. The merge changed a
 header, so old and new parts of the program disagreed about the shape
 of some data, and it crashed. Fixed: the script now rebuilds
 everything when any header changes.
-
-After the fix, all green again:
-  English canonical audio  - unchanged
-  Hindi three test cases   - unchanged
-  Hindi vs English         - still different, as they must be
 
 
 28 Aug 2026 - Found out WHY Hindi sounds like gibberish
@@ -48,8 +92,8 @@ belong together as one letter. So it sees 18 pieces of junk and
 reads out all 18.
 
 Proof:
-  नमस्ते through Hindi        = 94,974 samples (8.6 seconds!)
-  same bytes through English  = 94,974 samples (exactly the same length)
+  नमस्ते through Hindi        = 94,974 samples (8.6 seconds)
+  same bytes through English  = 94,974 samples (exactly the same)
   "namaste" in plain letters  = 11,484 samples (1 second, sounds fine)
 
 Both languages take the same time, which proves neither understands
@@ -59,7 +103,10 @@ Good news in that last line: typing "namaste" in normal letters
 already speaks properly. So the engine's mouth works. What is
 missing is only the part that turns Devanagari into sounds.
 
-DECISION: you chose to do this properly, not with a shortcut.
+DECISION: you chose to do this properly, not with a shortcut. And
+later: you said real Devanagari, not Hindi standing on another
+language. So the alphabet was widened in place rather than reseeding
+Hindi from Italian.
 
 
 28 Aug 2026 - Hindi now shows up in the NVDA add-on
@@ -104,19 +151,32 @@ lang/hien is in the tree, language number 0x90000. It builds, alone
 and beside English. English is completely unharmed (checked). Both
 languages can run in one program without interfering.
 
-BUT, honestly: only 3 files of it are really Hindi. Everything else
-is a copy of English. And one of those 3 files does nothing at all
-(I tested it - it writes a number nothing ever reads). So the only
-real difference between Hindi and English today is four timing
-numbers that make it slightly slower.
+
+WHERE IT STANDS RIGHT NOW
+--------------------------
+  done    Devanagari arrives as characters, not bytes
+  done    all 59 characters in the alphabet, each with a nearest sound
+  NOT     any rule that turns those characters into speech
+
+So Hindi currently makes one default noise for every word. That is
+progress from 18 junk characters, and it is not speech.
+
+test/hien-hash.sh FAILS today, on purpose. The recorded hashes are
+from before this change, and re-recording them would freeze silence
+as the right answer. Run test/hien-arrives.py instead - it says in
+one line where the work is.
+
+English is untouched throughout: the canonical hash still passes in
+both the English-only and the English+Hindi builds.
 
 
-NEXT: the real work, now with proper tools
--------------------------------------------
-  1. list every Devanagari letter and what byte it arrives as
-     (lang/hien/hien.codepoints - the tool for this now exists)
-  2. add those letters to Hindi's alphabet, each with a sound
-  3. add the sounds Hindi has that English does not - the breathy
-     ones (भ, ध, घ) and the tongue-curled ones (ट, ड, ण)
-  4. write the joining rules: conjuncts (क्ष, त्र) and the
-     silent-a rule that makes राम "raam" not "raama"
+NEXT
+-----
+  1. the letter-to-sound rules: a consonant says its sound plus an
+     "a" unless a vowel sign or a virama follows
+  2. the sounds Hindi has and English has not - 18 of the 59 letters
+     are currently pointed at an approximation:
+     breathy bha dha gha jha dha, aspirated kha cha tha pha,
+     retroflex Ta Tha Da Dha Na
+  3. conjuncts and the silent-a rule that makes राम "raam" and not
+     "raama"

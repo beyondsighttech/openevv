@@ -68,6 +68,22 @@ done
 
 [ "$bad" = 0 ] || { echo "bless: nothing written" >&2; exit 1; }
 
+# Three cases of different text that hash the same are not three cases. It
+# happened once and the hashes were recorded before anyone noticed: the
+# Devanagari code point table had just gone in, so every letter arrived as
+# itself and no rule knew what any of them sounded like, and all three cases
+# fell to the same default -- 37,158 bytes under one hash. Recording that
+# would have frozen silence as the thing to check against.
+if [ "$(cut -d' ' -f1 < "$new" | sort -u | wc -l)" != \
+     "$(wc -l < "$new")" ]; then
+    echo "bless: two cases of different text hashed the same" >&2
+    sed 's/^/  /' "$new" >&2
+    echo "  Nothing is recorded. Either the cases say the same thing, or the" >&2
+    echo "  language is saying nothing of its own and every one of them fell" >&2
+    echo "  to the same default -- which test/hien-arrives.py is what says." >&2
+    exit 1
+fi
+
 cp "$new" "$want"
 echo "bless: written to test/hien.sha256"
 exit 0

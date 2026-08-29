@@ -1,3 +1,16 @@
-c8c49678b6d22bac492de85b9a7e08d12de4c8ecac301655033c34787fb03194  plain
-c6d0d00c3c8fb6fc579ca8410c311d7e89554637a9eb6ef83074371ec16df349  matra
-2d4356df67511c7ee638e8a33ebb5ba5e3c248e6aeab39c7406a293ee32bb2c2  utf8
+# The three fixed Hindi cases, and what they hashed to.
+#
+# These are from before lang/hien's alphabet held Devanagari, when every
+# Devanagari code point arrived as its low byte and a word came out as a row of
+# punctuation. They are kept rather than re-recorded because the state after
+# the code point table is worse to freeze: the letters arrive correctly now and
+# no rule knows what any of them sounds like, so all three cases fall to the
+# same default and hash identically. test/hien-bless.sh refuses to record that,
+# deliberately.
+#
+# So test/hien-hash.sh fails today and is meant to. What it is waiting for is
+# the letter-to-sound rules; test/hien-arrives.py is the check that says in one
+# line where the work has got to, and it is the one to run in the meantime.
+826a8bbfaf475a0af6f8396ea29916a9fbf974db37420e76e9b8ce3240698aa3  plain
+fd800e64c506ba409a366485f76479adc97b04b24a5e714cf9312538ea2dacab  matra
+d08217e0826e7164947dd7835760c9a78f47a669894122eef9d322f4cc04645e  utf8

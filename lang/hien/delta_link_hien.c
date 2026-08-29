@@ -119,9 +119,9 @@ static const char s100[] = "\350";
 static const char s101[] = "\354";
 static const char s102[] = "\362";
 static const char s103[] = "\371";
-static const char s104[] = "\300";
-static const char s105[] = "\310";
-static const char s106[] = "\314";
+static const char s104[] = "dmi";
+static const char s105[] = "dmau";
+static const char s106[] = "dvirama";
 static const char s107[] = "\322";
 static const char s108[] = "\331";
 static const char s109[] = "\341";
@@ -129,9 +129,9 @@ static const char s110[] = "\351";
 static const char s111[] = "\355";
 static const char s112[] = "\363";
 static const char s113[] = "\372";
-static const char s114[] = "\301";
-static const char s115[] = "\311";
-static const char s116[] = "\315";
+static const char s114[] = "dmii";
+static const char s115[] = "danu";
+static const char s116[] = "ddanda";
 static const char s117[] = "\323";
 static const char s118[] = "\332";
 static const char s119[] = "\342";
@@ -139,91 +139,91 @@ static const char s120[] = "\352";
 static const char s121[] = "\356";
 static const char s122[] = "\364";
 static const char s123[] = "\373";
-static const char s124[] = "\302";
-static const char s125[] = "\312";
+static const char s124[] = "dmu";
+static const char s125[] = "dcandra";
 static const char s126[] = "\316";
 static const char s127[] = "\324";
 static const char s128[] = "\333";
 static const char s129[] = "\343";
 static const char s130[] = "\365";
-static const char s131[] = "\303";
+static const char s131[] = "dmuu";
 static const char s132[] = "\325";
 static const char s133[] = "\344";
 static const char s134[] = "\353";
 static const char s135[] = "\357";
 static const char s136[] = "\366";
 static const char s137[] = "\374";
-static const char s138[] = "\304";
-static const char s139[] = "\313";
+static const char s138[] = "dmri";
+static const char s139[] = "dvisarga";
 static const char s140[] = "\317";
 static const char s141[] = "\326";
 static const char s142[] = "\334";
 static const char s143[] = "\345";
-static const char s144[] = "\305";
+static const char s144[] = "dme";
 static const char s145[] = "\346";
-static const char s146[] = "\306";
-static const char s147[] = "\234";
-static const char s148[] = "\214";
+static const char s146[] = "dmai";
+static const char s147[] = "dkha";
+static const char s148[] = "dii";
 static const char s149[] = "\370";
 static const char s150[] = "\330";
 static const char s151[] = "\375";
 static const char s152[] = "\335";
 static const char s153[] = "\347";
-static const char s154[] = "\307";
+static const char s154[] = "dmo";
 static const char s155[] = "\360";
 static const char s156[] = "\320";
 static const char s157[] = "\361";
 static const char s158[] = "\321";
-static const char s159[] = "\232";
-static const char s160[] = "\212";
+static const char s159[] = "dka";
+static const char s160[] = "di";
 static const char s161[] = "\337";
 static const char s162[] = "\376";
 static const char s163[] = "\336";
-static const char s164[] = "\200";
-static const char s165[] = "\242";
-static const char s166[] = "\243";
-static const char s167[] = "\245";
+static const char s164[] = "da_";
+static const char s165[] = "dnga";
+static const char s166[] = "dca";
+static const char s167[] = "dja";
 static const char s168[] = "\205";
-static const char s169[] = "\223";
-static const char s170[] = "\224";
-static const char s171[] = "\241";
-static const char s172[] = "\277";
-static const char s173[] = "\253";
-static const char s174[] = "\273";
-static const char s175[] = "\226";
-static const char s176[] = "\227";
-static const char s177[] = "\274";
-static const char s178[] = "\275";
-static const char s179[] = "\276";
+static const char s169[] = "du";
+static const char s170[] = "duu";
+static const char s171[] = "dgha";
+static const char s172[] = "dmaa";
+static const char s173[] = "dDha";
+static const char s174[] = "dsha";
+static const char s175[] = "de";
+static const char s176[] = "dai";
+static const char s177[] = "dSha";
+static const char s178[] = "dsa";
+static const char s179[] = "dha";
 static const char s180[] = "\367";
 static const char s181[] = "\327";
-static const char s182[] = "\261";
-static const char s183[] = "\260";
-static const char s184[] = "\267";
-static const char s185[] = "\271";
-static const char s186[] = "\262";
-static const char s187[] = "\263";
-static const char s188[] = "\252";
-static const char s189[] = "\272";
-static const char s190[] = "\230";
-static const char s191[] = "\250";
-static const char s192[] = "\264";
-static const char s193[] = "\270";
-static const char s194[] = "\201";
-static const char s195[] = "\225";
-static const char s196[] = "\231";
-static const char s197[] = "\235";
+static const char s182[] = "dna";
+static const char s183[] = "ddha";
+static const char s184[] = "dya";
+static const char s185[] = "dla";
+static const char s186[] = "dpa";
+static const char s187[] = "dpha";
+static const char s188[] = "dDa";
+static const char s189[] = "dva";
+static const char s190[] = "do";
+static const char s191[] = "dTa";
+static const char s192[] = "dba";
+static const char s193[] = "dra";
+static const char s194[] = "daa";
+static const char s195[] = "dri";
+static const char s196[] = "dau";
+static const char s197[] = "dga";
 static const char s198[] = "\240";
-static const char s199[] = "\244";
-static const char s200[] = "\246";
-static const char s201[] = "\247";
-static const char s202[] = "\251";
-static const char s203[] = "\254";
-static const char s204[] = "\255";
-static const char s205[] = "\256";
-static const char s206[] = "\257";
-static const char s207[] = "\265";
-static const char s208[] = "\266";
+static const char s199[] = "dcha";
+static const char s200[] = "djha";
+static const char s201[] = "dnya";
+static const char s202[] = "dTha";
+static const char s203[] = "dNa";
+static const char s204[] = "dta";
+static const char s205[] = "dtha";
+static const char s206[] = "dda";
+static const char s207[] = "dbha";
+static const char s208[] = "dma";
 static const char s209[] = "letcase";
 static const char s210[] = "undefined";
 static const char s211[] = "lower";
@@ -241,391 +241,399 @@ static const char s222[] = "vow";
 static const char s223[] = "con";
 static const char s224[] = "glid";
 static const char s225[] = "acute_acc";
-static const char s226[] = "inp";
-static const char s227[] = "Xx";
-static const char s228[] = "c@";
-static const char s229[] = "a@";
-static const char s230[] = "Aa";
-static const char s231[] = "H@";
-static const char s232[] = "class";
-static const char s233[] = "glide";
-static const char s234[] = "voicing";
-static const char s235[] = "voic";
-static const char s236[] = "~voic";
-static const char s237[] = "sonority";
-static const char s238[] = "son";
-static const char s239[] = "~son";
-static const char s240[] = "manner_of_artic";
-static const char s241[] = "stop";
-static const char s242[] = "fric";
-static const char s243[] = "affr";
-static const char s244[] = "liq";
-static const char s245[] = "nas";
-static const char s246[] = "tense";
-static const char s247[] = "red";
-static const char s248[] = "AP";
-static const char s249[] = "VC";
-static const char s250[] = "place_of_artic";
-static const char s251[] = "lab";
-static const char s252[] = "intd";
-static const char s253[] = "alv";
-static const char s254[] = "pal";
-static const char s255[] = "vel";
-static const char s256[] = "high";
-static const char s257[] = "mid";
-static const char s258[] = "low";
-static const char s259[] = "backness";
-static const char s260[] = "front";
-static const char s261[] = "cent";
-static const char s262[] = "back";
-static const char s263[] = "stress";
-static const char s264[] = "transition";
-static const char s265[] = "asp";
-static const char s266[] = "tvoic";
-static const char s267[] = "diaph_ghost";
-static const char s268[] = "+t";
-static const char s269[] = "+d";
-static const char s270[] = "epen";
-static const char s271[] = "after";
-static const char s272[] = "glot";
-static const char s273[] = "duration";
-static const char s274[] = "phone";
-static const char s275[] = "pre";
-static const char s276[] = "root";
-static const char s277[] = "suf";
-static const char s278[] = "type";
-static const char s279[] = "undef";
-static const char s280[] = "clitic";
-static const char s281[] = "ed";
-static const char s282[] = "ing";
-static const char s283[] = "final";
-static const char s284[] = "phonesAssigned";
-static const char s285[] = "no";
-static const char s286[] = "dict";
-static const char s287[] = "spr";
-static const char s288[] = "worddict";
-static const char s289[] = "rootdict";
-static const char s290[] = "userdict";
-static const char s291[] = "morph";
-static const char s292[] = "category";
-static const char s293[] = "adj";
-static const char s294[] = "adv";
-static const char s295[] = "aux";
-static const char s296[] = "comp";
-static const char s297[] = "conj";
-static const char s298[] = "dem";
-static const char s299[] = "det";
-static const char s300[] = "interj";
-static const char s301[] = "not";
-static const char s302[] = "noun";
-static const char s303[] = "other";
-static const char s304[] = "postpos";
-static const char s305[] = "prep";
-static const char s306[] = "pro";
-static const char s307[] = "pro2";
-static const char s308[] = "quant";
-static const char s309[] = "there";
-static const char s310[] = "verb";
-static const char s311[] = "wh";
-static const char s312[] = "disambigDict";
-static const char s313[] = "adj_adv";
-static const char s314[] = "noun_verb";
-static const char s315[] = "noun_adj";
-static const char s316[] = "verb_adj";
-static const char s317[] = "subcat";
-static const char s318[] = "non";
-static const char s319[] = "any";
-static const char s320[] = "as";
-static const char s321[] = "be";
-static const char s322[] = "coord";
-static const char s323[] = "def";
-static const char s324[] = "does";
-static const char s325[] = "hav";
-static const char s326[] = "foreign";
-static const char s327[] = "get";
-static const char s328[] = "indef";
-static const char s329[] = "inf";
-static const char s330[] = "lik";
-static const char s331[] = "ly";
-static const char s332[] = "of";
-static const char s333[] = "modal";
-static const char s334[] = "neg";
-static const char s335[] = "nomposs";
-static const char s336[] = "num";
-static const char s337[] = "obj";
-static const char s338[] = "one";
-static const char s339[] = "only";
-static const char s340[] = "ord";
-static const char s341[] = "poss";
-static const char s342[] = "proper";
-static const char s343[] = "quantif";
-static const char s344[] = "refl";
-static const char s345[] = "so";
-static const char s346[] = "some";
-static const char s347[] = "subj";
-static const char s348[] = "subord";
-static const char s349[] = "such";
-static const char s350[] = "than";
-static const char s351[] = "that";
-static const char s352[] = "tim";
-static const char s353[] = "too";
-static const char s354[] = "very";
-static const char s355[] = "hav_modal";
-static const char s356[] = "be_poss";
-static const char s357[] = "be_poss_nom";
-static const char s358[] = "obj_poss";
-static const char s359[] = "poss_nom";
-static const char s360[] = "subj_obj";
-static const char s361[] = "letname";
-static const char s362[] = "contrac";
-static const char s363[] = "contr";
-static const char s364[] = "auxil";
-static const char s365[] = "negat";
-static const char s366[] = "test";
-static const char s367[] = "origin";
-static const char s368[] = "undfn";
-static const char s369[] = "spnsh";
-static const char s370[] = "frnch";
-static const char s371[] = "grk";
-static const char s372[] = "latin";
-static const char s373[] = "number";
-static const char s374[] = "nonapp";
-static const char s375[] = "sg";
-static const char s376[] = "pl";
-static const char s377[] = "ambig";
-static const char s378[] = "plural";
-static const char s379[] = "sing";
-static const char s380[] = "es";
-static const char s381[] = "stress_level";
-static const char s382[] = "acc_valu";
-static const char s383[] = "lsh";
-static const char s384[] = "lhs";
-static const char s385[] = "hsl";
-static const char s386[] = "hls";
-static const char s387[] = "d_step";
-static const char s388[] = "~down";
-static const char s389[] = "down";
-static const char s390[] = "annot";
-static const char s391[] = "none";
-static const char s392[] = "str";
-static const char s393[] = "acc";
-static const char s394[] = "str_acc";
-static const char s395[] = "brk_priority";
-static const char s396[] = "word";
-static const char s397[] = "??";
-static const char s398[] = "!!";
-static const char s399[] = "alt?";
-static const char s400[] = "wh?";
-static const char s401[] = "nuc_tone";
-static const char s402[] = "LSH";
-static const char s403[] = "LHS";
-static const char s404[] = "HSL";
-static const char s405[] = "HLS";
-static const char s406[] = "smH";
-static const char s407[] = "noneZero";
-static const char s408[] = "phr_tone";
-static const char s409[] = "bound_tone";
-static const char s410[] = "lb";
-static const char s411[] = "hb";
-static const char s412[] = "bk_index";
-static const char s413[] = "wind_size";
-static const char s414[] = "inton_phr";
-static const char s415[] = "gain_fac";
-static const char s416[] = "stretch_fac";
-static const char s417[] = "sr";
-static const char s418[] = "vocal_tract";
-static const char s419[] = "hed_size";
-static const char s420[] = "breathi";
-static const char s421[] = "diplo";
-static const char s422[] = "PSgain";
-static const char s423[] = "Rangeval";
-static const char s424[] = "Midline";
-static const char s425[] = "%ld";
-static const char s426[] = "BDeclnLevel";
-static const char s427[] = "BDeclnScale";
-static const char s428[] = "ADeclnLevel";
-static const char s429[] = "ADeclnScale";
-static const char s430[] = "klatt";
-static const char s431[] = "syllable";
-static const char s432[] = "F0";
-static const char s433[] = "Ms";
+static const char s226[] = "accent";
+static const char s227[] = "phon_form";
+static const char s228[] = "Xx";
+static const char s229[] = "c@";
+static const char s230[] = "a@";
+static const char s231[] = "Aa";
+static const char s232[] = "H@";
+static const char s233[] = "inp";
+static const char s234[] = "class";
+static const char s235[] = "glide";
+static const char s236[] = "voicing";
+static const char s237[] = "voic";
+static const char s238[] = "~voic";
+static const char s239[] = "sonority";
+static const char s240[] = "son";
+static const char s241[] = "~son";
+static const char s242[] = "manner_of_artic";
+static const char s243[] = "stop";
+static const char s244[] = "fric";
+static const char s245[] = "affr";
+static const char s246[] = "liq";
+static const char s247[] = "nas";
+static const char s248[] = "tense";
+static const char s249[] = "red";
+static const char s250[] = "AP";
+static const char s251[] = "VC";
+static const char s252[] = "place_of_artic";
+static const char s253[] = "lab";
+static const char s254[] = "intd";
+static const char s255[] = "alv";
+static const char s256[] = "pal";
+static const char s257[] = "vel";
+static const char s258[] = "high";
+static const char s259[] = "mid";
+static const char s260[] = "low";
+static const char s261[] = "backness";
+static const char s262[] = "front";
+static const char s263[] = "cent";
+static const char s264[] = "back";
+static const char s265[] = "stress";
+static const char s266[] = "transition";
+static const char s267[] = "asp";
+static const char s268[] = "tvoic";
+static const char s269[] = "diaph_ghost";
+static const char s270[] = "+t";
+static const char s271[] = "+d";
+static const char s272[] = "epen";
+static const char s273[] = "after";
+static const char s274[] = "glot";
+static const char s275[] = "duration";
+static const char s276[] = "phone";
+static const char s277[] = "pre";
+static const char s278[] = "root";
+static const char s279[] = "suf";
+static const char s280[] = "type";
+static const char s281[] = "undef";
+static const char s282[] = "clitic";
+static const char s283[] = "ed";
+static const char s284[] = "ing";
+static const char s285[] = "final";
+static const char s286[] = "phonesAssigned";
+static const char s287[] = "no";
+static const char s288[] = "dict";
+static const char s289[] = "spr";
+static const char s290[] = "worddict";
+static const char s291[] = "rootdict";
+static const char s292[] = "userdict";
+static const char s293[] = "morph";
+static const char s294[] = "category";
+static const char s295[] = "adj";
+static const char s296[] = "adv";
+static const char s297[] = "aux";
+static const char s298[] = "comp";
+static const char s299[] = "conj";
+static const char s300[] = "dem";
+static const char s301[] = "det";
+static const char s302[] = "interj";
+static const char s303[] = "not";
+static const char s304[] = "noun";
+static const char s305[] = "other";
+static const char s306[] = "postpos";
+static const char s307[] = "prep";
+static const char s308[] = "pro";
+static const char s309[] = "pro2";
+static const char s310[] = "quant";
+static const char s311[] = "there";
+static const char s312[] = "verb";
+static const char s313[] = "wh";
+static const char s314[] = "disambigDict";
+static const char s315[] = "adj_adv";
+static const char s316[] = "noun_verb";
+static const char s317[] = "noun_adj";
+static const char s318[] = "verb_adj";
+static const char s319[] = "subcat";
+static const char s320[] = "non";
+static const char s321[] = "any";
+static const char s322[] = "as";
+static const char s323[] = "be";
+static const char s324[] = "coord";
+static const char s325[] = "def";
+static const char s326[] = "does";
+static const char s327[] = "hav";
+static const char s328[] = "foreign";
+static const char s329[] = "get";
+static const char s330[] = "indef";
+static const char s331[] = "inf";
+static const char s332[] = "lik";
+static const char s333[] = "ly";
+static const char s334[] = "of";
+static const char s335[] = "modal";
+static const char s336[] = "neg";
+static const char s337[] = "nomposs";
+static const char s338[] = "num";
+static const char s339[] = "obj";
+static const char s340[] = "one";
+static const char s341[] = "only";
+static const char s342[] = "ord";
+static const char s343[] = "poss";
+static const char s344[] = "proper";
+static const char s345[] = "quantif";
+static const char s346[] = "refl";
+static const char s347[] = "so";
+static const char s348[] = "some";
+static const char s349[] = "subj";
+static const char s350[] = "subord";
+static const char s351[] = "such";
+static const char s352[] = "than";
+static const char s353[] = "that";
+static const char s354[] = "tim";
+static const char s355[] = "too";
+static const char s356[] = "very";
+static const char s357[] = "hav_modal";
+static const char s358[] = "be_poss";
+static const char s359[] = "be_poss_nom";
+static const char s360[] = "obj_poss";
+static const char s361[] = "poss_nom";
+static const char s362[] = "subj_obj";
+static const char s363[] = "letname";
+static const char s364[] = "contrac";
+static const char s365[] = "contr";
+static const char s366[] = "auxil";
+static const char s367[] = "negat";
+static const char s368[] = "test";
+static const char s369[] = "origin";
+static const char s370[] = "undfn";
+static const char s371[] = "spnsh";
+static const char s372[] = "frnch";
+static const char s373[] = "grk";
+static const char s374[] = "latin";
+static const char s375[] = "number";
+static const char s376[] = "nonapp";
+static const char s377[] = "sg";
+static const char s378[] = "pl";
+static const char s379[] = "ambig";
+static const char s380[] = "plural";
+static const char s381[] = "sing";
+static const char s382[] = "es";
+static const char s383[] = "stress_level";
+static const char s384[] = "acc_valu";
+static const char s385[] = "lsh";
+static const char s386[] = "lhs";
+static const char s387[] = "hsl";
+static const char s388[] = "hls";
+static const char s389[] = "d_step";
+static const char s390[] = "~down";
+static const char s391[] = "down";
+static const char s392[] = "annot";
+static const char s393[] = "none";
+static const char s394[] = "str";
+static const char s395[] = "acc";
+static const char s396[] = "str_acc";
+static const char s397[] = "brk_priority";
+static const char s398[] = "word";
+static const char s399[] = "??";
+static const char s400[] = "!!";
+static const char s401[] = "alt?";
+static const char s402[] = "wh?";
+static const char s403[] = "nuc_tone";
+static const char s404[] = "LSH";
+static const char s405[] = "LHS";
+static const char s406[] = "HSL";
+static const char s407[] = "HLS";
+static const char s408[] = "smH";
+static const char s409[] = "noneZero";
+static const char s410[] = "phr_tone";
+static const char s411[] = "bound_tone";
+static const char s412[] = "lb";
+static const char s413[] = "hb";
+static const char s414[] = "bk_index";
+static const char s415[] = "wind_size";
+static const char s416[] = "inton_phr";
+static const char s417[] = "gain_fac";
+static const char s418[] = "stretch_fac";
+static const char s419[] = "sr";
+static const char s420[] = "vocal_tract";
+static const char s421[] = "hed_size";
+static const char s422[] = "breathi";
+static const char s423[] = "diplo";
+static const char s424[] = "PSgain";
+static const char s425[] = "Rangeval";
+static const char s426[] = "Midline";
+static const char s427[] = "%ld";
+static const char s428[] = "BDeclnLevel";
+static const char s429[] = "BDeclnScale";
+static const char s430[] = "ADeclnLevel";
+static const char s431[] = "ADeclnScale";
+static const char s432[] = "klatt";
+static const char s433[] = "syllable";
+static const char s434[] = "F0";
+static const char s435[] = "Ms";
 
 /* One reader per field: where it sits in the record. */
 static void *g_vfg0000(void *p) { return (char *)p + 0; }
-static void *g_vfg0001(void *p) { return (char *)p + 3; }
+static void *g_vfg0001(void *p) { return (char *)p + 5; }
 static void *g_vfg0002(void *p) { return (char *)p + 0; }
-static void *g_vfg0003(void *p) { return (char *)p + 4; }
+static void *g_vfg0003(void *p) { return (char *)p + 6; }
 static void *g_vfg0004(void *p) { return (char *)p + 1; }
 static void *g_vfg0005(void *p) { return (char *)p + 2; }
-static void *g_vfg0006(void *p) { return (char *)p + 8; }
-static void *g_vfg0007(void *p) { return (char *)p + 0; }
-static void *g_vfg0008(void *p) { return (char *)p + 1; }
-static void *g_vfg0009(void *p) { return (char *)p + 2; }
-static void *g_vfg0010(void *p) { return (char *)p + 3; }
-static void *g_vfg0011(void *p) { return (char *)p + 4; }
-static void *g_vfg0012(void *p) { return (char *)p + 5; }
-static void *g_vfg0013(void *p) { return (char *)p + 6; }
-static void *g_vfg0014(void *p) { return (char *)p + 9; }
-static void *g_vfg0015(void *p) { return (char *)p + 10; }
-static void *g_vfg0016(void *p) { return (char *)p + 11; }
-static void *g_vfg0017(void *p) { return (char *)p + 12; }
-static void *g_vfg0018(void *p) { return (char *)p + 0; }
-static void *g_vfg0019(void *p) { return (char *)p + 1; }
-static void *g_vfg0020(void *p) { return (char *)p + 2; }
-static void *g_vfg0021(void *p) { return (char *)p + 0; }
+static void *g_vfg0006(void *p) { return (char *)p + 3; }
+static void *g_vfg0007(void *p) { return (char *)p + 4; }
+static void *g_vfg0008(void *p) { return (char *)p + 8; }
+static void *g_vfg0009(void *p) { return (char *)p + 0; }
+static void *g_vfg0010(void *p) { return (char *)p + 1; }
+static void *g_vfg0011(void *p) { return (char *)p + 2; }
+static void *g_vfg0012(void *p) { return (char *)p + 3; }
+static void *g_vfg0013(void *p) { return (char *)p + 4; }
+static void *g_vfg0014(void *p) { return (char *)p + 5; }
+static void *g_vfg0015(void *p) { return (char *)p + 6; }
+static void *g_vfg0016(void *p) { return (char *)p + 9; }
+static void *g_vfg0017(void *p) { return (char *)p + 10; }
+static void *g_vfg0018(void *p) { return (char *)p + 11; }
+static void *g_vfg0019(void *p) { return (char *)p + 12; }
+static void *g_vfg0020(void *p) { return (char *)p + 0; }
+static void *g_vfg0021(void *p) { return (char *)p + 1; }
 static void *g_vfg0022(void *p) { return (char *)p + 2; }
-static void *g_vfg0023(void *p) { return (char *)p + 3; }
-static void *g_vfg0024(void *p) { return (char *)p + 4; }
-static void *g_vfg0025(void *p) { return (char *)p + 5; }
-static void *g_vfg0026(void *p) { return (char *)p + 6; }
-static void *g_vfg0027(void *p) { return (char *)p + 7; }
-static void *g_vfg0028(void *p) { return (char *)p + 8; }
-static void *g_vfg0029(void *p) { return (char *)p + 10; }
-static void *g_vfg0030(void *p) { return (char *)p + 11; }
-static void *g_vfg0031(void *p) { return (char *)p + 12; }
-static void *g_vfg0032(void *p) { return (char *)p + 14; }
-static void *g_vfg0033(void *p) { return (char *)p + 0; }
-static void *g_vfg0034(void *p) { return (char *)p + 2; }
-static void *g_vfg0035(void *p) { return (char *)p + 3; }
-static void *g_vfg0036(void *p) { return (char *)p + 4; }
-static void *g_vfg0037(void *p) { return (char *)p + 5; }
-static void *g_vfg0038(void *p) { return (char *)p + 6; }
-static void *g_vfg0039(void *p) { return (char *)p + 8; }
-static void *g_vfg0040(void *p) { return (char *)p + 0; }
-static void *g_vfg0041(void *p) { return (char *)p + 2; }
-static void *g_vfg0042(void *p) { return (char *)p + 4; }
-static void *g_vfg0043(void *p) { return (char *)p + 6; }
-static void *g_vfg0044(void *p) { return (char *)p + 8; }
-static void *g_vfg0045(void *p) { return (char *)p + 10; }
-static void *g_vfg0046(void *p) { return (char *)p + 12; }
-static void *g_vfg0047(void *p) { return (char *)p + 14; }
-static void *g_vfg0048(void *p) { return (char *)p + 16; }
-static void *g_vfg0049(void *p) { return (char *)p + 18; }
-static void *g_vfg0050(void *p) { return (char *)p + 20; }
-static void *g_vfg0051(void *p) { return (char *)p + 24; }
-static void *g_vfg0052(void *p) { return (char *)p + 26; }
-static void *g_vfg0053(void *p) { return (char *)p + 28; }
-static void *g_vfg0054(void *p) { return (char *)p + 30; }
-static void *g_vfg0055(void *p) { return (char *)p + 0; }
-static void *g_vfg0056(void *p) { return (char *)p + 0; }
+static void *g_vfg0023(void *p) { return (char *)p + 0; }
+static void *g_vfg0024(void *p) { return (char *)p + 2; }
+static void *g_vfg0025(void *p) { return (char *)p + 3; }
+static void *g_vfg0026(void *p) { return (char *)p + 4; }
+static void *g_vfg0027(void *p) { return (char *)p + 5; }
+static void *g_vfg0028(void *p) { return (char *)p + 6; }
+static void *g_vfg0029(void *p) { return (char *)p + 7; }
+static void *g_vfg0030(void *p) { return (char *)p + 8; }
+static void *g_vfg0031(void *p) { return (char *)p + 10; }
+static void *g_vfg0032(void *p) { return (char *)p + 11; }
+static void *g_vfg0033(void *p) { return (char *)p + 12; }
+static void *g_vfg0034(void *p) { return (char *)p + 14; }
+static void *g_vfg0035(void *p) { return (char *)p + 0; }
+static void *g_vfg0036(void *p) { return (char *)p + 2; }
+static void *g_vfg0037(void *p) { return (char *)p + 3; }
+static void *g_vfg0038(void *p) { return (char *)p + 4; }
+static void *g_vfg0039(void *p) { return (char *)p + 5; }
+static void *g_vfg0040(void *p) { return (char *)p + 6; }
+static void *g_vfg0041(void *p) { return (char *)p + 8; }
+static void *g_vfg0042(void *p) { return (char *)p + 0; }
+static void *g_vfg0043(void *p) { return (char *)p + 2; }
+static void *g_vfg0044(void *p) { return (char *)p + 4; }
+static void *g_vfg0045(void *p) { return (char *)p + 6; }
+static void *g_vfg0046(void *p) { return (char *)p + 8; }
+static void *g_vfg0047(void *p) { return (char *)p + 10; }
+static void *g_vfg0048(void *p) { return (char *)p + 12; }
+static void *g_vfg0049(void *p) { return (char *)p + 14; }
+static void *g_vfg0050(void *p) { return (char *)p + 16; }
+static void *g_vfg0051(void *p) { return (char *)p + 18; }
+static void *g_vfg0052(void *p) { return (char *)p + 20; }
+static void *g_vfg0053(void *p) { return (char *)p + 24; }
+static void *g_vfg0054(void *p) { return (char *)p + 26; }
+static void *g_vfg0055(void *p) { return (char *)p + 28; }
+static void *g_vfg0056(void *p) { return (char *)p + 30; }
 static void *g_vfg0057(void *p) { return (char *)p + 0; }
+static void *g_vfg0058(void *p) { return (char *)p + 0; }
+static void *g_vfg0059(void *p) { return (char *)p + 0; }
 
 /* And one writer, which is the same with a width. */
 static void p_vfp0000(void *p, const void *v)
 { memcpy((char *)p + 0, v, 2); }
 static void p_vfp0001(void *p, const void *v)
-{ memcpy((char *)p + 3, v, 1); }
+{ memcpy((char *)p + 5, v, 1); }
 static void p_vfp0002(void *p, const void *v)
 { memcpy((char *)p + 0, v, 1); }
 static void p_vfp0003(void *p, const void *v)
-{ memcpy((char *)p + 4, v, 1); }
+{ memcpy((char *)p + 6, v, 1); }
 static void p_vfp0004(void *p, const void *v)
 { memcpy((char *)p + 1, v, 1); }
 static void p_vfp0005(void *p, const void *v)
 { memcpy((char *)p + 2, v, 1); }
 static void p_vfp0006(void *p, const void *v)
-{ memcpy((char *)p + 8, v, 1); }
-static void p_vfp0007(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 1); }
-static void p_vfp0008(void *p, const void *v)
-{ memcpy((char *)p + 1, v, 1); }
-static void p_vfp0009(void *p, const void *v)
-{ memcpy((char *)p + 2, v, 1); }
-static void p_vfp0010(void *p, const void *v)
 { memcpy((char *)p + 3, v, 1); }
-static void p_vfp0011(void *p, const void *v)
+static void p_vfp0007(void *p, const void *v)
 { memcpy((char *)p + 4, v, 1); }
-static void p_vfp0012(void *p, const void *v)
-{ memcpy((char *)p + 5, v, 1); }
-static void p_vfp0013(void *p, const void *v)
-{ memcpy((char *)p + 6, v, 2); }
-static void p_vfp0014(void *p, const void *v)
-{ memcpy((char *)p + 9, v, 1); }
-static void p_vfp0015(void *p, const void *v)
-{ memcpy((char *)p + 10, v, 1); }
-static void p_vfp0016(void *p, const void *v)
-{ memcpy((char *)p + 11, v, 1); }
-static void p_vfp0017(void *p, const void *v)
-{ memcpy((char *)p + 12, v, 2); }
-static void p_vfp0018(void *p, const void *v)
+static void p_vfp0008(void *p, const void *v)
+{ memcpy((char *)p + 8, v, 1); }
+static void p_vfp0009(void *p, const void *v)
 { memcpy((char *)p + 0, v, 1); }
-static void p_vfp0019(void *p, const void *v)
+static void p_vfp0010(void *p, const void *v)
 { memcpy((char *)p + 1, v, 1); }
-static void p_vfp0020(void *p, const void *v)
+static void p_vfp0011(void *p, const void *v)
 { memcpy((char *)p + 2, v, 1); }
+static void p_vfp0012(void *p, const void *v)
+{ memcpy((char *)p + 3, v, 1); }
+static void p_vfp0013(void *p, const void *v)
+{ memcpy((char *)p + 4, v, 1); }
+static void p_vfp0014(void *p, const void *v)
+{ memcpy((char *)p + 5, v, 1); }
+static void p_vfp0015(void *p, const void *v)
+{ memcpy((char *)p + 6, v, 2); }
+static void p_vfp0016(void *p, const void *v)
+{ memcpy((char *)p + 9, v, 1); }
+static void p_vfp0017(void *p, const void *v)
+{ memcpy((char *)p + 10, v, 1); }
+static void p_vfp0018(void *p, const void *v)
+{ memcpy((char *)p + 11, v, 1); }
+static void p_vfp0019(void *p, const void *v)
+{ memcpy((char *)p + 12, v, 2); }
+static void p_vfp0020(void *p, const void *v)
+{ memcpy((char *)p + 0, v, 1); }
 static void p_vfp0021(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 2); }
+{ memcpy((char *)p + 1, v, 1); }
 static void p_vfp0022(void *p, const void *v)
 { memcpy((char *)p + 2, v, 1); }
 static void p_vfp0023(void *p, const void *v)
-{ memcpy((char *)p + 3, v, 1); }
+{ memcpy((char *)p + 0, v, 2); }
 static void p_vfp0024(void *p, const void *v)
-{ memcpy((char *)p + 4, v, 1); }
-static void p_vfp0025(void *p, const void *v)
-{ memcpy((char *)p + 5, v, 1); }
-static void p_vfp0026(void *p, const void *v)
-{ memcpy((char *)p + 6, v, 1); }
-static void p_vfp0027(void *p, const void *v)
-{ memcpy((char *)p + 7, v, 1); }
-static void p_vfp0028(void *p, const void *v)
-{ memcpy((char *)p + 8, v, 2); }
-static void p_vfp0029(void *p, const void *v)
-{ memcpy((char *)p + 10, v, 1); }
-static void p_vfp0030(void *p, const void *v)
-{ memcpy((char *)p + 11, v, 1); }
-static void p_vfp0031(void *p, const void *v)
-{ memcpy((char *)p + 12, v, 1); }
-static void p_vfp0032(void *p, const void *v)
-{ memcpy((char *)p + 14, v, 2); }
-static void p_vfp0033(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 2); }
-static void p_vfp0034(void *p, const void *v)
 { memcpy((char *)p + 2, v, 1); }
-static void p_vfp0035(void *p, const void *v)
+static void p_vfp0025(void *p, const void *v)
 { memcpy((char *)p + 3, v, 1); }
-static void p_vfp0036(void *p, const void *v)
+static void p_vfp0026(void *p, const void *v)
 { memcpy((char *)p + 4, v, 1); }
-static void p_vfp0037(void *p, const void *v)
+static void p_vfp0027(void *p, const void *v)
 { memcpy((char *)p + 5, v, 1); }
-static void p_vfp0038(void *p, const void *v)
-{ memcpy((char *)p + 6, v, 2); }
-static void p_vfp0039(void *p, const void *v)
+static void p_vfp0028(void *p, const void *v)
+{ memcpy((char *)p + 6, v, 1); }
+static void p_vfp0029(void *p, const void *v)
+{ memcpy((char *)p + 7, v, 1); }
+static void p_vfp0030(void *p, const void *v)
 { memcpy((char *)p + 8, v, 2); }
-static void p_vfp0040(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 2); }
-static void p_vfp0041(void *p, const void *v)
-{ memcpy((char *)p + 2, v, 2); }
-static void p_vfp0042(void *p, const void *v)
-{ memcpy((char *)p + 4, v, 2); }
-static void p_vfp0043(void *p, const void *v)
-{ memcpy((char *)p + 6, v, 2); }
-static void p_vfp0044(void *p, const void *v)
-{ memcpy((char *)p + 8, v, 2); }
-static void p_vfp0045(void *p, const void *v)
-{ memcpy((char *)p + 10, v, 2); }
-static void p_vfp0046(void *p, const void *v)
-{ memcpy((char *)p + 12, v, 2); }
-static void p_vfp0047(void *p, const void *v)
+static void p_vfp0031(void *p, const void *v)
+{ memcpy((char *)p + 10, v, 1); }
+static void p_vfp0032(void *p, const void *v)
+{ memcpy((char *)p + 11, v, 1); }
+static void p_vfp0033(void *p, const void *v)
+{ memcpy((char *)p + 12, v, 1); }
+static void p_vfp0034(void *p, const void *v)
 { memcpy((char *)p + 14, v, 2); }
+static void p_vfp0035(void *p, const void *v)
+{ memcpy((char *)p + 0, v, 2); }
+static void p_vfp0036(void *p, const void *v)
+{ memcpy((char *)p + 2, v, 1); }
+static void p_vfp0037(void *p, const void *v)
+{ memcpy((char *)p + 3, v, 1); }
+static void p_vfp0038(void *p, const void *v)
+{ memcpy((char *)p + 4, v, 1); }
+static void p_vfp0039(void *p, const void *v)
+{ memcpy((char *)p + 5, v, 1); }
+static void p_vfp0040(void *p, const void *v)
+{ memcpy((char *)p + 6, v, 2); }
+static void p_vfp0041(void *p, const void *v)
+{ memcpy((char *)p + 8, v, 2); }
+static void p_vfp0042(void *p, const void *v)
+{ memcpy((char *)p + 0, v, 2); }
+static void p_vfp0043(void *p, const void *v)
+{ memcpy((char *)p + 2, v, 2); }
+static void p_vfp0044(void *p, const void *v)
+{ memcpy((char *)p + 4, v, 2); }
+static void p_vfp0045(void *p, const void *v)
+{ memcpy((char *)p + 6, v, 2); }
+static void p_vfp0046(void *p, const void *v)
+{ memcpy((char *)p + 8, v, 2); }
+static void p_vfp0047(void *p, const void *v)
+{ memcpy((char *)p + 10, v, 2); }
 static void p_vfp0048(void *p, const void *v)
-{ memcpy((char *)p + 16, v, 2); }
+{ memcpy((char *)p + 12, v, 2); }
 static void p_vfp0049(void *p, const void *v)
-{ memcpy((char *)p + 18, v, 2); }
+{ memcpy((char *)p + 14, v, 2); }
 static void p_vfp0050(void *p, const void *v)
-{ memcpy((char *)p + 20, v, 4); }
+{ memcpy((char *)p + 16, v, 2); }
 static void p_vfp0051(void *p, const void *v)
-{ memcpy((char *)p + 24, v, 2); }
+{ memcpy((char *)p + 18, v, 2); }
 static void p_vfp0052(void *p, const void *v)
-{ memcpy((char *)p + 26, v, 2); }
+{ memcpy((char *)p + 20, v, 4); }
 static void p_vfp0053(void *p, const void *v)
-{ memcpy((char *)p + 28, v, 2); }
+{ memcpy((char *)p + 24, v, 2); }
 static void p_vfp0054(void *p, const void *v)
-{ memcpy((char *)p + 30, v, 2); }
+{ memcpy((char *)p + 26, v, 2); }
 static void p_vfp0055(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 2); }
+{ memcpy((char *)p + 28, v, 2); }
 static void p_vfp0056(void *p, const void *v)
-{ memcpy((char *)p + 0, v, 2); }
+{ memcpy((char *)p + 30, v, 2); }
 static void p_vfp0057(void *p, const void *v)
+{ memcpy((char *)p + 0, v, 2); }
+static void p_vfp0058(void *p, const void *v)
+{ memcpy((char *)p + 0, v, 2); }
+static void p_vfp0059(void *p, const void *v)
 { memcpy((char *)p + 0, v, 2); }
 
 /* char_count */
@@ -642,112 +650,114 @@ static const char *const v1_1[] = { s210, s211, s212 };
 static const char *const v1_2[] = { s214, s215 };
 static const char *const v1_3[] = { s210, s217, s218, s219, s220 };
 static const char *const v1_4[] = { s210, s222, s223, s224, s225 };
+static const char *const v1_5[] = { s214, s215 };
+static const char *const v1_6[] = { s3, s14, s25, s16, s29, s38, s69, s21, s18, s37, s50, s30, s17, s34, s28, s55, s49, s41, s36, s19, s23, s24, s39, s47, s27, s22, s33, s31, s6, s11, s5, s10, s9, s53, s228, s40, s32, s48, s43, s82, s229, s230, s231, s232, s4, s8, s13, s7, s15, s54, s52, s12, s77 };
 static const delta_fielddesc f1[] = {
     { s0, s1, v1_0, 0, 207, -1, 1, { 0, 0, 0 } },
     { s209, s1, v1_1, 0, 3, -1, 0, { 0, 0, 0 } },
     { s213, s1, v1_2, 0, 2, -1, 0, { 0, 0, 0 } },
     { s216, s1, v1_3, 0, 5, -1, 0, { 0, 0, 0 } },
     { s221, s1, v1_4, 0, 5, -1, 0, { 0, 0, 0 } },
+    { s226, s1, v1_5, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s227, s1, v1_6, 0, 53, -1, 1, { 0, 0, 0 } },
 };
-static void *(*const gt1[])(void *) = { g_vfg0001, g_vfg0002, g_vfg0003, g_vfg0004, g_vfg0005 };
-static void (*const pt1[])(void *, const void *) = { p_vfp0001, p_vfp0002, p_vfp0003, p_vfp0004, p_vfp0005 };
-static const uint8_t d1[] = { 0, 0, 0, 0, 1 };
-static const uint8_t n1[] = { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 3, 1, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 3, 2, 1, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static void *(*const gt1[])(void *) = { g_vfg0001, g_vfg0002, g_vfg0003, g_vfg0004, g_vfg0005, g_vfg0006, g_vfg0007 };
+static void (*const pt1[])(void *, const void *) = { p_vfp0001, p_vfp0002, p_vfp0003, p_vfp0004, p_vfp0005, p_vfp0006, p_vfp0007 };
+static const uint8_t d1[] = { 0, 0, 0, 1, 0, 0, 1 };
+static const uint8_t n1[] = { 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 2, 1, 0, 1, 1, 3, 1, 0, 1, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 2, 1, 0, 2, 1, 3, 1, 0, 2, 1, 2, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, 1, 0, 0, 4, 0, 1, 0, 0, 4, 0, 1, 0, 0, 4, 0, 1, 0, 0, 4, 0, 1, 0, 0, 4, 0, 1, 0, 0, 4, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 28, 1, 1, 1, 1, 51, 1, 4, 0, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 29, 1, 1, 2, 1, 21, 1, 4, 0, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 45, 1, 1, 2, 1, 21, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 46, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 24, 1, 1, 2, 1, 19, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 30, 1, 1, 1, 1, 0, 1, 1, 1, 1, 31, 1, 1, 2, 1, 7, 1, 1, 1, 1, 29, 1, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 1, 1, 0, 2, 1, 1, 1, 0, 1, 1, 2, 1, 0, 1, 1, 1, 1, 47, 1, 1, 2, 1, 0, 2, 1, 2, 1, 0, 1, 1, 2, 1, 0, 2, 1, 2, 1, 0, 1, 1, 2, 1, 7, 1, 1, 1, 1, 28, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2, 0, 0, 1, 0, 1, 1, 1, 1, 44, 1, 1, 2, 1, 22, 1, 1, 2, 1, 18, 1, 1, 2, 1, 17, 0, 0, 0, 1, 0, 1, 1, 1, 1, 45, 1, 1, 1, 1, 46, 1, 1, 2, 1, 8, 1, 1, 1, 1, 42, 1, 1, 2, 1, 3, 1, 1, 2, 1, 16, 1, 1, 1, 1, 30, 1, 1, 1, 1, 31, 1, 1, 2, 1, 16, 1, 1, 2, 1, 14, 1, 1, 2, 1, 19, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 21, 1, 1, 2, 1, 3, 1, 1, 3, 1, 26, 1, 1, 2, 1, 25, 1, 1, 2, 1, 2, 1, 1, 2, 1, 12, 1, 1, 2, 1, 3, 1, 1, 3, 1, 11, 1, 1, 1, 1, 47, 1, 1, 2, 1, 4, 1, 1, 2, 1, 1, 1, 1, 2, 1, 24, 1, 1, 1, 1, 42, 1, 1, 1, 1, 24, 1, 1, 1, 1, 51, 1, 1, 2, 1, 8, 0, 0, 0, 1, 0, 1, 1, 2, 1, 18, 1, 1, 2, 1, 17, 1, 1, 2, 1, 21, 1, 1, 2, 1, 4, 1, 1, 2, 1, 21, 1, 1, 2, 1, 4, 1, 1, 2, 1, 4, 1, 1, 2, 1, 3, 1, 1, 2, 1, 1, 1, 1, 2, 1, 20, 0, 0, 0, 1, 0 };
 
 /* phone */
-static const char *const v2_0[] = { s3, s14, s25, s16, s29, s38, s69, s21, s18, s37, s50, s30, s17, s34, s28, s55, s49, s41, s36, s19, s23, s24, s39, s47, s27, s22, s33, s31, s6, s11, s5, s10, s9, s53, s227, s40, s32, s48, s43, s82, s228, s229, s230, s231, s4, s8, s13, s7, s15, s54, s52, s12, s77 };
-static const char *const v2_1[] = { s210, s222, s223, s233 };
-static const char *const v2_2[] = { s235, s236 };
-static const char *const v2_3[] = { s238, s239 };
-static const char *const v2_4[] = { s241, s242, s243, s244, s245, s224, s246, s247, s248, s249, s210 };
-static const char *const v2_5[] = { s251, s252, s253, s254, s255, s256, s257, s258, s210 };
-static const char *const v2_6[] = { s260, s261, s262, s210 };
-static const char *const v2_8[] = { s210, s265, s266 };
-static const char *const v2_9[] = { s210, s268, s269, s270 };
-static const char *const v2_10[] = { s210, s19, s272 };
+static const char *const v2_0[] = { s3, s14, s25, s16, s29, s38, s69, s21, s18, s37, s50, s30, s17, s34, s28, s55, s49, s41, s36, s19, s23, s24, s39, s47, s27, s22, s33, s31, s6, s11, s5, s10, s9, s53, s228, s40, s32, s48, s43, s82, s229, s230, s231, s232, s4, s8, s13, s7, s15, s54, s52, s12, s77 };
+static const char *const v2_1[] = { s210, s222, s223, s235 };
+static const char *const v2_2[] = { s237, s238 };
+static const char *const v2_3[] = { s240, s241 };
+static const char *const v2_4[] = { s243, s244, s245, s246, s247, s224, s248, s249, s250, s251, s210 };
+static const char *const v2_5[] = { s253, s254, s255, s256, s257, s258, s259, s260, s210 };
+static const char *const v2_6[] = { s262, s263, s264, s210 };
+static const char *const v2_8[] = { s210, s267, s268 };
+static const char *const v2_9[] = { s210, s270, s271, s272 };
+static const char *const v2_10[] = { s210, s19, s274 };
 static const delta_fielddesc f2[] = {
     { s0, s1, v2_0, 0, 53, -1, 1, { 0, 0, 0 } },
-    { s232, s1, v2_1, 0, 4, -1, 0, { 0, 0, 0 } },
-    { s234, s1, v2_2, 0, 2, -1, 0, { 0, 0, 0 } },
-    { s237, s1, v2_3, 0, 2, -1, 0, { 0, 0, 0 } },
-    { s240, s1, v2_4, 0, 11, -1, 0, { 0, 0, 0 } },
-    { s250, s1, v2_5, 0, 9, -1, 0, { 0, 0, 0 } },
-    { s259, s1, v2_6, 0, 4, -1, 0, { 0, 0, 0 } },
-    { s263, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s264, s1, v2_8, 0, 3, -1, 0, { 0, 0, 0 } },
-    { s267, s1, v2_9, 0, 4, -1, 0, { 0, 0, 0 } },
-    { s271, s1, v2_10, 0, 3, -1, 0, { 0, 0, 0 } },
-    { s273, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s234, s1, v2_1, 0, 4, -1, 0, { 0, 0, 0 } },
+    { s236, s1, v2_2, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s239, s1, v2_3, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s242, s1, v2_4, 0, 11, -1, 0, { 0, 0, 0 } },
+    { s252, s1, v2_5, 0, 9, -1, 0, { 0, 0, 0 } },
+    { s261, s1, v2_6, 0, 4, -1, 0, { 0, 0, 0 } },
+    { s265, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s266, s1, v2_8, 0, 3, -1, 0, { 0, 0, 0 } },
+    { s269, s1, v2_9, 0, 4, -1, 0, { 0, 0, 0 } },
+    { s273, s1, v2_10, 0, 3, -1, 0, { 0, 0, 0 } },
+    { s275, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
 };
-static void *(*const gt2[])(void *) = { g_vfg0006, g_vfg0007, g_vfg0008, g_vfg0009, g_vfg0010, g_vfg0011, g_vfg0012, g_vfg0013, g_vfg0014, g_vfg0015, g_vfg0016, g_vfg0017 };
-static void (*const pt2[])(void *, const void *) = { p_vfp0006, p_vfp0007, p_vfp0008, p_vfp0009, p_vfp0010, p_vfp0011, p_vfp0012, p_vfp0013, p_vfp0014, p_vfp0015, p_vfp0016, p_vfp0017 };
+static void *(*const gt2[])(void *) = { g_vfg0008, g_vfg0009, g_vfg0010, g_vfg0011, g_vfg0012, g_vfg0013, g_vfg0014, g_vfg0015, g_vfg0016, g_vfg0017, g_vfg0018, g_vfg0019 };
+static void (*const pt2[])(void *, const void *) = { p_vfp0008, p_vfp0009, p_vfp0010, p_vfp0011, p_vfp0012, p_vfp0013, p_vfp0014, p_vfp0015, p_vfp0016, p_vfp0017, p_vfp0018, p_vfp0019 };
 static const uint8_t d2[] = { 0, 1, 1, 10, 8, 3, 0, 0, 0, 0, 0, 0, 0, 0 };
 static const uint8_t n2[] = { 0, 1, 1, 10, 8, 3, 0, 0, 2, 0, 1, 0, 0, 3, 0, 0, 2, 1, 1, 0, 0, 3, 0, 0, 2, 0, 1, 0, 2, 3, 0, 0, 2, 1, 1, 0, 2, 3, 0, 0, 2, 1, 1, 0, 2, 3, 0, 0, 2, 1, 1, 0, 8, 3, 0, 0, 2, 1, 1, 0, 4, 3, 0, 0, 2, 0, 1, 0, 4, 3, 0, 0, 2, 0, 1, 1, 1, 3, 0, 0, 2, 1, 1, 1, 1, 3, 0, 0, 2, 0, 1, 1, 0, 3, 0, 0, 2, 1, 1, 1, 0, 3, 0, 0, 2, 0, 1, 1, 2, 3, 0, 0, 2, 1, 1, 1, 2, 3, 0, 0, 2, 0, 1, 1, 3, 3, 0, 0, 2, 1, 1, 1, 3, 3, 0, 0, 2, 0, 1, 2, 3, 3, 0, 0, 2, 1, 1, 2, 3, 3, 0, 0, 2, 1, 1, 10, 8, 3, 0, 0, 2, 0, 1, 4, 0, 3, 0, 0, 2, 0, 1, 4, 2, 3, 0, 0, 2, 0, 1, 4, 4, 3, 0, 0, 2, 0, 1, 1, 4, 3, 0, 0, 2, 0, 0, 3, 8, 3, 0, 0, 2, 0, 0, 3, 8, 3, 0, 0, 2, 0, 0, 5, 3, 3, 0, 0, 2, 0, 0, 5, 0, 3, 0, 0, 1, 0, 0, 6, 5, 0, 0, 0, 1, 0, 0, 10, 5, 0, 0, 0, 1, 0, 0, 6, 6, 0, 0, 0, 1, 0, 0, 10, 6, 0, 0, 0, 1, 0, 0, 10, 7, 0, 0, 0, 1, 0, 0, 7, 5, 1, 0, 0, 1, 0, 0, 7, 5, 1, 0, 0, 1, 0, 0, 10, 6, 1, 0, 0, 1, 0, 0, 7, 6, 1, 0, 0, 1, 0, 0, 6, 6, 1, 0, 0, 1, 0, 0, 10, 7, 1, 0, 0, 1, 0, 0, 10, 7, 2, 0, 0, 1, 0, 0, 10, 8, 1, 0, 0, 1, 0, 0, 10, 8, 1, 0, 0, 1, 0, 0, 10, 8, 1, 0, 0, 1, 0, 0, 10, 8, 1, 0, 0, 1, 0, 0, 10, 7, 1, 0, 0, 1, 0, 0, 6, 5, 2, 0, 0, 1, 0, 0, 10, 5, 2, 0, 0, 1, 0, 0, 6, 6, 2, 0, 0, 1, 0, 0, 10, 7, 2, 0, 0, 1, 0, 0, 6, 7, 3, 0, 0, 1, 0, 0, 6, 7, 3, 0, 0, 1, 0, 0, 6, 7, 3, 0, 0, 0, 1, 1, 10, 8, 3, 1, 0 };
 
 /* morph */
-static const char *const v3_0[] = { s3, s275, s276, s277 };
-static const char *const v3_1[] = { s279, s280, s281, s282, s28, s283 };
-static const char *const v3_2[] = { s279, s285, s286, s287, s288, s289, s290 };
+static const char *const v3_0[] = { s3, s277, s278, s279 };
+static const char *const v3_1[] = { s281, s282, s283, s284, s28, s285 };
+static const char *const v3_2[] = { s281, s287, s288, s289, s290, s291, s292 };
 static const delta_fielddesc f3[] = {
     { s0, s1, v3_0, 0, 4, -1, 1, { 0, 0, 0 } },
-    { s278, s1, v3_1, 0, 6, -1, 0, { 0, 0, 0 } },
-    { s284, s1, v3_2, 0, 7, -1, 0, { 0, 0, 0 } },
+    { s280, s1, v3_1, 0, 6, -1, 0, { 0, 0, 0 } },
+    { s286, s1, v3_2, 0, 7, -1, 0, { 0, 0, 0 } },
 };
-static void *(*const gt3[])(void *) = { g_vfg0018, g_vfg0019, g_vfg0020 };
-static void (*const pt3[])(void *, const void *) = { p_vfp0018, p_vfp0019, p_vfp0020 };
+static void *(*const gt3[])(void *) = { g_vfg0020, g_vfg0021, g_vfg0022 };
+static void (*const pt3[])(void *, const void *) = { p_vfp0020, p_vfp0021, p_vfp0022 };
 static const uint8_t d3[] = { 0, 0, 0 };
 
 /* word */
-static const char *const v4_1[] = { s279, s293, s294, s295, s296, s297, s298, s299, s300, s301, s302, s303, s304, s305, s306, s307, s308, s309, s310, s311, s312, s313, s314, s315, s316 };
-static const char *const v4_2[] = { s318, s319, s320, s321, s322, s323, s324, s281, s325, s326, s327, s328, s329, s282, s330, s331, s332, s333, s334, s335, s336, s337, s338, s339, s340, s341, s342, s343, s344, s345, s346, s347, s348, s349, s350, s351, s352, s353, s354, s355, s356, s357, s358, s359, s360, s361 };
-static const char *const v4_3[] = { s285, s363, s364, s365, s366 };
-static const char *const v4_4[] = { s368, s369, s370, s371, s372 };
-static const char *const v4_5[] = { s374, s375, s376, s377 };
-static const char *const v4_6[] = { s379, s28, s380 };
-static const char *const v4_8[] = { s19, s22, s383, s384, s385, s386, s210 };
-static const char *const v4_9[] = { s388, s389 };
-static const char *const v4_10[] = { s391, s392, s393, s394 };
+static const char *const v4_1[] = { s281, s295, s296, s297, s298, s299, s300, s301, s302, s303, s304, s305, s306, s307, s308, s309, s310, s311, s312, s313, s314, s315, s316, s317, s318 };
+static const char *const v4_2[] = { s320, s321, s322, s323, s324, s325, s326, s283, s327, s328, s329, s330, s331, s284, s332, s333, s334, s335, s336, s337, s338, s339, s340, s341, s342, s343, s344, s345, s346, s347, s348, s349, s350, s351, s352, s353, s354, s355, s356, s357, s358, s359, s360, s361, s362, s363 };
+static const char *const v4_3[] = { s287, s365, s366, s367, s368 };
+static const char *const v4_4[] = { s370, s371, s372, s373, s374 };
+static const char *const v4_5[] = { s376, s377, s378, s379 };
+static const char *const v4_6[] = { s381, s28, s382 };
+static const char *const v4_8[] = { s19, s22, s385, s386, s387, s388, s210 };
+static const char *const v4_9[] = { s390, s391 };
+static const char *const v4_10[] = { s393, s394, s395, s396 };
 static const delta_fielddesc f4[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
-    { s292, s1, v4_1, 0, 25, -1, 0, { 0, 0, 0 } },
-    { s317, s1, v4_2, 0, 46, -1, 0, { 0, 0, 0 } },
-    { s362, s1, v4_3, 0, 5, -1, 0, { 0, 0, 0 } },
-    { s367, s1, v4_4, 0, 5, -1, 0, { 0, 0, 0 } },
-    { s373, s1, v4_5, 0, 4, -1, 0, { 0, 0, 0 } },
-    { s378, s1, v4_6, 0, 3, -1, 0, { 0, 0, 0 } },
-    { s381, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s382, s1, v4_8, 0, 7, -1, 0, { 0, 0, 0 } },
-    { s387, s1, v4_9, 0, 2, -1, 0, { 0, 0, 0 } },
-    { s390, s1, v4_10, 0, 4, -1, 0, { 0, 0, 0 } },
-    { s395, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s294, s1, v4_1, 0, 25, -1, 0, { 0, 0, 0 } },
+    { s319, s1, v4_2, 0, 46, -1, 0, { 0, 0, 0 } },
+    { s364, s1, v4_3, 0, 5, -1, 0, { 0, 0, 0 } },
+    { s369, s1, v4_4, 0, 5, -1, 0, { 0, 0, 0 } },
+    { s375, s1, v4_5, 0, 4, -1, 0, { 0, 0, 0 } },
+    { s380, s1, v4_6, 0, 3, -1, 0, { 0, 0, 0 } },
+    { s383, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s384, s1, v4_8, 0, 7, -1, 0, { 0, 0, 0 } },
+    { s389, s1, v4_9, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s392, s1, v4_10, 0, 4, -1, 0, { 0, 0, 0 } },
+    { s397, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
 };
-static void *(*const gt4[])(void *) = { g_vfg0021, g_vfg0022, g_vfg0023, g_vfg0024, g_vfg0025, g_vfg0026, g_vfg0027, g_vfg0028, g_vfg0029, g_vfg0030, g_vfg0031, g_vfg0032 };
-static void (*const pt4[])(void *, const void *) = { p_vfp0021, p_vfp0022, p_vfp0023, p_vfp0024, p_vfp0025, p_vfp0026, p_vfp0027, p_vfp0028, p_vfp0029, p_vfp0030, p_vfp0031, p_vfp0032 };
+static void *(*const gt4[])(void *) = { g_vfg0023, g_vfg0024, g_vfg0025, g_vfg0026, g_vfg0027, g_vfg0028, g_vfg0029, g_vfg0030, g_vfg0031, g_vfg0032, g_vfg0033, g_vfg0034 };
+static void (*const pt4[])(void *, const void *) = { p_vfp0023, p_vfp0024, p_vfp0025, p_vfp0026, p_vfp0027, p_vfp0028, p_vfp0029, p_vfp0030, p_vfp0031, p_vfp0032, p_vfp0033, p_vfp0034 };
 static const uint8_t d4[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
 
 /* inton_phr */
-static const char *const v5_1[] = { s68, s67, s71, s69, s397, s72, s398, s399, s400 };
-static const char *const v5_2[] = { s40, s43, s402, s403, s404, s405, s406, s391, s407 };
+static const char *const v5_1[] = { s68, s67, s71, s69, s399, s72, s400, s401, s402 };
+static const char *const v5_2[] = { s40, s43, s404, s405, s406, s407, s408, s393, s409 };
 static const char *const v5_3[] = { s22, s19 };
-static const char *const v5_4[] = { s410, s411 };
+static const char *const v5_4[] = { s412, s413 };
 static const delta_fielddesc f5[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
-    { s278, s1, v5_1, 0, 9, -1, 0, { 0, 0, 0 } },
-    { s401, s1, v5_2, 0, 9, -1, 0, { 0, 0, 0 } },
-    { s408, s1, v5_3, 0, 2, -1, 0, { 0, 0, 0 } },
-    { s409, s1, v5_4, 0, 2, -1, 0, { 0, 0, 0 } },
-    { s412, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s413, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s280, s1, v5_1, 0, 9, -1, 0, { 0, 0, 0 } },
+    { s403, s1, v5_2, 0, 9, -1, 0, { 0, 0, 0 } },
+    { s410, s1, v5_3, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s411, s1, v5_4, 0, 2, -1, 0, { 0, 0, 0 } },
+    { s414, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s415, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
 };
-static void *(*const gt5[])(void *) = { g_vfg0033, g_vfg0034, g_vfg0035, g_vfg0036, g_vfg0037, g_vfg0038, g_vfg0039 };
-static void (*const pt5[])(void *, const void *) = { p_vfp0033, p_vfp0034, p_vfp0035, p_vfp0036, p_vfp0037, p_vfp0038, p_vfp0039 };
+static void *(*const gt5[])(void *) = { g_vfg0035, g_vfg0036, g_vfg0037, g_vfg0038, g_vfg0039, g_vfg0040, g_vfg0041 };
+static void (*const pt5[])(void *, const void *) = { p_vfp0035, p_vfp0036, p_vfp0037, p_vfp0038, p_vfp0039, p_vfp0040, p_vfp0041 };
 static const uint8_t d5[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /* klatt */
 static const delta_fielddesc f6[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
-    { s415, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s416, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s417, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s418, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s419, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
@@ -755,38 +765,40 @@ static const delta_fielddesc f6[] = {
     { s421, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s422, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s423, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s424, s425, 0, 0, 0, -3, 0, { 0, 0, 0 } },
-    { s426, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
-    { s427, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s424, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s425, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s426, s427, 0, 0, 0, -3, 0, { 0, 0, 0 } },
     { s428, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
     { s429, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s430, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
+    { s431, s1, 0, 0, 0, -4, 0, { 0, 0, 0 } },
 };
-static void *(*const gt6[])(void *) = { g_vfg0040, g_vfg0041, g_vfg0042, g_vfg0043, g_vfg0044, g_vfg0045, g_vfg0046, g_vfg0047, g_vfg0048, g_vfg0049, g_vfg0050, g_vfg0051, g_vfg0052, g_vfg0053, g_vfg0054 };
-static void (*const pt6[])(void *, const void *) = { p_vfp0040, p_vfp0041, p_vfp0042, p_vfp0043, p_vfp0044, p_vfp0045, p_vfp0046, p_vfp0047, p_vfp0048, p_vfp0049, p_vfp0050, p_vfp0051, p_vfp0052, p_vfp0053, p_vfp0054 };
+static void *(*const gt6[])(void *) = { g_vfg0042, g_vfg0043, g_vfg0044, g_vfg0045, g_vfg0046, g_vfg0047, g_vfg0048, g_vfg0049, g_vfg0050, g_vfg0051, g_vfg0052, g_vfg0053, g_vfg0054, g_vfg0055, g_vfg0056 };
+static void (*const pt6[])(void *, const void *) = { p_vfp0042, p_vfp0043, p_vfp0044, p_vfp0045, p_vfp0046, p_vfp0047, p_vfp0048, p_vfp0049, p_vfp0050, p_vfp0051, p_vfp0052, p_vfp0053, p_vfp0054, p_vfp0055, p_vfp0056 };
 static const uint8_t d6[] = { 0, 0, 100, 0, 100, 0, 17, 43, 0, 0, 50, 0, 0, 0, 0, 0, 202, 0, 30, 0, 165, 4, 0, 0, 241, 216, 241, 216, 241, 216, 241, 216 };
 
 /* syllable */
 static const delta_fielddesc f7[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
 };
-static void *(*const gt7[])(void *) = { g_vfg0055 };
-static void (*const pt7[])(void *, const void *) = { p_vfp0055 };
+static void *(*const gt7[])(void *) = { g_vfg0057 };
+static void (*const pt7[])(void *, const void *) = { p_vfp0057 };
 static const uint8_t d7[] = { 0, 0 };
 
 /* F0 */
 static const delta_fielddesc f8[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
 };
-static void *(*const gt8[])(void *) = { g_vfg0056 };
-static void (*const pt8[])(void *, const void *) = { p_vfp0056 };
+static void *(*const gt8[])(void *) = { g_vfg0058 };
+static void (*const pt8[])(void *, const void *) = { p_vfp0058 };
 static const uint8_t d8[] = { 0, 0 };
 
 /* Ms */
 static const delta_fielddesc f9[] = {
     { s0, s1, 0, 0, 0, -4, 1, { 0, 0, 0 } },
 };
-static void *(*const gt9[])(void *) = { g_vfg0057 };
-static void (*const pt9[])(void *, const void *) = { p_vfp0057 };
+static void *(*const gt9[])(void *) = { g_vfg0059 };
+static void (*const pt9[])(void *, const void *) = { p_vfp0059 };
 static const uint8_t d9[] = { 0, 0 };
 
 /* Not const: the runtime writes two of the words in
@@ -795,23 +807,23 @@ static const uint8_t d9[] = { 0, 0 };
 delta_stmt hien_vstmtbl[] = {
     { s2, f0, gt0, pt0, 0, d0,
       0, 0, 1, 2, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s226, f1, gt1, pt1, n1, d1,
-      0, 0, 5, 5, 0, 0, 1, { 124, 124 }, 0, 0, 1, 0 },
-    { s274, f2, gt2, pt2, n2, d2,
+    { s233, f1, gt1, pt1, n1, d1,
+      0, 0, 7, 7, 0, 0, 1, { 124, 124 }, 0, 0, 1, 0 },
+    { s276, f2, gt2, pt2, n2, d2,
       0, 0, 12, 14, 0, 0, 1, { 39, 39 }, 0, 0, 1, 0 },
-    { s291, f3, gt3, pt3, 0, d3,
+    { s293, f3, gt3, pt3, 0, d3,
       0, 0, 3, 3, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s396, f4, gt4, pt4, 0, d4,
+    { s398, f4, gt4, pt4, 0, d4,
       0, 0, 12, 16, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s414, f5, gt5, pt5, 0, d5,
+    { s416, f5, gt5, pt5, 0, d5,
       0, 0, 7, 10, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s430, f6, gt6, pt6, 0, d6,
+    { s432, f6, gt6, pt6, 0, d6,
       0, 0, 15, 32, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s431, f7, gt7, pt7, 0, d7,
+    { s433, f7, gt7, pt7, 0, d7,
       0, 0, 1, 2, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s432, f8, gt8, pt8, 0, d8,
+    { s434, f8, gt8, pt8, 0, d8,
       0, 0, 1, 2, 0, 0, 0, { 39, 39 }, 0, 0, 1, 0 },
-    { s433, f9, gt9, pt9, 0, d9,
+    { s435, f9, gt9, pt9, 0, d9,
       0, 0, 1, 2, 0, 0, 0, { 39, 39 }, 1, 0, 1, 0 },
 };
 
@@ -822,8 +834,8 @@ delta_stmt hien_vstmtbl[] = {
    it at all. */
 void hien_viasizes(void)
 {
-    hien_vstmtbl[1].stride = 3;
-    hien_vstmtbl[1].varlen = 3;
+    hien_vstmtbl[1].stride = 5;
+    hien_vstmtbl[1].varlen = 5;
     hien_vstmtbl[2].stride = 8;
     hien_vstmtbl[2].varlen = 8;
 }

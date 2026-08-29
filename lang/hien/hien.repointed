@@ -1,0 +1,64 @@
+# Which byte each repointed slot of hien's alphabet is reached by.
+# Written by tools/lang-repoint.py. A slot renamed away from the character
+# it held no longer says its own byte, and tools/lang-codepoints.py reads
+# this to know a real slot from a byte nothing names.
+
+80 da_
+81 daa
+8a di
+8c dii
+93 du
+94 duu
+95 dri
+96 de
+97 dai
+98 do
+99 dau
+9a dka
+9c dkha
+9d dga
+a1 dgha
+a2 dnga
+a3 dca
+a4 dcha
+a5 dja
+a6 djha
+a7 dnya
+a8 dTa
+a9 dTha
+aa dDa
+ab dDha
+ac dNa
+ad dta
+ae dtha
+af dda
+b0 ddha
+b1 dna
+b2 dpa
+b3 dpha
+b4 dba
+b5 dbha
+b6 dma
+b7 dya
+b8 dra
+b9 dla
+ba dva
+bb dsha
+bc dSha
+bd dsa
+be dha
+bf dmaa
+c0 dmi
+c1 dmii
+c2 dmu
+c3 dmuu
+c4 dmri
+c5 dme
+c6 dmai
+c7 dmo
+c8 dmau
+c9 danu
+ca dcandra
+cb dvisarga
+cc dvirama
+cd ddanda
