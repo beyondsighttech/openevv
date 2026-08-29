@@ -32,6 +32,11 @@ extern void hien_act_dict_delete(delta_state *d);
 
 extern const delta_rule_c hien_delta_rule_native[];
 
+extern const delta_store hien_delta_authored_store[];
+
+extern const delta_codepoint hien_delta_codepoints[];
+extern const int32_t hien_delta_codepoints_n;
+
 /* The two slots the runtime fills in for this language: the symbol table,
    once delta_syms_bind has copied the stores into the arena, and the index
    of whichever rules are written as C. Not const, unlike everything else
@@ -49,6 +54,7 @@ extern int32_t hien_DeltaProc_end(int32_t d);
 extern int32_t hien_DeltaProc_flush(int32_t d);
 extern int32_t hien_DeltaProc_process_sentences(int32_t d);
 extern int32_t hien_DeltaProc_process_remaining(int32_t d);
+extern int32_t hien_DeltaProc_main(int32_t d);
 
 static int32_t proc_start(delta_state *d)
 {
@@ -75,6 +81,11 @@ static int32_t proc_process_remaining(delta_state *d)
     return hien_DeltaProc_process_remaining(EVV_REF(d));
 }
 
+static int32_t proc_main(delta_state *d)
+{
+    return hien_DeltaProc_main(EVV_REF(d));
+}
+
 
 /* Not const, because the numbers below cannot go in an initialiser: each
    lives in another file as a const object, which C does not count as a
@@ -82,7 +93,7 @@ static int32_t proc_process_remaining(delta_state *d)
    anything asks the language anything. */
 delta_language delta_lang_hien = {
     "hien",
-    "US English",
+    "Hindi",
     0, 0, 0,             /* id, library name, how big a machine is */
 
     hien_delta_rule_code,
@@ -99,6 +110,9 @@ delta_language delta_lang_hien = {
     &hien_delta_native_index,
 
     hien_delta_const_store,
+    hien_delta_authored_store,
+    hien_delta_codepoints,
+    0,                   /* how many of those */
     &hien_delta_sym_ref,
 
     hien_vstmtbl,
@@ -120,6 +134,7 @@ delta_language delta_lang_hien = {
     proc_flush,
     proc_process_sentences,
     proc_process_remaining,
+    proc_main,
 
     0, 0,                /* the settings blob and its size */
 };
@@ -135,6 +150,7 @@ void delta_lang_bind_hien(void)
     l->rule_count     = hien_delta_rule_count;
     l->rule_setjmp    = hien_delta_rule_setjmp;
     l->globals_n      = hien_delta_globals_n;
+    l->codepoints_n   = hien_delta_codepoints_n;
     l->ini            = hien_eciIni;
     l->ini_size       = hien_eciIniSize;
 }

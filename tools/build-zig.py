@@ -127,12 +127,28 @@ def main():
                    "-fdata-sections", "-Wl,--gc-sections"]
 
     objs = []
+    # Nothing here tracks which headers a source includes, so a change to one
+    # -- delta_lang.h growing two fields, say -- leaves every object older than
+    # it and looking fresh. Linking those gives a binary whose modules disagree
+    # about the shape of a struct, which segfaults rather than failing to link.
+    # So the newest header anywhere in the include path is a floor under every
+    # object's age. That is coarser than real dependencies and rebuilds more
+    # than it must; a wrong rebuild costs a minute and a stale object costs an
+    # afternoon of looking for a fault that is not there.
+    headers = []
+    for d in [SRC] + [os.path.join(ROOT, x) for x in lang_dirs]:
+        for name in os.listdir(d):
+            if name.endswith(".h"):
+                headers.append(os.path.getmtime(os.path.join(d, name)))
+    newest_header = max(headers) if headers else 0
+
     for s in srcs:
         obj = os.path.join(
             objdir, os.path.splitext(os.path.basename(s))[0] + ".o")
         objs.append(obj)
         newer = (not os.path.exists(obj) or
-                 os.path.getmtime(s) > os.path.getmtime(obj))
+                 os.path.getmtime(s) > os.path.getmtime(obj) or
+                 newest_header > os.path.getmtime(obj))
         if newer or "--force" in sys.argv:
             cmd = ZIG + cflags + ["-c", s, "-o", obj]
             print(" ".join(cmd), file=sys.stderr)
