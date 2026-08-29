@@ -156,27 +156,80 @@ WHERE IT STANDS RIGHT NOW
 --------------------------
   done    Devanagari arrives as characters, not bytes
   done    all 59 characters in the alphabet, each with a nearest sound
-  NOT     any rule that turns those characters into speech
+  done    81 sound-strings written and compiled in
+  done    48 letter rules written and compiling
+  NOT     those rules are not reached yet - see the blocker below
 
-So Hindi currently makes one default noise for every word. That is
-progress from 18 junk characters, and it is not speech.
+So Hindi still makes one default noise for every word. The rules that
+would speak it exist and compile; nothing calls them.
 
 test/hien-hash.sh FAILS today, on purpose. The recorded hashes are
-from before this change, and re-recording them would freeze silence
-as the right answer. Run test/hien-arrives.py instead - it says in
-one line where the work is.
+from before the alphabet change, and re-recording them would freeze
+silence as the right answer. Run test/hien-arrives.py instead - it
+says in one line where the work is.
 
 English is untouched throughout: the canonical hash still passes in
 both the English-only and the English+Hindi builds.
 
 
-NEXT
------
-  1. the letter-to-sound rules: a consonant says its sound plus an
-     "a" unless a vowel sign or a virama follows
-  2. the sounds Hindi has and English has not - 18 of the 59 letters
-     are currently pointed at an approximation:
-     breathy bha dha gha jha dha, aspirated kha cha tha pha,
-     retroflex Ta Tha Da Dha Na
-  3. conjuncts and the silent-a rule that makes राम "raam" and not
-     "raama"
+29 Aug 2026 - the letter rules exist. They are not wired in yet.
+-----------------------------------------------------------------
+Written this session:
+  - 81 sound-strings (every sound a Hindi letter can say). Each
+    consonant needs two: one bare, one with the "a" it carries.
+  - 48 letter rules, one per Devanagari character. They compile to
+    real machine code.
+  - a generator, tools/hien-letters.py, that writes those 48. Writing
+    44 nearly-identical rules by hand is how one quietly gets the
+    wrong sound; and when I found the word-final rule was wrong, one
+    edit fixed all 33 consonants at once.
+
+The rules do contain the real Hindi logic:
+  virama  क्ष  -> no vowel, it is a cluster
+  matra   का   -> the sign's vowel instead of "a"
+  word end राम -> the "a" is dropped, so raam and not raama
+
+The new notation caught a real mistake: I wrote "backtrack" where
+nothing had been planted, and it refused to compile. In the old
+notation that would have compiled and crashed days later somewhere
+unrelated.
+
+THE BLOCKER, plainly:
+My rules are shaped like Italian's - they take the two ends of the
+text as arguments. English's letter rules are shaped differently:
+they take one argument and find the text through pre-made wrapper
+routines, one per sound. Mine have no wrappers.
+
+Worse: the thing that decides which letter rule to call uses a
+75-slot lookup table indexed by character code. Devanagari sits
+above slot 75. So even with the right shape, no Devanagari character
+can currently reach any rule I wrote.
+
+WHAT IS LEFT
+-------------
+  1. generate wrapper routines for our 81 sounds (a tool for this may
+     already exist in the tree - tools/delta-wrappers.py)
+  2. reshape the 48 rules to English's convention - one edit to the
+     generator, not 48 edits
+  3. extend or replace the thing that picks a letter rule, so
+     Devanagari characters reach ours
+
+Steps 1 and 2 are small. Step 3 is the unknown: if there is a clean
+hook, quick. If the whole 600-line dispatcher has to be rewritten,
+several sessions.
+
+Estimate to hear recognisable Hindi words: 2-4 more sessions. Not one.
+
+"Perfect Hindi" is not a promise I can make. 18 of the 59 letters
+still point at approximate sounds - the breathy ones (भ ध घ) and the
+tongue-curled ones (ट ड ण) do not exist as sounds in the engine yet,
+and each new one has to be judged by ear, because there is no IBM
+Hindi anywhere to compare against. Intelligible is a target I can
+aim at. Perfect has no finish line I can see from here.
+
+One note for later: the two detours above are both caused by Hindi
+sitting on English. Italian's convention is the one the Polish work
+proved, and my rules were already shaped that way. The Devanagari
+work - alphabet, code points, the 59 characters - carries over
+whichever base is used.
+

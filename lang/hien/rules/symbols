@@ -6796,3 +6796,89 @@ at hien_evv_glob_data_3 948
 at hien_evv_glob_data_3 460
 at hien_evv_glob_data_3 860
 at hien_evv_glob_data_3 1340
+
+# And the constants of our own, out of rules/constants by tools/delta-consts.py.
+
+# And the constants of our own, out of rules/constants by tools/delta-consts.py.
+store hien_evv_authored_data
+at * hi_k hien_evv_authored_data 0
+at * hi_kh hien_evv_authored_data 1
+at * hi_g hien_evv_authored_data 2
+at * hi_gh hien_evv_authored_data 3
+at * hi_ng hien_evv_authored_data 4
+at * hi_c hien_evv_authored_data 5
+at * hi_ch hien_evv_authored_data 6
+at * hi_j hien_evv_authored_data 7
+at * hi_jh hien_evv_authored_data 8
+at * hi_ny hien_evv_authored_data 9
+at * hi_tt hien_evv_authored_data 10
+at * hi_tth hien_evv_authored_data 11
+at * hi_dd hien_evv_authored_data 12
+at * hi_ddh hien_evv_authored_data 13
+at * hi_nn hien_evv_authored_data 14
+at * hi_t hien_evv_authored_data 15
+at * hi_th hien_evv_authored_data 16
+at * hi_d hien_evv_authored_data 17
+at * hi_dh hien_evv_authored_data 18
+at * hi_n hien_evv_authored_data 19
+at * hi_p hien_evv_authored_data 20
+at * hi_ph hien_evv_authored_data 21
+at * hi_b hien_evv_authored_data 22
+at * hi_bh hien_evv_authored_data 23
+at * hi_m hien_evv_authored_data 24
+at * hi_y hien_evv_authored_data 25
+at * hi_r hien_evv_authored_data 26
+at * hi_l hien_evv_authored_data 27
+at * hi_v hien_evv_authored_data 28
+at * hi_sh hien_evv_authored_data 29
+at * hi_ssh hien_evv_authored_data 30
+at * hi_s hien_evv_authored_data 31
+at * hi_h hien_evv_authored_data 32
+at * hi_ka hien_evv_authored_data 33
+at * hi_kha hien_evv_authored_data 35
+at * hi_ga hien_evv_authored_data 37
+at * hi_gha hien_evv_authored_data 39
+at * hi_nga hien_evv_authored_data 41
+at * hi_ca hien_evv_authored_data 43
+at * hi_cha hien_evv_authored_data 45
+at * hi_ja hien_evv_authored_data 47
+at * hi_jha hien_evv_authored_data 49
+at * hi_nya hien_evv_authored_data 51
+at * hi_tta hien_evv_authored_data 53
+at * hi_ttha hien_evv_authored_data 55
+at * hi_dda hien_evv_authored_data 57
+at * hi_ddha hien_evv_authored_data 59
+at * hi_nna hien_evv_authored_data 61
+at * hi_ta hien_evv_authored_data 63
+at * hi_tha hien_evv_authored_data 65
+at * hi_da hien_evv_authored_data 67
+at * hi_dha hien_evv_authored_data 69
+at * hi_na hien_evv_authored_data 71
+at * hi_pa hien_evv_authored_data 73
+at * hi_pha hien_evv_authored_data 75
+at * hi_ba hien_evv_authored_data 77
+at * hi_bha hien_evv_authored_data 79
+at * hi_ma hien_evv_authored_data 81
+at * hi_ya hien_evv_authored_data 83
+at * hi_ra hien_evv_authored_data 85
+at * hi_la hien_evv_authored_data 87
+at * hi_va hien_evv_authored_data 89
+at * hi_sha hien_evv_authored_data 91
+at * hi_ssha hien_evv_authored_data 93
+at * hi_sa hien_evv_authored_data 95
+at * hi_ha hien_evv_authored_data 97
+at * hi_a hien_evv_authored_data 99
+at * hi_aa hien_evv_authored_data 100
+at * hi_i hien_evv_authored_data 101
+at * hi_ii hien_evv_authored_data 102
+at * hi_u hien_evv_authored_data 103
+at * hi_uu hien_evv_authored_data 104
+at * hi_ri hien_evv_authored_data 105
+at * hi_e hien_evv_authored_data 107
+at * hi_ai hien_evv_authored_data 108
+at * hi_o hien_evv_authored_data 109
+at * hi_au hien_evv_authored_data 110
+at * hi_anu hien_evv_authored_data 111
+at * hi_visg hien_evv_authored_data 112
+at * hi_virama_char hien_evv_authored_data 113
+at * hi_matra_chars hien_evv_authored_data 114

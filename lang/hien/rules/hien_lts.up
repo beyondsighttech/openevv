@@ -1,0 +1,2502 @@
+# What a Devanagari letter says. Written by tools/hien-letters.py.
+#
+# This is the rule the module exists for. Everything before it -- the alphabet,
+# the code point table, the widened records -- only got the letters to arrive;
+# nothing said what any of them sounds like, so every word came out as the same
+# default noise. This is what turns a letter into a sound.
+#
+# The shape is English's and Italian's, because it is the machine's. A letter
+# rule is handed the two ends of the run of characters it is asked about, and it
+# puts phoneme codes between them: lpta and rpta are those ends and
+# insert_2pt_s fills the range. A rule that reads more than one character moves
+# the right-hand end past the extra ones -- savescptr puts where the scan has
+# got to into the cell -- and answers that position through the second pointer,
+# so the next character read is the one after what this rule consumed.
+#
+# Devanagari is an abugida, which is why every consonant rule has four arms. A
+# consonant is a consonant and the vowel a together: क is `ka' and never `k'.
+# Three things override that -- a virama, a vowel sign, or the end of the word,
+# which in Hindi deletes the inherent a. राम is raam, not raama.
+#
+# The sounds are lang/hien/rules/constants, and eighteen of the letters are
+# pointed at an approximate one: the aspirates say the unaspirated sound and the
+# retroflex series says the dental, because a phoneme code that never existed is
+# invisible to the five hundred places a module tests one by name.
+# lang/hien/hien.repointed records which. Fixing those is a phoneme question and
+# changes the constants file, not this one.
+#
+# DO NOT EDIT. tools/hien-letters.py writes it; edit the shape there and every
+# letter gets the fix at once, which is the point -- the schwa arm was wrong in
+# the first version and one edit fixed all thirty-three.
+
+# ka
+rule hi_letter_dka takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dka_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_k 0
+      if answer is 0
+        go to dka_said
+      end
+    end
+  end
+  backtrack
+
+place dka_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dka_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_k 0
+      if answer is 0
+        go to dka_said
+      end
+    end
+  end
+  backtrack
+
+place dka_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dka_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_k 0
+    if answer is 0
+      go to dka_said
+    end
+  end
+  backtrack
+
+place dka_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ka 0
+  if answer is not 0
+    give up
+  end
+
+place dka_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# kha
+rule hi_letter_dkha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dkha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_kh 0
+      if answer is 0
+        go to dkha_said
+      end
+    end
+  end
+  backtrack
+
+place dkha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dkha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_kh 0
+      if answer is 0
+        go to dkha_said
+      end
+    end
+  end
+  backtrack
+
+place dkha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dkha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_kh 0
+    if answer is 0
+      go to dkha_said
+    end
+  end
+  backtrack
+
+place dkha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_kha 0
+  if answer is not 0
+    give up
+  end
+
+place dkha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ga
+rule hi_letter_dga takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dga_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_g 0
+      if answer is 0
+        go to dga_said
+      end
+    end
+  end
+  backtrack
+
+place dga_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dga_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_g 0
+      if answer is 0
+        go to dga_said
+      end
+    end
+  end
+  backtrack
+
+place dga_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dga_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_g 0
+    if answer is 0
+      go to dga_said
+    end
+  end
+  backtrack
+
+place dga_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ga 0
+  if answer is not 0
+    give up
+  end
+
+place dga_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# gha
+rule hi_letter_dgha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dgha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_gh 0
+      if answer is 0
+        go to dgha_said
+      end
+    end
+  end
+  backtrack
+
+place dgha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dgha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_gh 0
+      if answer is 0
+        go to dgha_said
+      end
+    end
+  end
+  backtrack
+
+place dgha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dgha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_gh 0
+    if answer is 0
+      go to dgha_said
+    end
+  end
+  backtrack
+
+place dgha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_gha 0
+  if answer is not 0
+    give up
+  end
+
+place dgha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# nga
+rule hi_letter_dnga takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dnga_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ng 0
+      if answer is 0
+        go to dnga_said
+      end
+    end
+  end
+  backtrack
+
+place dnga_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dnga_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ng 0
+      if answer is 0
+        go to dnga_said
+      end
+    end
+  end
+  backtrack
+
+place dnga_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dnga_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ng 0
+    if answer is 0
+      go to dnga_said
+    end
+  end
+  backtrack
+
+place dnga_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_nga 0
+  if answer is not 0
+    give up
+  end
+
+place dnga_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ca
+rule hi_letter_dca takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dca_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_c 0
+      if answer is 0
+        go to dca_said
+      end
+    end
+  end
+  backtrack
+
+place dca_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dca_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_c 0
+      if answer is 0
+        go to dca_said
+      end
+    end
+  end
+  backtrack
+
+place dca_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dca_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_c 0
+    if answer is 0
+      go to dca_said
+    end
+  end
+  backtrack
+
+place dca_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ca 0
+  if answer is not 0
+    give up
+  end
+
+place dca_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# cha
+rule hi_letter_dcha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dcha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ch 0
+      if answer is 0
+        go to dcha_said
+      end
+    end
+  end
+  backtrack
+
+place dcha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dcha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ch 0
+      if answer is 0
+        go to dcha_said
+      end
+    end
+  end
+  backtrack
+
+place dcha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dcha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ch 0
+    if answer is 0
+      go to dcha_said
+    end
+  end
+  backtrack
+
+place dcha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_cha 0
+  if answer is not 0
+    give up
+  end
+
+place dcha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ja
+rule hi_letter_dja takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dja_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_j 0
+      if answer is 0
+        go to dja_said
+      end
+    end
+  end
+  backtrack
+
+place dja_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dja_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_j 0
+      if answer is 0
+        go to dja_said
+      end
+    end
+  end
+  backtrack
+
+place dja_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dja_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_j 0
+    if answer is 0
+      go to dja_said
+    end
+  end
+  backtrack
+
+place dja_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ja 0
+  if answer is not 0
+    give up
+  end
+
+place dja_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# jha
+rule hi_letter_djha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test djha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_jh 0
+      if answer is 0
+        go to djha_said
+      end
+    end
+  end
+  backtrack
+
+place djha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test djha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_jh 0
+      if answer is 0
+        go to djha_said
+      end
+    end
+  end
+  backtrack
+
+place djha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test djha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_jh 0
+    if answer is 0
+      go to djha_said
+    end
+  end
+  backtrack
+
+place djha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_jha 0
+  if answer is not 0
+    give up
+  end
+
+place djha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# nya
+rule hi_letter_dnya takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dnya_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ny 0
+      if answer is 0
+        go to dnya_said
+      end
+    end
+  end
+  backtrack
+
+place dnya_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dnya_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ny 0
+      if answer is 0
+        go to dnya_said
+      end
+    end
+  end
+  backtrack
+
+place dnya_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dnya_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ny 0
+    if answer is 0
+      go to dnya_said
+    end
+  end
+  backtrack
+
+place dnya_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_nya 0
+  if answer is not 0
+    give up
+  end
+
+place dnya_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Ta
+rule hi_letter_dTa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dTa_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_tt 0
+      if answer is 0
+        go to dTa_said
+      end
+    end
+  end
+  backtrack
+
+place dTa_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dTa_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_tt 0
+      if answer is 0
+        go to dTa_said
+      end
+    end
+  end
+  backtrack
+
+place dTa_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dTa_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_tt 0
+    if answer is 0
+      go to dTa_said
+    end
+  end
+  backtrack
+
+place dTa_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_tta 0
+  if answer is not 0
+    give up
+  end
+
+place dTa_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Tha
+rule hi_letter_dTha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dTha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_tth 0
+      if answer is 0
+        go to dTha_said
+      end
+    end
+  end
+  backtrack
+
+place dTha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dTha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_tth 0
+      if answer is 0
+        go to dTha_said
+      end
+    end
+  end
+  backtrack
+
+place dTha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dTha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_tth 0
+    if answer is 0
+      go to dTha_said
+    end
+  end
+  backtrack
+
+place dTha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ttha 0
+  if answer is not 0
+    give up
+  end
+
+place dTha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Da
+rule hi_letter_dDa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dDa_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_dd 0
+      if answer is 0
+        go to dDa_said
+      end
+    end
+  end
+  backtrack
+
+place dDa_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dDa_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_dd 0
+      if answer is 0
+        go to dDa_said
+      end
+    end
+  end
+  backtrack
+
+place dDa_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dDa_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_dd 0
+    if answer is 0
+      go to dDa_said
+    end
+  end
+  backtrack
+
+place dDa_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_dda 0
+  if answer is not 0
+    give up
+  end
+
+place dDa_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Dha
+rule hi_letter_dDha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dDha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ddh 0
+      if answer is 0
+        go to dDha_said
+      end
+    end
+  end
+  backtrack
+
+place dDha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dDha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ddh 0
+      if answer is 0
+        go to dDha_said
+      end
+    end
+  end
+  backtrack
+
+place dDha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dDha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ddh 0
+    if answer is 0
+      go to dDha_said
+    end
+  end
+  backtrack
+
+place dDha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ddha 0
+  if answer is not 0
+    give up
+  end
+
+place dDha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Na
+rule hi_letter_dNa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dNa_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_nn 0
+      if answer is 0
+        go to dNa_said
+      end
+    end
+  end
+  backtrack
+
+place dNa_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dNa_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_nn 0
+      if answer is 0
+        go to dNa_said
+      end
+    end
+  end
+  backtrack
+
+place dNa_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dNa_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_nn 0
+    if answer is 0
+      go to dNa_said
+    end
+  end
+  backtrack
+
+place dNa_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_nna 0
+  if answer is not 0
+    give up
+  end
+
+place dNa_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ta
+rule hi_letter_dta takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dta_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_t 0
+      if answer is 0
+        go to dta_said
+      end
+    end
+  end
+  backtrack
+
+place dta_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dta_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_t 0
+      if answer is 0
+        go to dta_said
+      end
+    end
+  end
+  backtrack
+
+place dta_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dta_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_t 0
+    if answer is 0
+      go to dta_said
+    end
+  end
+  backtrack
+
+place dta_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ta 0
+  if answer is not 0
+    give up
+  end
+
+place dta_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# tha
+rule hi_letter_dtha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dtha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_th 0
+      if answer is 0
+        go to dtha_said
+      end
+    end
+  end
+  backtrack
+
+place dtha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dtha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_th 0
+      if answer is 0
+        go to dtha_said
+      end
+    end
+  end
+  backtrack
+
+place dtha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dtha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_th 0
+    if answer is 0
+      go to dtha_said
+    end
+  end
+  backtrack
+
+place dtha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_tha 0
+  if answer is not 0
+    give up
+  end
+
+place dtha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# da
+rule hi_letter_dda takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dda_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_d 0
+      if answer is 0
+        go to dda_said
+      end
+    end
+  end
+  backtrack
+
+place dda_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dda_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_d 0
+      if answer is 0
+        go to dda_said
+      end
+    end
+  end
+  backtrack
+
+place dda_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dda_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_d 0
+    if answer is 0
+      go to dda_said
+    end
+  end
+  backtrack
+
+place dda_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_da 0
+  if answer is not 0
+    give up
+  end
+
+place dda_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# dha
+rule hi_letter_ddha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test ddha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_dh 0
+      if answer is 0
+        go to ddha_said
+      end
+    end
+  end
+  backtrack
+
+place ddha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test ddha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_dh 0
+      if answer is 0
+        go to ddha_said
+      end
+    end
+  end
+  backtrack
+
+place ddha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test ddha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_dh 0
+    if answer is 0
+      go to ddha_said
+    end
+  end
+  backtrack
+
+place ddha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_dha 0
+  if answer is not 0
+    give up
+  end
+
+place ddha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# na
+rule hi_letter_dna takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dna_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_n 0
+      if answer is 0
+        go to dna_said
+      end
+    end
+  end
+  backtrack
+
+place dna_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dna_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_n 0
+      if answer is 0
+        go to dna_said
+      end
+    end
+  end
+  backtrack
+
+place dna_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dna_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_n 0
+    if answer is 0
+      go to dna_said
+    end
+  end
+  backtrack
+
+place dna_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_na 0
+  if answer is not 0
+    give up
+  end
+
+place dna_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# pa
+rule hi_letter_dpa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dpa_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_p 0
+      if answer is 0
+        go to dpa_said
+      end
+    end
+  end
+  backtrack
+
+place dpa_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dpa_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_p 0
+      if answer is 0
+        go to dpa_said
+      end
+    end
+  end
+  backtrack
+
+place dpa_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dpa_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_p 0
+    if answer is 0
+      go to dpa_said
+    end
+  end
+  backtrack
+
+place dpa_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_pa 0
+  if answer is not 0
+    give up
+  end
+
+place dpa_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# pha
+rule hi_letter_dpha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dpha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ph 0
+      if answer is 0
+        go to dpha_said
+      end
+    end
+  end
+  backtrack
+
+place dpha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dpha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ph 0
+      if answer is 0
+        go to dpha_said
+      end
+    end
+  end
+  backtrack
+
+place dpha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dpha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ph 0
+    if answer is 0
+      go to dpha_said
+    end
+  end
+  backtrack
+
+place dpha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_pha 0
+  if answer is not 0
+    give up
+  end
+
+place dpha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ba
+rule hi_letter_dba takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dba_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_b 0
+      if answer is 0
+        go to dba_said
+      end
+    end
+  end
+  backtrack
+
+place dba_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dba_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_b 0
+      if answer is 0
+        go to dba_said
+      end
+    end
+  end
+  backtrack
+
+place dba_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dba_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_b 0
+    if answer is 0
+      go to dba_said
+    end
+  end
+  backtrack
+
+place dba_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ba 0
+  if answer is not 0
+    give up
+  end
+
+place dba_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# bha
+rule hi_letter_dbha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dbha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_bh 0
+      if answer is 0
+        go to dbha_said
+      end
+    end
+  end
+  backtrack
+
+place dbha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dbha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_bh 0
+      if answer is 0
+        go to dbha_said
+      end
+    end
+  end
+  backtrack
+
+place dbha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dbha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_bh 0
+    if answer is 0
+      go to dbha_said
+    end
+  end
+  backtrack
+
+place dbha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_bha 0
+  if answer is not 0
+    give up
+  end
+
+place dbha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ma
+rule hi_letter_dma takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dma_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_m 0
+      if answer is 0
+        go to dma_said
+      end
+    end
+  end
+  backtrack
+
+place dma_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dma_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_m 0
+      if answer is 0
+        go to dma_said
+      end
+    end
+  end
+  backtrack
+
+place dma_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dma_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_m 0
+    if answer is 0
+      go to dma_said
+    end
+  end
+  backtrack
+
+place dma_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ma 0
+  if answer is not 0
+    give up
+  end
+
+place dma_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ya
+rule hi_letter_dya takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dya_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_y 0
+      if answer is 0
+        go to dya_said
+      end
+    end
+  end
+  backtrack
+
+place dya_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dya_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_y 0
+      if answer is 0
+        go to dya_said
+      end
+    end
+  end
+  backtrack
+
+place dya_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dya_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_y 0
+    if answer is 0
+      go to dya_said
+    end
+  end
+  backtrack
+
+place dya_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ya 0
+  if answer is not 0
+    give up
+  end
+
+place dya_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ra
+rule hi_letter_dra takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dra_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_r 0
+      if answer is 0
+        go to dra_said
+      end
+    end
+  end
+  backtrack
+
+place dra_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dra_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_r 0
+      if answer is 0
+        go to dra_said
+      end
+    end
+  end
+  backtrack
+
+place dra_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dra_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_r 0
+    if answer is 0
+      go to dra_said
+    end
+  end
+  backtrack
+
+place dra_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ra 0
+  if answer is not 0
+    give up
+  end
+
+place dra_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# la
+rule hi_letter_dla takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dla_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_l 0
+      if answer is 0
+        go to dla_said
+      end
+    end
+  end
+  backtrack
+
+place dla_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dla_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_l 0
+      if answer is 0
+        go to dla_said
+      end
+    end
+  end
+  backtrack
+
+place dla_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dla_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_l 0
+    if answer is 0
+      go to dla_said
+    end
+  end
+  backtrack
+
+place dla_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_la 0
+  if answer is not 0
+    give up
+  end
+
+place dla_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# va
+rule hi_letter_dva takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dva_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_v 0
+      if answer is 0
+        go to dva_said
+      end
+    end
+  end
+  backtrack
+
+place dva_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dva_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_v 0
+      if answer is 0
+        go to dva_said
+      end
+    end
+  end
+  backtrack
+
+place dva_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dva_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_v 0
+    if answer is 0
+      go to dva_said
+    end
+  end
+  backtrack
+
+place dva_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_va 0
+  if answer is not 0
+    give up
+  end
+
+place dva_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# sha
+rule hi_letter_dsha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dsha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_sh 0
+      if answer is 0
+        go to dsha_said
+      end
+    end
+  end
+  backtrack
+
+place dsha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dsha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_sh 0
+      if answer is 0
+        go to dsha_said
+      end
+    end
+  end
+  backtrack
+
+place dsha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dsha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_sh 0
+    if answer is 0
+      go to dsha_said
+    end
+  end
+  backtrack
+
+place dsha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_sha 0
+  if answer is not 0
+    give up
+  end
+
+place dsha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# Sha
+rule hi_letter_dSha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dSha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ssh 0
+      if answer is 0
+        go to dSha_said
+      end
+    end
+  end
+  backtrack
+
+place dSha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dSha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_ssh 0
+      if answer is 0
+        go to dSha_said
+      end
+    end
+  end
+  backtrack
+
+place dSha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dSha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_ssh 0
+    if answer is 0
+      go to dSha_said
+    end
+  end
+  backtrack
+
+place dSha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ssha 0
+  if answer is not 0
+    give up
+  end
+
+place dSha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# sa
+rule hi_letter_dsa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dsa_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_s 0
+      if answer is 0
+        go to dsa_said
+      end
+    end
+  end
+  backtrack
+
+place dsa_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dsa_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_s 0
+      if answer is 0
+        go to dsa_said
+      end
+    end
+  end
+  backtrack
+
+place dsa_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dsa_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_s 0
+    if answer is 0
+      go to dsa_said
+    end
+  end
+  backtrack
+
+place dsa_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_sa 0
+  if answer is not 0
+    give up
+  end
+
+place dsa_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ha
+rule hi_letter_dha takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+
+  # A virama next? Then no vowel at all, and this is a cluster.
+  plant test dha_sign
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_virama
+    if answer is 0
+      call savescptr 1 addr right
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_h 0
+      if answer is 0
+        go to dha_said
+      end
+    end
+  end
+  backtrack
+
+place dha_sign
+  # A vowel sign next? Then its vowel instead of the inherent a. The sign is
+  # eaten with the consonant, and the sign's own rule lays the vowel down.
+  plant test dha_final
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is 0
+    call hi_is_matra
+    if answer is 0
+      call lpta_rpta_loadp addr left addr right
+      call insert_2pt_s 2 1 sym hi_h 0
+      if answer is 0
+        go to dha_said
+      end
+    end
+  end
+  backtrack
+
+place dha_final
+  # The end of the word? Then the inherent a is not spoken.
+  plant test dha_plain
+  call ZZlpta_load__setscan_nof_r__1 addr right
+  if answer is not 0
+    call lpta_rpta_loadp addr left addr right
+    call insert_2pt_s 2 1 sym hi_h 0
+    if answer is 0
+      go to dha_said
+    end
+  end
+  backtrack
+
+place dha_plain
+  # And otherwise the consonant carries its a, which is every syllable in the
+  # middle of a word.
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ha 0
+  if answer is not 0
+    give up
+  end
+
+place dha_said
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# a
+rule hi_letter_da_ takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_a 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# aa
+rule hi_letter_daa takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_aa 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# i
+rule hi_letter_di takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_i 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ii
+rule hi_letter_dii takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_ii 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# u
+rule hi_letter_du takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_u 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# uu
+rule hi_letter_duu takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_uu 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ri
+rule hi_letter_dri takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 2 sym hi_ri 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# e
+rule hi_letter_de takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_e 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ai
+rule hi_letter_dai takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_ai 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# o
+rule hi_letter_do takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_o 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# au
+rule hi_letter_dau takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_au 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# anusvara
+rule hi_letter_danu takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_anu 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# visarga
+rule hi_letter_dvisarga takes 3 from hien_lts.obj
+  local left bytes 8
+  local right bytes 8
+  call ZZget_parm_ptr2 addr left arg 1 addr right arg 2
+  call ZZfence_null
+  call lpta_rpta_loadp addr left addr right
+  call insert_2pt_s 2 1 sym hi_visg 0
+  if answer is not 0
+    give up
+  end
+  call succeed
+  put cell right value into arg 2 at 4
+  answer 0
+end
+
+# ---------------------------------------------------------------------------
+# Is the character the scan is on a virama, or a vowel sign?
+#
+# Both are one test against one character code, and both are asked by every
+# consonant rule, so they are rules of their own rather than thirty-three
+# copies. `bare' because they stand where a wrapper stands: the choice points
+# around the call belong to the rule that planted them, and a succeed here
+# would commit them.
+rule hi_is_virama takes 1 from hien_lts.obj
+  bare
+  call ZZtest_string_s_1_1_hi_virama_char
+  answer answer
+end
+
+rule hi_is_matra takes 1 from hien_lts.obj
+  bare
+  call ZZtest_string_s_1_1_hi_matra_chars
+  answer answer
+end

@@ -1,0 +1,134 @@
+# The phoneme strings Hindi's letter rules lay down, which no lifter writes:
+# these are ours.
+#
+# A letter rule does not name a sound by name -- it names a string of phoneme
+# codes by address, and the address is a symbol the emitter numbers. So every
+# sound a Devanagari letter can say has to be a line here first.
+#
+# The codes are the phone statement's own alphabet, and hien inherited
+# English's, which tools/lang-phonemes.py prints. In hex, the ones this file
+# uses:
+#
+#   07 k   08 g   04 t   03 d   02 p   01 b   14 m   15 n
+#   0e s   10 S   13 h   18 r   19 l   1a y   0b v   12 C   11 J
+#   16 G   0c f
+#   2c a   2a Aa  1c i   1d I   2d u   2e U   1e e   1f E   2f o   33 O
+#
+# Devanagari is an abugida: a consonant carries the vowel a unless something
+# says otherwise. That is why nearly every consonant needs two strings -- one
+# bare, for when a virama or the end of a word kills the a, and one with the a
+# on the end. The vowel signs need one string each per consonant they follow,
+# which would be thirty-three times ten, so the rule lays the consonant and the
+# vowel down as two inserts instead and only the single sounds are here.
+#
+# Eighteen of the letters are pointed at an approximate sound, which
+# lang/hien/hien.repointed records: the aspirates say the unaspirated sound and
+# the retroflex series says the dental, because a phoneme code that has never
+# existed is invisible to the five hundred places a module tests one by name.
+# Adding those codes is the next piece of work and it is a phoneme question,
+# not a rules one -- these strings change when the codes exist, and nothing
+# else does.
+
+# ---- the consonants, bare: what a virama or the end of a word leaves --------
+bytes hi_k     07          # क  ka
+bytes hi_kh    07          # ख  kha, wants an aspirated k
+bytes hi_g     08          # ग  ga
+bytes hi_gh    08          # घ  gha, wants a breathy g
+bytes hi_ng    16          # ङ  nga
+bytes hi_c     12          # च  ca
+bytes hi_ch    12          # छ  cha, wants an aspirated ch
+bytes hi_j     11          # ज  ja
+bytes hi_jh    11          # झ  jha, wants a breathy j
+bytes hi_ny    15          # ञ  nya, wants a palatal n
+bytes hi_tt    04          # ट  Ta, wants a retroflex t
+bytes hi_tth   04          # ठ  Tha
+bytes hi_dd    03          # ड  Da, wants a retroflex d
+bytes hi_ddh   03          # ढ  Dha
+bytes hi_nn    15          # ण  Na, wants a retroflex n
+bytes hi_t     04          # त  ta
+bytes hi_th    04          # थ  tha, wants an aspirated t
+bytes hi_d     03          # द  da
+bytes hi_dh    03          # ध  dha, wants a breathy d
+bytes hi_n     15          # न  na
+bytes hi_p     02          # प  pa
+bytes hi_ph    0c          # फ  pha, f in modern Hindi
+bytes hi_b     01          # ब  ba
+bytes hi_bh    01          # भ  bha, wants a breathy b
+bytes hi_m     14          # म  ma
+bytes hi_y     1a          # य  ya
+bytes hi_r     18          # र  ra
+bytes hi_l     19          # ल  la
+bytes hi_v     0b          # व  va
+bytes hi_sh    10          # श  sha
+bytes hi_ssh   10          # ष  Sha, wants a retroflex sh
+bytes hi_s     0e          # स  sa
+bytes hi_h     13          # ह  ha
+
+# ---- the consonants carrying their own a -----------------------------------
+# The ordinary case: every syllable in the middle of a word takes one of these.
+bytes hi_ka    07 2c
+bytes hi_kha   07 2c
+bytes hi_ga    08 2c
+bytes hi_gha   08 2c
+bytes hi_nga   16 2c
+bytes hi_ca    12 2c
+bytes hi_cha   12 2c
+bytes hi_ja    11 2c
+bytes hi_jha   11 2c
+bytes hi_nya   15 2c
+bytes hi_tta   04 2c
+bytes hi_ttha  04 2c
+bytes hi_dda   03 2c
+bytes hi_ddha  03 2c
+bytes hi_nna   15 2c
+bytes hi_ta    04 2c
+bytes hi_tha   04 2c
+bytes hi_da    03 2c
+bytes hi_dha   03 2c
+bytes hi_na    15 2c
+bytes hi_pa    02 2c
+bytes hi_pha   0c 2c
+bytes hi_ba    01 2c
+bytes hi_bha   01 2c
+bytes hi_ma    14 2c
+bytes hi_ya    1a 2c
+bytes hi_ra    18 2c
+bytes hi_la    19 2c
+bytes hi_va    0b 2c
+bytes hi_sha   10 2c
+bytes hi_ssha  10 2c
+bytes hi_sa    0e 2c
+bytes hi_ha    13 2c
+
+# ---- the vowels, independent and as signs ----------------------------------
+# One string each, and the sign and the letter say the same sound: का is the
+# consonant's own string and then this, which is why there are ten of these
+# rather than three hundred and thirty.
+bytes hi_a     2c          # अ  ा
+bytes hi_aa    2a          # आ  ा
+bytes hi_i     1c          # इ  ि
+bytes hi_ii    1d          # ई  ी
+bytes hi_u     2d          # उ  ु
+bytes hi_uu    2e          # ऊ  ू
+bytes hi_ri    18 1c       # ऋ  ृ  ri, the vocalic r: r then i
+bytes hi_e     1e          # ए  े
+bytes hi_ai    1f          # ऐ  ै
+bytes hi_o     2f          # ओ  ो
+bytes hi_au    33          # औ  ौ
+
+# ---- the signs -------------------------------------------------------------
+bytes hi_anu   15          # ं  nasalises the vowel before it; says n for now
+bytes hi_visg  13          # ः  says h
+
+# ---- what the consonant rules test the next character against --------------
+# One code each, in the input alphabet rather than the phoneme one: these are
+# characters being read, not sounds being said. The bytes are the ones
+# lang/hien/hien.codepoints gives each character, and they are not chosen --
+# tools/hien-devanagari.py takes them in order from the slots that were free, so
+# these two lines are read off that file rather than decided here. Change the
+# alphabet and these change with it.
+bytes hi_virama_char  cc         # ्  the vowel-killer, U+094D
+# Every vowel sign as one string, so a consonant asks whether what follows is
+# any of them in one call rather than ten. Unicode order, which is the order
+# hien.codepoints lists them: aa i ii u uu ri e ai o au.
+bytes hi_matra_chars  bf c0 c1 c2 c3 c4 c5 c6 c7 c8
