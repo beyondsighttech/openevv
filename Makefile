@@ -576,3 +576,12 @@ nvda: win win32
 nvda-test:
 	@python3 nvda/test/sequence.py
 	@python3 nvda/test/engine.py
+
+# And the one that wants a real library: it loads the eci.dll out of a packed
+# add-on the way the driver does and speaks Devanagari through it. That is the
+# only check that says the add-on a person would install actually carries
+# Hindi -- a library built without lang/hien passes everything above. Windows
+# only, since it loads a PE with ctypes; `make nvda' first.
+.PHONY: nvda-hindi
+nvda-hindi:
+	@python3 nvda/test/addon-hindi.py

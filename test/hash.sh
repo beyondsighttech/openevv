@@ -22,6 +22,11 @@ text="The quick brown fox jumps over the lazy dog."
 [ -x "$bin" ] || { echo "hash: no binary at $bin" >&2; exit 2; }
 
 out=$(mktemp) || exit 1
+# A native Windows exe cannot open an MSYS /tmp path, which mktemp hands
+# back as text; translate it so the child opens the file the shell checks.
+case $(uname -s 2>/dev/null) in
+MINGW*|MSYS*|CYGWIN*) out=$(cygpath -m "$out") ;;
+esac
 trap 'rm -f "$out"' EXIT
 
 # A Windows binary runs itself on Windows and wants Wine in front of it

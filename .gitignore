@@ -11,3 +11,12 @@ __pycache__/
 # tools/delta-decompile.py, and rewritten whole by every change to that tool.
 # `make rules' makes it.
 lang/*/delta_rules_c_*.c
+
+# Local Windows toolchain (WinLibs mingw-w64 gcc), not part of the project.
+.toolchain/
+.venv/
+
+# Wave files written into the working tree while listening to something.
+# The ones that are evidence live in test/, under a name and a hash.
+/*.wav
+.freebuff/

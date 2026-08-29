@@ -32,6 +32,8 @@ The compiler. The rules are readable C, but there is no way to write a new rule 
 
 Polish, which is the reason the compiler matters. Nothing started.
 
+Hindi is started, and is the first module written rather than lifted; its section below says how far, and the short answer is that three files of it are Hindi's own and the rest is English wearing another name.
+
 Japanese, which is the one language still not built. Everything else in the SDK now is.
 
 ## German
@@ -81,6 +83,32 @@ Four things had to be fixed to get there, and every one of them was ours rather 
 One thing about the case files is worth knowing. The engine is a single-byte engine, so the `utf8` cases really test that both sides mangle multi-byte input the same way rather than that either handles it. For Spanish that is not merely mangled: an o-acute directly before an n crashes IBM's engine and ours identically, at the same fault address, so `razón` cannot be compared at all and the case file avoids it. The same text in Latin-1 speaks perfectly.
 
 Not done for any of the five: no dictionary a person can edit, and no thirty-two bit or Windows build.
+
+## Hindi
+
+Hindi is `lang/hien`, language number 0x90000, and it is the first module in the project not lifted out of anything: IBM never shipped an Indic language, so there is no object behind it and no oracle to hold it against. That changes what "works" can mean here, and the honest statement is narrow.
+
+**What is proved.** It builds beside English -- `--langs enus,hien` -- and speaks Devanagari UTF-8 through the narrow path, byte-wise, without the Unicode bit its language number does not carry. Both languages come out of one library byte for byte identical to what each says on its own: `test/langs.py build/eci.dll` on 28 August 2026, 38,423 samples for English and 199,925 for Hindi, each matching its solo run. It also builds alone -- `--langs hien` -- and `build/probe-hien.exe` gives the same samples as the two-language binary, to the hash. English is untouched: `test/hash.sh build/evv-enus-hien.exe` still gives the canonical hash. Three fixed cases are held against `test/hien.sha256` by `test/hien-hash.sh`, `test/hien-differs.sh` says the language asked for is the one that ran, and `test/hien-sabotage.sh` breaks a rule on purpose and proves the harness fails.
+
+**What is not proved, and cannot be.** That any of it is *right*. `test/suite.sh` has nothing to compare against, so no byte comparison exists and none can be written. `hien-hash.sh` says unchanged, not correct; a person listening is the only judge there is, which is a weaker standard than every other language in this tree is held to.
+
+**How much of Hindi exists: three files.** The tree was seeded from `lang/enus` and is being written over one file at a time, so counting files in `lang/hien/rules` counts English. What is actually Hindi's own, as of 28 August 2026:
+
+- `hien_lts.dr`, the hand-written rule, one rule -- `hi_lang_globals`, reached from `e_vars.dr`.
+- `e_vars.dr`, three lines: two inline stores replaced by the call to it.
+- `es_val.dr`, four lines: the segment durations of one rule, 1800/1800/2700/2700 where English says 1500/1500/2550/2550.
+
+Everything else -- the letter-to-sound rules, the tokenizer, the syllabifier, the whole of `ut_*` and `et_*` -- is English's, unchanged. There is no Devanagari-aware anything yet: no matra handling, no conjunct handling, no schwa deletion. The `matra` and `utf8` cases speak, and what they speak is English's rules applied to bytes they were never written for.
+
+**And the hand-written rule is inert, which was measured rather than assumed.** It writes two globals, 4130 = 1 and 4134 = 3. 4130 is what English writes there too. Nothing in any of the nine languages' rules reads 4134 at all. So put `es_val.dr`'s four durations back to English's numbers and the two languages speak byte-identical samples with `hi_lang_globals` still in place and still running. What the rule proves is structural and worth having -- a rule written by a person, in the same notation as the lifted ones, regenerates byte for byte through `tools/hien-regen.py`, links, is called, and runs -- but every audible difference between Hindi and English today is those four duration numbers. The head of `hien_lts.dr` says so.
+
+That is also what made the first sabotage attempt useless and is the lesson worth carrying: pointed at 4134, `hien-sabotage.sh` reported that `hien-hash.sh` passed a deliberately broken rule, because a value nothing reads cannot change the samples. A sabotage target has to be a number something downstream reads.
+
+**Two traps in the harness, both paid for.** `cli/probe.c` pumps the engine's queue at most 3000 times at 10 ms and then writes whatever it has, so an utterance longer than about thirty seconds is truncated at a length that follows the machine's mood -- which reads exactly like nondeterministic rules. The first Hindi cases were four lines each and did that: hashes moved every run, and shrinking them to one line made them reproduce to the byte. `test/hien-timing.sh` is what tells the two apart. And `probe` and `evv` do not produce the same samples for the same text on the same tree -- `probe` walks a few more API entries first, `et_insertIndex` among them -- so English must be checked with `test/hash.sh build/evv-enus-hien.exe`; holding `probe` against `test/samples.sha256` reports English as broken on a tree with nothing wrong with it.
+
+**Not done.** Everything that makes it Hindi. The letter-to-sound rules are the next piece of work and the reason `hien_lts.dr` exists as a place to put them; after that, matras, conjuncts, schwa deletion, a dictionary, and the phoneme set the settings blob still inherits from English -- `eci_ini_hien.c` is `enus`'s blob with the section renamed `[9.0]`, which is why the voice presets and the dataset paths still say `En_US`.
+
+
 
 ## Japanese
 

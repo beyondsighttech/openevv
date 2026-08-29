@@ -136,6 +136,9 @@ LOCALES = {
 	0x40000: "de_DE",
 	0x50000: "it_IT",
 	0x80000: "ja_JP",
+	# Not IBM's: Hindi is this project's own module and IBM never gave it a
+	# number. docs/status.md says how far it gets, and it is early.
+	0x90000: "hi_IN",
 }
 
 #: And what to call it in a list of voices. NVDA shows the voice's name, so
@@ -151,6 +154,7 @@ LANGUAGE_NAMES = {
 	0x40000: "German",
 	0x50000: "Italian",
 	0x80000: "Japanese",
+	0x90000: "Hindi",
 }
 
 

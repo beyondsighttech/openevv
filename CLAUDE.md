@@ -8,13 +8,17 @@ Nothing works until `test/suite.sh` says so. It speaks each case through our eng
 
 Six builds have to pass, not one: `probe`, `probe32` and `probe.exe`, each with `RULES=bytecode` and `RULES=c`. C is the default as of 22 August 2026, so it is the interpreter that goes untested unless `RULES=bytecode` is what was built -- the opposite of the trap this warned about before. The Windows one is `EVV_NATIVE=$PWD/build/probe.exe test/suite.sh`, which runs it under the same Wine as the reference.
 
-`test/hash.sh` is the quick one, and the only check that wants neither Wine nor IBM's objects. It proves the samples unchanged, not right.
+`test/hash.sh` is the quick one, and the only check that wants neither Wine nor IBM's objects. It proves the samples unchanged, not right. It belongs to `evv`: `cli/probe.c` walks a few more of the API before it speaks -- `et_insertIndex` among them -- so `test/hash.sh build/probe*.exe` reports English as broken on a tree with nothing wrong with it.
+
+A language with no oracle behind it cannot be held to any of the above, and Hindi is the first: `lang/hien` has no IBM object and no reference binary, so `test/suite.sh` has nothing to compare against. `test/hien-hash.sh`, `test/hien-differs.sh` and `test/hien-sabotage.sh` are what stand in, and together they say unchanged and self-consistent rather than right. `test/hien-bless.sh` is what records new hashes, deliberately separate so that checking can never re-record what it found. `docs/status.md` says how narrow that makes the claim, and how much of `lang/hien` is still English's rules under another name.
 
 The library has its own two: `test/dll.c` loads `eci.dll` by name and speaks, and `test/dll.py` does it through ctypes. `make win32` builds the thirty-two bit library, which is where a wrong signature shows up -- stdcall carries the argument size in the decorated name on x86, so a declaration that disagrees with the engine fails to link there and links silently on x86-64.
 
 A pass proves nothing until the new code is shown to be the code that ran. Break the function on purpose, rebuild, check the audio changes, then put it back. That has caught two functions that were never reached at all. When a sabotage changes nothing, ask whether the harness can observe that function at all before concluding the code is dead.
 
-Rebuild both sides before believing a difference. A stale binary reads as a bug, and a single difference on a long sentence that does not reproduce is a timeout.
+And choose what to break by whether anything reads it. A sabotage of a value nothing consumes reports a pass however broken the code is: breaking the intonation global at offset 4134 in `lang/hien` changed the bytecode and the binary and not one sample, because no rule in any of the nine languages ever reads 4134. Grep for a reader -- `load movw statefld <offset>` -- before trusting the result. The duration fields have many; 4134 has none.
+
+Rebuild both sides before believing a difference. A stale binary reads as a bug, and a single difference on a long sentence that does not reproduce is a timeout. The timeout is concrete: `cli/probe.c` asks whether the engine is still speaking at most 3000 times at 10 ms and then writes whatever it has, so an utterance past about thirty seconds comes out truncated at whatever length the machine's mood allowed. Three runs giving three lengths is that, not nondeterministic rules. Keep a fixed case to one short line, and `test/hien-timing.sh` is what tells the two apart.
 
 `make missing` has to keep answering zero. A name that reappears there is a call that has quietly gone back to IBM's objects.
 
@@ -22,7 +26,9 @@ German has its own cases and its own oracle: `EVV_LANG=dede test/suite.sh`, agai
 
 A build with two languages in it proves something a build with one cannot: that nothing has quietly stayed global. `test/langs.py build/eci.dll` is the cheap form of that -- every language spoken from one process, each held against what it says alone -- and it needs neither Wine nor IBM's objects. If a change makes only one language's suite pass, the language in force is being read from the wrong place.
 
-A change made for German is not finished until the English suite has been run again. The two share every line of `src` and every tool in `tools`: the dictionary table German crashed on had been wrong on sixty-four bits all along, and the lift that German needed changed two places in the English bytecode as well.
+On a Windows host without the Makefile, `tools/build-zig.py --langs enus,hien dll` is what writes that library, and it must link `-static`: otherwise it imports `libgcc_s_seh-1.dll` and `libwinpthread-1.dll` and ctypes reports the library itself as not found, which is the loader failing on an import rather than a missing file.
+
+A change made for German is not finished until the English suite has been run again. The two share every line of `src` and every tool in `tools`: the dictionary table German crashed on had been wrong on sixty-four bits all along, and the lift that German needed changed two places in the English bytecode as well. The same holds for Hindi, and there `test/hash.sh build/evv-enus-hien.exe` is the whole of the English check available without Wine.
 
 A marker case that differs once and not again is IBM's binary being unsteady, not a change in ours. Run it again, and if in doubt hash both sides over several runs -- it is the reference that varies.
 
@@ -34,7 +40,9 @@ File names in `src` are the names of IBM's objects. A file named for the object 
 
 `lang/enus` is transcribed data, not code to improve. It is what the engine sounds like. `tools/delta-sets.py` puts IBM's own dictionary tables back and loses anything added through `tools/delta-dict.py`, so do not run it to "regenerate" that file.
 
-The audio is identical to IBM's by design. If it sounds wrong, that is Eloquence sounding like Eloquence, not a fault to fix.
+`lang/hien` is the opposite case and wants the opposite care: nothing in it is transcribed, so there is no original to be faithful to and no oracle to catch a mistake. It was seeded from `lang/enus`, which means counting its files counts English -- compare a `.dr` against `lang/enus/rules/` of the same name before believing anything in it is Hindi's. `tools/hien-regen.py` writes its three generated rule files out of the text; run it with `--write` after editing a rule and then without, to see that the result is stable.
+
+The audio is identical to IBM's by design. If it sounds wrong, that is Eloquence sounding like Eloquence, not a fault to fix. Hindi is the one exception, and only because there is no IBM Hindi to be identical to: there, wrong-sounding audio is a fault, and a person listening is the only judge of it that exists.
 
 Never hand the machine an address in the program. A value is thirty-two bits, and the program may be loaded anywhere -- it has to be, or there could be no library. Anything the machine can be given the address of is copied into the arena at startup by `src/delta_low.c` and translated at the crossing; a pointer in the program that is in none of the registered stores aborts with a message. If a new table is ever handed over, register it there rather than linking the program low again.
 

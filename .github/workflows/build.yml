@@ -85,13 +85,20 @@ jobs:
 
       # And all of them in one binary, each still speaking: this is what says
       # nothing in the engine has quietly stayed global.
+      #
+      # hien is in the list because a language that only ever builds alone
+      # proves the least interesting half of that. Its hashes are not checked
+      # here: test/hien.sha256 was recorded from a Windows probe, and whether
+      # those samples are reproducible across hosts has not been measured, so
+      # asserting it in CI would be asserting something unproved. What is
+      # asserted is that it speaks.
       - name: Speak every language out of one binary
         run: |
           set -eu
-          all=$(printf 'lang/%s ' enus dede engb eses esus frfr frca itit)
+          all=$(printf 'lang/%s ' enus dede engb eses esus frfr frca itit hien)
           make -j"$(nproc)" probe RULES=bytecode LANGS="$all"
-          b=build/probe-enus-dede-engb-eses-esus-frfr-frca-itit
-          for id in 0x10000 0x10001 0x20000 0x20001 0x30000 0x30001 0x40000 0x50000; do
+          b=build/probe-enus-dede-engb-eses-esus-frfr-frca-itit-hien
+          for id in 0x10000 0x10001 0x20000 0x20001 0x30000 0x30001 0x40000 0x50000 0x90000; do
             EVV_LANGUAGE=$id "$b" "The quick brown fox." "/tmp/one-$id.wav"
             test -s "/tmp/one-$id.wav"
           done

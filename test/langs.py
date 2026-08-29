@@ -44,6 +44,7 @@ SAY = {
     0x30001: "Le rapide renard brun saute par-dessus le chien paresseux.",
     0x40000: "Der schnelle braune Fuchs springt ueber den faulen Hund.",
     0x50000: "La rapida volpe marrone salta sopra il cane pigro.",
+    0x90000: "नमस्ते दुनिया.",
 }
 FALLBACK = SAY[0x10000]
 
@@ -64,6 +65,23 @@ def declare(dll):
     dll.eciSpeaking.argtypes = [ctypes.c_void_p]
     dll.eciDelete.restype = ctypes.c_void_p
     dll.eciDelete.argtypes = [ctypes.c_void_p]
+
+
+def encode(text):
+    """The bytes the engine is handed.
+
+    eciAddText takes bytes, not characters, and which bytes depends on the
+    language: the codepage ones want the machine's, and a language whose id
+    carries 0x800 -- Hindi's 0x90000 does not, Japanese's 0x80800 does --
+    wants its own. Hindi goes through the narrow path as UTF-8 because its
+    tokenizer reads Devanagari byte-wise, so text that mbcs cannot spell is
+    sent as UTF-8 rather than refused. Latin-1 text encodes the same either
+    way, so nothing that worked before moves.
+    """
+    try:
+        return text.encode("mbcs")
+    except UnicodeEncodeError:
+        return text.encode("utf-8")
 
 
 class Voice:
@@ -96,7 +114,7 @@ class Voice:
             raise SystemExit("langs.py: 0x%x refused a sample buffer" % lang)
 
     def speak(self, text):
-        if not self.dll.eciAddText(self.h, text.encode("mbcs")):
+        if not self.dll.eciAddText(self.h, encode(text)):
             raise SystemExit("langs.py: 0x%x refused the text" % self.lang)
         if not self.dll.eciSynthesize(self.h):
             raise SystemExit("langs.py: 0x%x refused to speak" % self.lang)

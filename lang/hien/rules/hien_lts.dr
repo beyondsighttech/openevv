@@ -1,0 +1,83 @@
+# The rules of hien_lts.obj -- Hindi, hand-written.
+#
+# Everything else in this tree came out of IBM's objects through
+# tools/delta-notation.py. This file did not: it is the first rule in the
+# project written by a person rather than lifted, and it is written in the
+# same notation for the same reason the lifted files are -- one operation to
+# a line, the machine's own registers and argument stack, nothing carried by
+# indentation. docs/building.md says what each verb means.
+#
+# `from hien_lts.obj' names an object that does not exist. The emitter reads
+# the name only to group the constants a rule addresses by symbol, and this
+# rule addresses none, so nothing looks for the file. That is deliberate: a
+# new symbol would go into the language's shared symbol pool and move every
+# address after it, which lang/hien/rules/symbols records by position.
+#
+# What it does: puts two numbers into the language's global variables before
+# anything is spoken, standing where enus writes them inline. Devanagari is
+# written without case, so the machine's letter-case variable is of no use and
+# is left at nought.
+#
+# What it does NOT do, and this is worth saying plainly rather than leaving to
+# be discovered: neither number changes what comes out. 4130 gets 1, which is
+# what enus writes there too, and 4134 gets 3 where enus writes 2 -- and
+# nothing in any of the nine languages' rules ever reads 4134. Grep it. So
+# this rule is structural: it proves that a rule written by a person lifts,
+# links, is reached from e_vars and runs, and it is where Hindi's globals will
+# go. It is not yet why Hindi sounds different from English. That is entirely
+# the four duration numbers in es_val.dr, and it was measured rather than
+# assumed -- put those four back to English's values and the two languages
+# speak byte-identical samples with this rule still in place.
+#
+# 4130 next door does have a reader, insert_dict_root in et_morph.dr, which is
+# where a Hindi value that reaches something would start.
+
+rule hi_lang_globals from hien_lts.obj
+shape frame 196 argbase 8 params 1
+label L0 was _hi_lang_globals
+  alu andl imm 0 slot -4
+  load movl slotaddr -104 into r0
+  push imm 0
+  push slotaddr -104
+  call setjmp3 arity 2 depth 2
+  cmp testl reg r0 reg r0
+  load movl state 0 into r6
+  popreg r1
+  popreg r1
+  branch jne to L1
+  load movl slotaddr -104 into r0
+  push slotaddr -104
+  load movl slotaddr -40 into r0
+  push slotaddr -40
+  load movl slotaddr -28 into r0
+  push slotaddr -28
+  load movl slotaddr -16 into r0
+  push slotaddr -16
+  load movl slotaddr -196 into r0
+  push slotaddr -196
+  push state 0
+  call ventproc arity 6 depth 6
+  popn 6
+  cmp testl reg r0 reg r0
+  branch je to L2
+label L1 was at_fail
+  push imm 94
+  push reg r6
+  call vretproc arity 2 depth 2
+  popreg r1
+  popreg r1
+  load movl imm 94 into r0
+  jump to L3
+label L2 was at_body
+  push reg r6
+  call ZZfence_null arity 1 depth 1
+  push reg r6
+  store movw imm 1 ind reg r6 4130
+  store movw imm 3 ind reg r6 4134
+  call succeed arity 1 depth 2
+  popreg r1
+  popreg r1
+  load movl imm 0 into r0
+label L3 was at_done
+  return reg r0
+end

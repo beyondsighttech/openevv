@@ -1,0 +1,86 @@
+WHAT IS ACTUALLY DONE - Hindi in openevv
+=========================================
+
+Plain language. Newest entry at the top. Only real things, with proof.
+
+
+28 Aug 2026 - Found out WHY Hindi sounds like gibberish
+-------------------------------------------------------
+You were right that it speaks nonsense. I measured the cause.
+
+The word नमस्ते is 6 letters, but in the computer it is 18 bytes.
+The engine reads ONE BYTE AT A TIME. It has no idea that 3 bytes
+belong together as one letter. So it sees 18 pieces of junk and
+reads out all 18.
+
+Proof:
+  नमस्ते through Hindi        = 94,974 samples (8.6 seconds!)
+  same bytes through English  = 94,974 samples (exactly the same length)
+  "namaste" in plain letters  = 11,484 samples (1 second, sounds fine)
+
+Both languages take the same time, which proves neither understands
+Devanagari - they are both just spelling out garbage.
+
+Good news in that last line: typing "namaste" in normal letters
+already speaks properly. So the engine's mouth works. What is
+missing is only the part that turns Devanagari into sounds.
+
+DECISION: you chose to do this properly, not with a shortcut.
+
+
+28 Aug 2026 - Hindi now shows up in the NVDA add-on
+----------------------------------------------------
+Before: the add-on did not know Hindi existed at all. It would have
+shown a number instead of a name, and NVDA could never pick it
+automatically for Hindi text.
+
+Done: added Hindi to the driver's two lists (name "Hindi", locale
+"hi_IN"). Made a checker, "make nvda-hindi", that opens the real
+packed add-on, loads the real engine out of it, and proves Hindi is
+in there and is a different voice from English.
+
+It said:
+  0x10000  US English  en_US
+  0x90000  Hindi       hi_IN
+  Hindi and English differ on the same text, as they must
+  every check passed
+
+Also: your computer can only build 64-bit, and the add-on normally
+needs both 32 and 64. Added "--only 64" so you can build and try it
+anyway. That version works in your NVDA but must not be shared.
+
+
+27-28 Aug 2026 - Made the Hindi tests trustworthy
+--------------------------------------------------
+A test that always passes is worthless. So I broke Hindi on purpose
+and checked the tests noticed. First attempt: tests PASSED even
+though Hindi was broken - because I broke a number nothing reads.
+Fixed the test to break a number that matters. Now breaking Hindi
+correctly fails all three tests, and English stays fine.
+
+Also fixed: the Hindi test hashes kept changing every run, which
+looked like a bug in the rules. It was not. Long sentences get cut
+off after 30 seconds by the test program, at a random point. Made
+the test sentences short. Now they are identical every time.
+
+
+Earlier - Hindi exists as a module and speaks
+----------------------------------------------
+lang/hien is in the tree, language number 0x90000. It builds, alone
+and beside English. English is completely unharmed (checked). Both
+languages can run in one program without interfering.
+
+BUT, honestly: only 3 files of it are really Hindi. Everything else
+is a copy of English. And one of those 3 files does nothing at all
+(I tested it - it writes a number nothing ever reads). So the only
+real difference between Hindi and English today is four timing
+numbers that make it slightly slower.
+
+
+NEXT: the real work
+--------------------
+Write the rules that turn Devanagari letters into Hindi sounds.
+This is the days-long job. Steps, roughly:
+  1. teach it that 3 bytes = 1 Devanagari letter
+  2. map each consonant and vowel mark to a sound
+  3. handle joined letters (क्ष, त्र) and the silent-a rule

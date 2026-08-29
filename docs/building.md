@@ -219,11 +219,37 @@ A binary with several languages in it is driven the same way, with `EVV_NATIVE` 
 
 Eight of the SDK's nine languages pass the cases there are for them, each against a reference built from its own objects: US and British English, German, both Spanishes, both Frenches and Italian. `docs/status.md` says in which configurations, and why Japanese is the ninth.
 
-The language numbers `compare.sh` knows are IBM's own: 0x10000 and 0x10001 for the two Englishes, 0x20000 and 0x20001 for the Spanishes, 0x30000 and 0x30001 for the Frenches, 0x40000 for German, 0x50000 for Italian. A language added to the tree adds a line to that table.
+The language numbers `compare.sh` knows are IBM's own: 0x10000 and 0x10001 for the two Englishes, 0x20000 and 0x20001 for the Spanishes, 0x30000 and 0x30001 for the Frenches, 0x40000 for German, 0x50000 for Italian. A language added to the tree adds a line to that table. 0x90000 is Hindi's and is not IBM's, since IBM never gave Hindi one; the section below says what testing that language means instead.
 
 One thing about the `utf8` cases is worth knowing before reading too much into them. The engine takes one byte at a time, so what those cases really check is that both sides mangle multi-byte text the same way, not that either handles it. For Spanish that is not merely mangled: an o-acute directly before an n faults IBM's engine and ours identically, so `razón` in UTF-8 cannot be compared and the Spanish case files avoid the sequence. The same word in Latin-1 speaks perfectly, which is the answer for a caller that wants accents.
 
 Everything a language module holds is named for that module, and the build takes whatever `.c` and `.h` files are in one. A file left behind by an earlier lift, or copied in from another language, would otherwise be compiled in without a word, which is how `lang/dede` carried an unprefixed rule shim into every German binary for a day: its names collided with nothing, so the linker had nothing to say. The build now refuses a module holding a file that is not named for it, and says which file.
+
+## Testing a language with no oracle
+
+Hindi has no objects behind it and so no reference binary, which takes `test/suite.sh` away entirely: there is nothing to compare against and no amount of care makes one. What replaces it is four scripts under `test/`, and it is worth being clear that together they are weaker than a byte comparison, not equal to one.
+
+    test/hien-hash.sh          three fixed cases against test/hien.sha256
+    test/hien-differs.sh       Hindi and English out of one binary, and not equal
+    test/hien-sabotage.sh      break a rule on purpose; the tests must fail
+    test/hien-bless.sh         record new hashes, after listening
+
+`hien-hash.sh` says unchanged rather than right, the way `test/hash.sh` does for English, and that is all it can say. `hien-bless.sh` is deliberately a separate script: a check that re-recorded whatever it found would never fail, so recording is never a side effect of checking. It speaks each case twice and refuses to record one whose two runs disagree.
+
+`hien-sabotage.sh` is the one that gives the others their weight, and CLAUDE.md asks for it before any claim that a module works. It turns one duration in `lang/hien/rules/es_val.dr` from 1800 into 1200, regenerates, rebuilds, and requires `hien-hash.sh` to fail and English to stay put; then it restores the tree and requires the hashes to come back. Two things it teaches, both of which cost a session to learn.
+
+**A sabotage target has to be a number something reads.** The first version broke the intonation global in `hien_lts.dr`, offset 4134 -- and `hien-hash.sh` passed a deliberately broken rule, because nothing in any of the nine languages' rules reads 4134. The bytecode changed, the binary changed, the samples did not. A value nothing consumes cannot be a test of anything.
+
+**`probe` and `evv` do not agree, and English must be checked with `evv`.** `cli/probe.c` walks a few more of the API before it speaks -- `et_insertIndex` among them -- so its samples for the canonical English sentence differ from `evv`'s on a tree with nothing wrong with it. `test/hash.sh build/probe-enus-hien.exe` therefore reports English as broken every time, which looked for a while like Hindi's rules reaching into English's. `test/hash.sh build/evv-enus-hien.exe` is the check.
+
+And a trap that belongs to the cases rather than the scripts. `probe` pumps the engine's message queue at most 3000 times at 10 ms and then writes whatever it has, so an utterance past about thirty seconds is truncated wherever the pumping ran out -- at a different length on a busier machine. The first Hindi cases were four lines each and did exactly that: three runs, three lengths, three hashes, which reads as nondeterministic rules and is not. `test/hien-timing.sh` speaks a short case and a longer one twice each and prints lengths and hashes; a case whose two runs agree is inside the cap. Keep the cases short.
+
+`tools/build-zig.py` also takes `dll` as a target now, for `test/langs.py`, which wants a library rather than an exe:
+
+    EVV_CC=".../gcc.exe" python tools/build-zig.py --langs enus,hien dll
+    python test/langs.py build/eci.dll
+
+It writes `build/eci.dll` under that name whatever languages are in it -- a caller loads it by name and nothing else -- so a build with more overwrites the one before, and `langs.py` wants the one with more. It links `-static`: without that the library imports `libgcc_s_seh-1.dll` and `libwinpthread-1.dll`, and ctypes then reports the library itself as not found rather than naming the import it could not resolve. `langs.py` also sends text the machine's codepage cannot spell as UTF-8 rather than refusing it, which is what lets it speak Devanagari through the narrow path.
 
 ## Running
 
@@ -278,6 +304,50 @@ That builds both libraries and packs `build/openevv-<version>.nvda-addon`,
 which is the engine as a synthesiser for NVDA. `nvda` is the whole of it:
 `addon/synthDrivers/openevv.py` is what the reader talks to, and
 `_openevv.py` beside it is the library, the thread that owns it and the audio.
+
+`make nvda` wants a cross toolchain that can build both bitnesses. On a
+machine that has only one -- this tree's Windows setup has a sixty-four bit
+mingw and nothing that makes a thirty-two bit object -- `nvda/build.py
+--only 64` packs the one library there is, as
+`openevv-<version>-64only.nvda-addon`. That add-on works in a sixty-four bit
+reader and fails in a thirty-two bit one, so it is for trying something and
+never for shipping; the script says so as it writes it.
+
+#### Is Hindi actually in there?
+
+The two checks under `nvda/test` stand NVDA in and never load a real library,
+so neither can tell an add-on carrying Hindi from one that does not.
+`make nvda-hindi` is the one that can:
+
+    make nvda            # or nvda/build.py --only 64
+    make nvda-hindi
+
+It takes the newest `.nvda-addon` in `build`, unpacks the `eci.dll` out of it,
+loads that with `ctypes.WinDLL` exactly as the driver does, and then asks three
+things. Whether `eciGetAvailableLanguages` lists 0x90000 at all -- if the
+library was built without `lang/hien` it will not, and every other check still
+passes. Whether the driver calls that number `hi_IN`, because NVDA matches a
+document's language to a voice by locale and a voice with none can be chosen
+but never chosen automatically. And whether Hindi and English, given the same
+Devanagari sentence, produce different samples -- equal samples mean the
+language asked for is not the language that ran, which is the fault worth
+finding. It prints the sample count and a hash per language and says which of
+the three failed.
+
+On 28 August 2026 it passes against a `--only 64` add-on: two languages listed,
+`0x10000 US English en_US` and `0x90000 Hindi hi_IN`, 106,843 samples each on
+`नमस्ते।` and different hashes.
+
+What it does not tell you is whether the Hindi sounds like Hindi. Nothing can:
+there is no oracle, so `docs/status.md` is the honest account and a person
+listening is the only judge. As of now the answer is that it will not, because
+`lang/hien` still has English's letter-to-sound rules in it.
+
+To hear it in the reader itself, install the add-on the ordinary way -- NVDA
+menu, Tools, Add-on store, Install from external source -- then choose
+openevv as the synthesiser and pick the voice whose name begins "Hindi". The
+eight presets per language repeat their names, which is why the language is in
+the voice name.
 
 It loads the engine into the reader's own process, which is why both libraries
 are in the archive and the driver picks one by the bitness of the Python it

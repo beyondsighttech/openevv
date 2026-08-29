@@ -12,7 +12,13 @@ misspelling or an entry point that was never wrapped shows up as speech simply
 not happening, in a screen reader, with the log the only way to find out why.
 Here it is a message before anything is shipped.
 
-usage: build.py [--version V] [--tested V] [--out DIR]
+usage: build.py [--version V] [--tested V] [--out DIR] [--only 64|32]
+
+`--only' packs one bitness, for trying a build on a machine that has no
+cross toolchain -- this tree's Windows setup has a sixty-four bit mingw and
+nothing that can make a thirty-two bit object. The add-on it writes works in
+a reader of that bitness and fails in the other, so it is for testing and
+not for shipping, and it says so on the way out.
 """
 
 import argparse
@@ -156,11 +162,20 @@ def main():
     ap.add_argument("--version")
     ap.add_argument("--tested", default=DEFAULT_TESTED)
     ap.add_argument("--out", default=os.path.join(ROOT, "build"))
+    ap.add_argument("--only", choices=["64", "32"],
+                    help="pack one bitness only; for testing, not shipping")
     args = ap.parse_args()
 
     version = args.version or described()
 
-    for path, _name in LIBRARIES:
+    libraries = LIBRARIES
+    if args.only:
+        want = "eci.dll" if args.only == "64" else "eci32.dll"
+        libraries = [(p, n) for p, n in LIBRARIES if n == want]
+        say("packing %s only -- this add-on will not load in a %s-bit reader"
+            % (want, "32" if args.only == "64" else "64"))
+
+    for path, _name in libraries:
         if not os.path.isfile(path):
             die(
                 "there is no %s; `make win' and `make win32' build both"
@@ -170,7 +185,7 @@ def main():
     wants = wanted_names()
     if not wants:
         die("the engine layer names no entry points, which cannot be right")
-    for path, name in LIBRARIES:
+    for path, name in libraries:
         has = exported_names(path)
         missing = sorted(wants - has)
         if missing:
@@ -184,13 +199,15 @@ def main():
     manifest = manifest.replace("@VERSION@", version).replace("@TESTED@", args.tested)
 
     os.makedirs(args.out, exist_ok=True)
-    target = os.path.join(args.out, "openevv-%s.nvda-addon" % version)
+    suffix = "" if not args.only else "-%sonly" % args.only
+    target = os.path.join(args.out,
+                          "openevv-%s%s.nvda-addon" % (version, suffix))
 
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("manifest.ini", manifest)
         for leaf in ("openevv.py", "_openevv.py"):
             z.write(os.path.join(ADDON, "synthDrivers", leaf), "synthDrivers/" + leaf)
-        for path, name in LIBRARIES:
+        for path, name in libraries:
             z.write(path, ENGINE_DIR + "/" + name)
 
     say("wrote %s, %d bytes" % (target, os.path.getsize(target)))
