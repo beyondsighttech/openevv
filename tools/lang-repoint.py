@@ -21,6 +21,7 @@ refuses a target outside it.
 
     lang-repoint.py show <tag>              which slots are takeable
     lang-repoint.py take <tag> <byte> <name> <field>=<value>...
+    lang-repoint.py mend <tag>              undo every rename, keep the records
 
 `take' renames one slot and rewrites its record. The byte is in hex and has to
 be one `show' listed. The name is what the rules will call it, which for a
@@ -153,7 +154,19 @@ def take(tag, byte, newname, args):
     new = bytearray(variants)
     new[code * 5:code * 5 + 5] = record
 
-    lines[line_at] = "    value %s" % newname
+    # The name is left exactly as it was, and this is the whole subtlety of
+    # the file. A slot's name is not a label: it is what an arriving byte is
+    # matched against. The reader turns each input byte into a one-character
+    # string and walks the names with strcmp until one is equal -- that search
+    # IS the byte-to-code mapping, there is no other table -- so a slot named
+    # `dka' answers to no byte at all, and every Devanagari character was read,
+    # matched against nothing, reported and dropped. Three different words came
+    # out as the same silence.
+    #
+    # So what changes here is the record only, and the transliteration goes in
+    # the note below for the tools and for a person reading. What a rule names
+    # is a constant holding the slot's code, not its spelling, so nothing in
+    # the rules wants the name.
 
     body = []
     for at in range(0, len(new), 32):
@@ -201,9 +214,52 @@ def take(tag, byte, newname, args):
     return True
 
 
+def mend(tag):
+    """Put the original character back as the name of every repointed slot.
+
+    Written because renaming was wrong and the tree already holds the renames.
+    A slot's name is what an arriving byte is matched against -- see the note
+    in `take' -- so a slot named `dka' answers to no byte and its letter is
+    read, matched against nothing, reported and dropped. The records stay as
+    they are: those are the part of a repoint that was always right.
+    """
+    lines, _f, _t, names, _v, _var, _at = read(tag)
+    note = os.path.join(ROOT, "lang", tag, "%s.repointed" % tag)
+    if not os.path.exists(note):
+        print("lang-repoint: %s has no repointed slots" % tag)
+        return True
+
+    want = {}
+    for line in open(note, encoding="utf-8"):
+        line = line.split("#")[0].strip()
+        if line:
+            w = line.split()
+            want[w[1]] = int(w[0], 16)
+
+    mended = 0
+    for code, (line_at, n) in enumerate(names):
+        if n in want:
+            ch = bytes([want[n]]).decode("latin-1")
+            lines[line_at] = "    value %s" % ch
+            mended += 1
+            print("  code %d: %r is %r again, the byte %02x"
+                  % (code, n, ch, want[n]))
+
+    if not mended:
+        print("lang-repoint: %s's slots already say their own bytes" % tag)
+        return True
+
+    open(path_of(tag), "w", encoding="utf-8").write("\n".join(lines))
+    print("%s: %d slots say their own byte again; the records are untouched"
+          % (tag, mended))
+    return True
+
+
 def main(argv):
     if len(argv) >= 2 and argv[0] == "show":
         return 0 if show(argv[1]) else 1
+    if len(argv) == 2 and argv[0] == "mend":
+        return 0 if mend(argv[1]) else 1
     if len(argv) >= 4 and argv[0] == "take":
         return 0 if take(argv[1], argv[2], argv[3], argv[4:]) else 1
     raise SystemExit(__doc__.strip())

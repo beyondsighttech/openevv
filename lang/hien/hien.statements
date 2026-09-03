@@ -183,9 +183,9 @@ statement inp
     value ì
     value ò
     value ù
-    value dmi
-    value dmau
-    value dvirama
+    value À
+    value È
+    value Ì
     value Ò
     value Ù
     value á
@@ -193,9 +193,9 @@ statement inp
     value í
     value ó
     value ú
-    value dmii
-    value danu
-    value ddanda
+    value Á
+    value É
+    value Í
     value Ó
     value Ú
     value â
@@ -203,91 +203,91 @@ statement inp
     value î
     value ô
     value û
-    value dmu
-    value dcandra
+    value Â
+    value Ê
     value Î
     value Ô
     value Û
     value ã
     value õ
-    value dmuu
+    value Ã
     value Õ
     value ä
     value ë
     value ï
     value ö
     value ü
-    value dmri
-    value dvisarga
+    value Ä
+    value Ë
     value Ï
     value Ö
     value Ü
     value å
-    value dme
+    value Å
     value æ
-    value dmai
-    value dkha
-    value dii
+    value Æ
+    value 
+    value 
     value ø
     value Ø
     value ý
     value Ý
     value ç
-    value dmo
+    value Ç
     value ð
     value Ð
     value ñ
     value Ñ
-    value dka
-    value di
+    value 
+    value 
     value ß
     value þ
     value Þ
-    value da_
-    value dnga
-    value dca
-    value dja
+    value 
+    value ¢
+    value £
+    value ¥
     value 
-    value du
-    value duu
-    value dgha
-    value dmaa
-    value dDha
-    value dsha
-    value de
-    value dai
-    value dSha
-    value dsa
-    value dha
+    value 
+    value 
+    value ¡
+    value ¿
+    value «
+    value »
+    value 
+    value 
+    value ¼
+    value ½
+    value ¾
     value ÷
     value ×
-    value dna
-    value ddha
-    value dya
-    value dla
-    value dpa
-    value dpha
-    value dDa
-    value dva
-    value do
-    value dTa
-    value dba
-    value dra
-    value daa
-    value dri
-    value dau
-    value dga
+    value ±
+    value °
+    value ·
+    value ¹
+    value ²
+    value ³
+    value ª
+    value º
+    value 
+    value ¨
+    value ´
+    value ¸
+    value 
+    value 
+    value 
+    value 
     value  
-    value dcha
-    value djha
-    value dnya
-    value dTha
-    value dNa
-    value dta
-    value dtha
-    value dda
-    value dbha
-    value dma
+    value ¤
+    value ¦
+    value §
+    value ©
+    value ¬
+    value ­
+    value ®
+    value ¯
+    value µ
+    value ¶
     end
   field letcase
     where 0 0 1

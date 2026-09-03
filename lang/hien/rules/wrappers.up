@@ -4100,3 +4100,408 @@ wrapper ZZtest_synch9_ZZstring468 takes 1
   test_synch 9 1 ZZstring468
 wrapper ZZtest_synch9_ZZstring501 takes 1
   test_synch 9 1 ZZstring501
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_k takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_k 0
+wrapper ZZtest_string_s_1_1_hi_k takes 1
+  test_string_s 1 1 hi_k
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_kh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_kh 0
+wrapper ZZtest_string_s_1_1_hi_kh takes 1
+  test_string_s 1 1 hi_kh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_g takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_g 0
+wrapper ZZtest_string_s_1_1_hi_g takes 1
+  test_string_s 1 1 hi_g
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_gh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_gh 0
+wrapper ZZtest_string_s_1_1_hi_gh takes 1
+  test_string_s 1 1 hi_gh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ng takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ng 0
+wrapper ZZtest_string_s_1_1_hi_ng takes 1
+  test_string_s 1 1 hi_ng
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_c takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_c 0
+wrapper ZZtest_string_s_1_1_hi_c takes 1
+  test_string_s 1 1 hi_c
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ch takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ch 0
+wrapper ZZtest_string_s_1_1_hi_ch takes 1
+  test_string_s 1 1 hi_ch
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_j takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_j 0
+wrapper ZZtest_string_s_1_1_hi_j takes 1
+  test_string_s 1 1 hi_j
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_jh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_jh 0
+wrapper ZZtest_string_s_1_1_hi_jh takes 1
+  test_string_s 1 1 hi_jh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ny takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ny 0
+wrapper ZZtest_string_s_1_1_hi_ny takes 1
+  test_string_s 1 1 hi_ny
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_tt takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_tt 0
+wrapper ZZtest_string_s_1_1_hi_tt takes 1
+  test_string_s 1 1 hi_tt
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_tth takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_tth 0
+wrapper ZZtest_string_s_1_1_hi_tth takes 1
+  test_string_s 1 1 hi_tth
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_dd takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_dd 0
+wrapper ZZtest_string_s_1_1_hi_dd takes 1
+  test_string_s 1 1 hi_dd
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ddh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ddh 0
+wrapper ZZtest_string_s_1_1_hi_ddh takes 1
+  test_string_s 1 1 hi_ddh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_nn takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_nn 0
+wrapper ZZtest_string_s_1_1_hi_nn takes 1
+  test_string_s 1 1 hi_nn
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_t takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_t 0
+wrapper ZZtest_string_s_1_1_hi_t takes 1
+  test_string_s 1 1 hi_t
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_th takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_th 0
+wrapper ZZtest_string_s_1_1_hi_th takes 1
+  test_string_s 1 1 hi_th
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_d takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_d 0
+wrapper ZZtest_string_s_1_1_hi_d takes 1
+  test_string_s 1 1 hi_d
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_dh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_dh 0
+wrapper ZZtest_string_s_1_1_hi_dh takes 1
+  test_string_s 1 1 hi_dh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_n takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_n 0
+wrapper ZZtest_string_s_1_1_hi_n takes 1
+  test_string_s 1 1 hi_n
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_p takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_p 0
+wrapper ZZtest_string_s_1_1_hi_p takes 1
+  test_string_s 1 1 hi_p
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ph takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ph 0
+wrapper ZZtest_string_s_1_1_hi_ph takes 1
+  test_string_s 1 1 hi_ph
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_b takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_b 0
+wrapper ZZtest_string_s_1_1_hi_b takes 1
+  test_string_s 1 1 hi_b
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_bh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_bh 0
+wrapper ZZtest_string_s_1_1_hi_bh takes 1
+  test_string_s 1 1 hi_bh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_m takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_m 0
+wrapper ZZtest_string_s_1_1_hi_m takes 1
+  test_string_s 1 1 hi_m
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_y takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_y 0
+wrapper ZZtest_string_s_1_1_hi_y takes 1
+  test_string_s 1 1 hi_y
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_r takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_r 0
+wrapper ZZtest_string_s_1_1_hi_r takes 1
+  test_string_s 1 1 hi_r
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_l takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_l 0
+wrapper ZZtest_string_s_1_1_hi_l takes 1
+  test_string_s 1 1 hi_l
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_v takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_v 0
+wrapper ZZtest_string_s_1_1_hi_v takes 1
+  test_string_s 1 1 hi_v
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_sh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_sh 0
+wrapper ZZtest_string_s_1_1_hi_sh takes 1
+  test_string_s 1 1 hi_sh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ssh takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ssh 0
+wrapper ZZtest_string_s_1_1_hi_ssh takes 1
+  test_string_s 1 1 hi_ssh
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_s takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_s 0
+wrapper ZZtest_string_s_1_1_hi_s takes 1
+  test_string_s 1 1 hi_s
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_h takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_h 0
+wrapper ZZtest_string_s_1_1_hi_h takes 1
+  test_string_s 1 1 hi_h
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ka takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ka 0
+wrapper ZZtest_string_s_1_1_hi_ka takes 1
+  test_string_s 1 1 hi_ka
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_kha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_kha 0
+wrapper ZZtest_string_s_1_1_hi_kha takes 1
+  test_string_s 1 1 hi_kha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ga takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ga 0
+wrapper ZZtest_string_s_1_1_hi_ga takes 1
+  test_string_s 1 1 hi_ga
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_gha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_gha 0
+wrapper ZZtest_string_s_1_1_hi_gha takes 1
+  test_string_s 1 1 hi_gha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_nga takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_nga 0
+wrapper ZZtest_string_s_1_1_hi_nga takes 1
+  test_string_s 1 1 hi_nga
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ca takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ca 0
+wrapper ZZtest_string_s_1_1_hi_ca takes 1
+  test_string_s 1 1 hi_ca
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_cha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_cha 0
+wrapper ZZtest_string_s_1_1_hi_cha takes 1
+  test_string_s 1 1 hi_cha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ja takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ja 0
+wrapper ZZtest_string_s_1_1_hi_ja takes 1
+  test_string_s 1 1 hi_ja
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_jha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_jha 0
+wrapper ZZtest_string_s_1_1_hi_jha takes 1
+  test_string_s 1 1 hi_jha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_nya takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_nya 0
+wrapper ZZtest_string_s_1_1_hi_nya takes 1
+  test_string_s 1 1 hi_nya
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_tta takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_tta 0
+wrapper ZZtest_string_s_1_1_hi_tta takes 1
+  test_string_s 1 1 hi_tta
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ttha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ttha 0
+wrapper ZZtest_string_s_1_1_hi_ttha takes 1
+  test_string_s 1 1 hi_ttha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_dda takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_dda 0
+wrapper ZZtest_string_s_1_1_hi_dda takes 1
+  test_string_s 1 1 hi_dda
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ddha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ddha 0
+wrapper ZZtest_string_s_1_1_hi_ddha takes 1
+  test_string_s 1 1 hi_ddha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_nna takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_nna 0
+wrapper ZZtest_string_s_1_1_hi_nna takes 1
+  test_string_s 1 1 hi_nna
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ta takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ta 0
+wrapper ZZtest_string_s_1_1_hi_ta takes 1
+  test_string_s 1 1 hi_ta
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_tha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_tha 0
+wrapper ZZtest_string_s_1_1_hi_tha takes 1
+  test_string_s 1 1 hi_tha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_da takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_da 0
+wrapper ZZtest_string_s_1_1_hi_da takes 1
+  test_string_s 1 1 hi_da
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_dha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_dha 0
+wrapper ZZtest_string_s_1_1_hi_dha takes 1
+  test_string_s 1 1 hi_dha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_na takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_na 0
+wrapper ZZtest_string_s_1_1_hi_na takes 1
+  test_string_s 1 1 hi_na
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_pa takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_pa 0
+wrapper ZZtest_string_s_1_1_hi_pa takes 1
+  test_string_s 1 1 hi_pa
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_pha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_pha 0
+wrapper ZZtest_string_s_1_1_hi_pha takes 1
+  test_string_s 1 1 hi_pha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ba takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ba 0
+wrapper ZZtest_string_s_1_1_hi_ba takes 1
+  test_string_s 1 1 hi_ba
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_bha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_bha 0
+wrapper ZZtest_string_s_1_1_hi_bha takes 1
+  test_string_s 1 1 hi_bha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ma takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ma 0
+wrapper ZZtest_string_s_1_1_hi_ma takes 1
+  test_string_s 1 1 hi_ma
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ya takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ya 0
+wrapper ZZtest_string_s_1_1_hi_ya takes 1
+  test_string_s 1 1 hi_ya
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ra takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ra 0
+wrapper ZZtest_string_s_1_1_hi_ra takes 1
+  test_string_s 1 1 hi_ra
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_la takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_la 0
+wrapper ZZtest_string_s_1_1_hi_la takes 1
+  test_string_s 1 1 hi_la
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_va takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_va 0
+wrapper ZZtest_string_s_1_1_hi_va takes 1
+  test_string_s 1 1 hi_va
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_sha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_sha 0
+wrapper ZZtest_string_s_1_1_hi_sha takes 1
+  test_string_s 1 1 hi_sha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ssha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ssha 0
+wrapper ZZtest_string_s_1_1_hi_ssha takes 1
+  test_string_s 1 1 hi_ssha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_sa takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_sa 0
+wrapper ZZtest_string_s_1_1_hi_sa takes 1
+  test_string_s 1 1 hi_sa
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ha takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ha 0
+wrapper ZZtest_string_s_1_1_hi_ha takes 1
+  test_string_s 1 1 hi_ha
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_a takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_a 0
+wrapper ZZtest_string_s_1_1_hi_a takes 1
+  test_string_s 1 1 hi_a
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_aa takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_aa 0
+wrapper ZZtest_string_s_1_1_hi_aa takes 1
+  test_string_s 1 1 hi_aa
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_i takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_i 0
+wrapper ZZtest_string_s_1_1_hi_i takes 1
+  test_string_s 1 1 hi_i
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ii takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ii 0
+wrapper ZZtest_string_s_1_1_hi_ii takes 1
+  test_string_s 1 1 hi_ii
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_u takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_u 0
+wrapper ZZtest_string_s_1_1_hi_u takes 1
+  test_string_s 1 1 hi_u
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_uu takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_uu 0
+wrapper ZZtest_string_s_1_1_hi_uu takes 1
+  test_string_s 1 1 hi_uu
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ri takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ri 0
+wrapper ZZtest_string_s_1_1_hi_ri takes 1
+  test_string_s 1 1 hi_ri
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_e takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_e 0
+wrapper ZZtest_string_s_1_1_hi_e takes 1
+  test_string_s 1 1 hi_e
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_ai takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_ai 0
+wrapper ZZtest_string_s_1_1_hi_ai takes 1
+  test_string_s 1 1 hi_ai
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_o takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_o 0
+wrapper ZZtest_string_s_1_1_hi_o takes 1
+  test_string_s 1 1 hi_o
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_au takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_au 0
+wrapper ZZtest_string_s_1_1_hi_au takes 1
+  test_string_s 1 1 hi_au
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_anu takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_anu 0
+wrapper ZZtest_string_s_1_1_hi_anu takes 1
+  test_string_s 1 1 hi_anu
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_visg takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_visg 0
+wrapper ZZtest_string_s_1_1_hi_visg takes 1
+  test_string_s 1 1 hi_visg
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_virama_char takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_virama_char 0
+wrapper ZZtest_string_s_1_1_hi_virama_char takes 1
+  test_string_s 1 1 hi_virama_char
+wrapper ZZlprp_load__insert_2pt_s_2_1_hi_matra_chars takes 3 answering truth
+  lpta_rpta_loadp arg 1 arg 2
+  insert_2pt_s 2 1 hi_matra_chars 0
+wrapper ZZtest_string_s_1_1_hi_matra_chars takes 1
+  test_string_s 1 1 hi_matra_chars

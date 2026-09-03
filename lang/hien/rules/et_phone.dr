@@ -26877,6 +26877,6750 @@ label L14 was $X12$99755
   popreg r1
   popreg r1
 label L15 was $X10$99757
+# ---------------------------------------------------------------------------
+# Devanagari's arms in the chain, written by tools/hien-arms.py. Everything
+# from here to L503 is Hindi's; do not edit it by hand.
+#
+# These sit at the head of L15's body rather than in front of the label,
+# because the letter loop is re-entered through the backtrack switch and that
+# switch names L15: anything above the label runs once and is stepped over on
+# every pass after the first.
+#
+# Each arm is the shape of an English arm with the backtrack tag left out: set
+# the scan from the left-hand end, ask whether what is there is this character
+# or this pair of them, and if it is, put the phonemes between the two ends and
+# go to the matched join. An arm that does not match falls into the next, and
+# the last falls into L503, which is English's own body -- so English is
+# untouched either way.
+#
+# The order is the whole of the Devanagari in here. A consonant carries the
+# vowel a unless something takes it away, so the pairs that take it away are
+# asked first: consonant-then-virama says the bare consonant, consonant-then-
+# vowel-sign says the bare consonant and that sign's vowel, and a consonant
+# that matched neither says its inherent a. test_string_s walks one character
+# per byte of the string, which is what makes a two-character test possible;
+# English's own `th' arm is the same shape.
+label L83 was hi_arm_dka_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L84
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_k arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L84 was hi_arm_dkha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L85
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_kh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L85 was hi_arm_dga_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L86
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_g arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L86 was hi_arm_dgha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L87
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_gh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L87 was hi_arm_dnga_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L88
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ng arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L88 was hi_arm_dca_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L89
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_c arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L89 was hi_arm_dcha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L90
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ch arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L90 was hi_arm_dja_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L91
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_j arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L91 was hi_arm_djha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L92
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_jh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L92 was hi_arm_dnya_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L93
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ny arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L93 was hi_arm_dTa_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L94
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_tt arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L94 was hi_arm_dTha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L95
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_tth arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L95 was hi_arm_dDa_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L96
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_dd arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L96 was hi_arm_dDha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L97
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ddh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L97 was hi_arm_dNa_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L98
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_nn arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L98 was hi_arm_dta_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L99
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_t arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L99 was hi_arm_dtha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L100
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_th arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L100 was hi_arm_dda_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L101
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_d arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L101 was hi_arm_ddha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L102
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_dh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L102 was hi_arm_dna_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L103
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_n arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L103 was hi_arm_dpa_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L104
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_p arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L104 was hi_arm_dpha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L105
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ph arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L105 was hi_arm_dba_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L106
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_b arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L106 was hi_arm_dbha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L107
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_bh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L107 was hi_arm_dma_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L108
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_m arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L108 was hi_arm_dya_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L109
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_y arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L109 was hi_arm_dra_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L110
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_r arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L110 was hi_arm_dla_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L111
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_l arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L111 was hi_arm_dva_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L112
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_v arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L112 was hi_arm_dsha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L113
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_sh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L113 was hi_arm_dSha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L114
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ssh arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L114 was hi_arm_dsa_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L115
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_s arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L115 was hi_arm_dha_virama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_virama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L116
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_h arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L116 was hi_arm_dka_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L117
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L117 was hi_arm_dka_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L118
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L118 was hi_arm_dka_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L119
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L119 was hi_arm_dka_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L120
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L120 was hi_arm_dka_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L121
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L121 was hi_arm_dka_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L122
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_k_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L122 was hi_arm_dka_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L123
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L123 was hi_arm_dka_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L124
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L124 was hi_arm_dka_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L125
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L125 was hi_arm_dka_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dka_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L126
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_k_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L126 was hi_arm_dkha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L127
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L127 was hi_arm_dkha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L128
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L128 was hi_arm_dkha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L129
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L129 was hi_arm_dkha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L130
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L130 was hi_arm_dkha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L131
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L131 was hi_arm_dkha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L132
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_kh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L132 was hi_arm_dkha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L133
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L133 was hi_arm_dkha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L134
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L134 was hi_arm_dkha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L135
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L135 was hi_arm_dkha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dkha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L136
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L136 was hi_arm_dga_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L137
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L137 was hi_arm_dga_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L138
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L138 was hi_arm_dga_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L139
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L139 was hi_arm_dga_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L140
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L140 was hi_arm_dga_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L141
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L141 was hi_arm_dga_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L142
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_g_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L142 was hi_arm_dga_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L143
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L143 was hi_arm_dga_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L144
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L144 was hi_arm_dga_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L145
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L145 was hi_arm_dga_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dga_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L146
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_g_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L146 was hi_arm_dgha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L147
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L147 was hi_arm_dgha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L148
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L148 was hi_arm_dgha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L149
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L149 was hi_arm_dgha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L150
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L150 was hi_arm_dgha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L151
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L151 was hi_arm_dgha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L152
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_gh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L152 was hi_arm_dgha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L153
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L153 was hi_arm_dgha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L154
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L154 was hi_arm_dgha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L155
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L155 was hi_arm_dgha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dgha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L156
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L156 was hi_arm_dnga_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L157
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L157 was hi_arm_dnga_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L158
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L158 was hi_arm_dnga_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L159
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L159 was hi_arm_dnga_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L160
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L160 was hi_arm_dnga_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L161
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L161 was hi_arm_dnga_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L162
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ng_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L162 was hi_arm_dnga_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L163
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L163 was hi_arm_dnga_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L164
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L164 was hi_arm_dnga_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L165
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L165 was hi_arm_dnga_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnga_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L166
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ng_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L166 was hi_arm_dca_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L167
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L167 was hi_arm_dca_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L168
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L168 was hi_arm_dca_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L169
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L169 was hi_arm_dca_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L170
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L170 was hi_arm_dca_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L171
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L171 was hi_arm_dca_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L172
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_c_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L172 was hi_arm_dca_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L173
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L173 was hi_arm_dca_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L174
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L174 was hi_arm_dca_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L175
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L175 was hi_arm_dca_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dca_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L176
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_c_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L176 was hi_arm_dcha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L177
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L177 was hi_arm_dcha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L178
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L178 was hi_arm_dcha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L179
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L179 was hi_arm_dcha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L180
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L180 was hi_arm_dcha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L181
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L181 was hi_arm_dcha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L182
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ch_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L182 was hi_arm_dcha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L183
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L183 was hi_arm_dcha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L184
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L184 was hi_arm_dcha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L185
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L185 was hi_arm_dcha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dcha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L186
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ch_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L186 was hi_arm_dja_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L187
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L187 was hi_arm_dja_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L188
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L188 was hi_arm_dja_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L189
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L189 was hi_arm_dja_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L190
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L190 was hi_arm_dja_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L191
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L191 was hi_arm_dja_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L192
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_j_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L192 was hi_arm_dja_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L193
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L193 was hi_arm_dja_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L194
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L194 was hi_arm_dja_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L195
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L195 was hi_arm_dja_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dja_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L196
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_j_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L196 was hi_arm_djha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L197
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L197 was hi_arm_djha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L198
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L198 was hi_arm_djha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L199
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L199 was hi_arm_djha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L200
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L200 was hi_arm_djha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L201
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L201 was hi_arm_djha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L202
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_jh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L202 was hi_arm_djha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L203
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L203 was hi_arm_djha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L204
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L204 was hi_arm_djha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L205
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L205 was hi_arm_djha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_djha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L206
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L206 was hi_arm_dnya_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L207
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L207 was hi_arm_dnya_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L208
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L208 was hi_arm_dnya_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L209
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L209 was hi_arm_dnya_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L210
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L210 was hi_arm_dnya_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L211
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L211 was hi_arm_dnya_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L212
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ny_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L212 was hi_arm_dnya_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L213
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L213 was hi_arm_dnya_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L214
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L214 was hi_arm_dnya_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L215
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L215 was hi_arm_dnya_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dnya_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L216
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ny_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L216 was hi_arm_dTa_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L217
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L217 was hi_arm_dTa_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L218
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L218 was hi_arm_dTa_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L219
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L219 was hi_arm_dTa_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L220
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L220 was hi_arm_dTa_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L221
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L221 was hi_arm_dTa_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L222
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_tt_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L222 was hi_arm_dTa_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L223
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L223 was hi_arm_dTa_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L224
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L224 was hi_arm_dTa_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L225
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L225 was hi_arm_dTa_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTa_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L226
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tt_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L226 was hi_arm_dTha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L227
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L227 was hi_arm_dTha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L228
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L228 was hi_arm_dTha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L229
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L229 was hi_arm_dTha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L230
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L230 was hi_arm_dTha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L231
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L231 was hi_arm_dTha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L232
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_tth_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L232 was hi_arm_dTha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L233
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L233 was hi_arm_dTha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L234
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L234 was hi_arm_dTha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L235
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L235 was hi_arm_dTha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dTha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L236
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tth_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L236 was hi_arm_dDa_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L237
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L237 was hi_arm_dDa_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L238
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L238 was hi_arm_dDa_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L239
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L239 was hi_arm_dDa_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L240
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L240 was hi_arm_dDa_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L241
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L241 was hi_arm_dDa_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L242
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_dd_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L242 was hi_arm_dDa_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L243
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L243 was hi_arm_dDa_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L244
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L244 was hi_arm_dDa_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L245
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L245 was hi_arm_dDa_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDa_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L246
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dd_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L246 was hi_arm_dDha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L247
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L247 was hi_arm_dDha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L248
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L248 was hi_arm_dDha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L249
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L249 was hi_arm_dDha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L250
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L250 was hi_arm_dDha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L251
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L251 was hi_arm_dDha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L252
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ddh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L252 was hi_arm_dDha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L253
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L253 was hi_arm_dDha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L254
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L254 was hi_arm_dDha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L255
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L255 was hi_arm_dDha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dDha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L256
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L256 was hi_arm_dNa_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L257
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L257 was hi_arm_dNa_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L258
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L258 was hi_arm_dNa_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L259
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L259 was hi_arm_dNa_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L260
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L260 was hi_arm_dNa_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L261
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L261 was hi_arm_dNa_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L262
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_nn_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L262 was hi_arm_dNa_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L263
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L263 was hi_arm_dNa_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L264
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L264 was hi_arm_dNa_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L265
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L265 was hi_arm_dNa_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dNa_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L266
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nn_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L266 was hi_arm_dta_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L267
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L267 was hi_arm_dta_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L268
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L268 was hi_arm_dta_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L269
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L269 was hi_arm_dta_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L270
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L270 was hi_arm_dta_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L271
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L271 was hi_arm_dta_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L272
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_t_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L272 was hi_arm_dta_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L273
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L273 was hi_arm_dta_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L274
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L274 was hi_arm_dta_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L275
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L275 was hi_arm_dta_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dta_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L276
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_t_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L276 was hi_arm_dtha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L277
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L277 was hi_arm_dtha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L278
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L278 was hi_arm_dtha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L279
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L279 was hi_arm_dtha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L280
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L280 was hi_arm_dtha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L281
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L281 was hi_arm_dtha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L282
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_th_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L282 was hi_arm_dtha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L283
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L283 was hi_arm_dtha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L284
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L284 was hi_arm_dtha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L285
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L285 was hi_arm_dtha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dtha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L286
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_th_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L286 was hi_arm_dda_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L287
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L287 was hi_arm_dda_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L288
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L288 was hi_arm_dda_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L289
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L289 was hi_arm_dda_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L290
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L290 was hi_arm_dda_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L291
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L291 was hi_arm_dda_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L292
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_d_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L292 was hi_arm_dda_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L293
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L293 was hi_arm_dda_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L294
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L294 was hi_arm_dda_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L295
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L295 was hi_arm_dda_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dda_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L296
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_d_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L296 was hi_arm_ddha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L297
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L297 was hi_arm_ddha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L298
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L298 was hi_arm_ddha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L299
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L299 was hi_arm_ddha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L300
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L300 was hi_arm_ddha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L301
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L301 was hi_arm_ddha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L302
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_dh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L302 was hi_arm_ddha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L303
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L303 was hi_arm_ddha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L304
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L304 was hi_arm_ddha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L305
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L305 was hi_arm_ddha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_ddha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L306
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L306 was hi_arm_dna_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L307
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L307 was hi_arm_dna_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L308
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L308 was hi_arm_dna_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L309
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L309 was hi_arm_dna_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L310
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L310 was hi_arm_dna_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L311
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L311 was hi_arm_dna_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L312
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_n_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L312 was hi_arm_dna_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L313
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L313 was hi_arm_dna_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L314
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L314 was hi_arm_dna_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L315
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L315 was hi_arm_dna_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dna_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L316
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_n_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L316 was hi_arm_dpa_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L317
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L317 was hi_arm_dpa_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L318
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L318 was hi_arm_dpa_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L319
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L319 was hi_arm_dpa_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L320
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L320 was hi_arm_dpa_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L321
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L321 was hi_arm_dpa_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L322
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_p_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L322 was hi_arm_dpa_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L323
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L323 was hi_arm_dpa_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L324
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L324 was hi_arm_dpa_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L325
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L325 was hi_arm_dpa_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpa_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L326
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_p_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L326 was hi_arm_dpha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L327
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L327 was hi_arm_dpha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L328
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L328 was hi_arm_dpha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L329
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L329 was hi_arm_dpha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L330
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L330 was hi_arm_dpha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L331
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L331 was hi_arm_dpha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L332
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ph_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L332 was hi_arm_dpha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L333
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L333 was hi_arm_dpha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L334
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L334 was hi_arm_dpha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L335
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L335 was hi_arm_dpha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dpha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L336
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ph_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L336 was hi_arm_dba_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L337
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L337 was hi_arm_dba_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L338
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L338 was hi_arm_dba_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L339
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L339 was hi_arm_dba_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L340
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L340 was hi_arm_dba_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L341
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L341 was hi_arm_dba_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L342
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_b_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L342 was hi_arm_dba_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L343
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L343 was hi_arm_dba_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L344
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L344 was hi_arm_dba_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L345
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L345 was hi_arm_dba_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dba_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L346
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_b_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L346 was hi_arm_dbha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L347
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L347 was hi_arm_dbha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L348
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L348 was hi_arm_dbha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L349
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L349 was hi_arm_dbha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L350
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L350 was hi_arm_dbha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L351
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L351 was hi_arm_dbha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L352
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_bh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L352 was hi_arm_dbha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L353
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L353 was hi_arm_dbha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L354
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L354 was hi_arm_dbha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L355
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L355 was hi_arm_dbha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dbha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L356
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L356 was hi_arm_dma_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L357
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L357 was hi_arm_dma_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L358
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L358 was hi_arm_dma_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L359
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L359 was hi_arm_dma_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L360
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L360 was hi_arm_dma_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L361
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L361 was hi_arm_dma_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L362
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_m_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L362 was hi_arm_dma_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L363
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L363 was hi_arm_dma_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L364
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L364 was hi_arm_dma_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L365
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L365 was hi_arm_dma_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dma_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L366
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_m_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L366 was hi_arm_dya_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L367
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L367 was hi_arm_dya_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L368
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L368 was hi_arm_dya_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L369
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L369 was hi_arm_dya_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L370
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L370 was hi_arm_dya_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L371
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L371 was hi_arm_dya_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L372
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_y_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L372 was hi_arm_dya_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L373
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L373 was hi_arm_dya_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L374
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L374 was hi_arm_dya_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L375
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L375 was hi_arm_dya_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dya_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L376
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_y_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L376 was hi_arm_dra_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L377
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L377 was hi_arm_dra_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L378
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L378 was hi_arm_dra_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L379
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L379 was hi_arm_dra_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L380
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L380 was hi_arm_dra_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L381
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L381 was hi_arm_dra_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L382
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_r_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L382 was hi_arm_dra_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L383
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L383 was hi_arm_dra_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L384
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L384 was hi_arm_dra_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L385
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L385 was hi_arm_dra_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dra_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L386
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_r_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L386 was hi_arm_dla_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L387
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L387 was hi_arm_dla_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L388
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L388 was hi_arm_dla_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L389
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L389 was hi_arm_dla_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L390
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L390 was hi_arm_dla_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L391
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L391 was hi_arm_dla_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L392
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_l_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L392 was hi_arm_dla_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L393
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L393 was hi_arm_dla_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L394
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L394 was hi_arm_dla_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L395
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L395 was hi_arm_dla_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dla_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L396
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_l_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L396 was hi_arm_dva_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L397
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L397 was hi_arm_dva_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L398
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L398 was hi_arm_dva_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L399
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L399 was hi_arm_dva_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L400
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L400 was hi_arm_dva_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L401
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L401 was hi_arm_dva_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L402
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_v_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L402 was hi_arm_dva_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L403
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L403 was hi_arm_dva_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L404
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L404 was hi_arm_dva_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L405
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L405 was hi_arm_dva_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dva_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L406
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_v_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L406 was hi_arm_dsha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L407
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L407 was hi_arm_dsha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L408
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L408 was hi_arm_dsha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L409
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L409 was hi_arm_dsha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L410
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L410 was hi_arm_dsha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L411
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L411 was hi_arm_dsha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L412
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_sh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L412 was hi_arm_dsha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L413
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L413 was hi_arm_dsha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L414
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L414 was hi_arm_dsha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L415
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L415 was hi_arm_dsha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L416
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L416 was hi_arm_dSha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L417
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L417 was hi_arm_dSha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L418
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L418 was hi_arm_dSha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L419
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L419 was hi_arm_dSha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L420
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L420 was hi_arm_dSha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L421
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L421 was hi_arm_dSha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L422
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_ssh_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L422 was hi_arm_dSha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L423
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L423 was hi_arm_dSha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L424
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L424 was hi_arm_dSha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L425
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L425 was hi_arm_dSha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dSha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L426
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssh_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L426 was hi_arm_dsa_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L427
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L427 was hi_arm_dsa_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L428
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L428 was hi_arm_dsa_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L429
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L429 was hi_arm_dsa_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L430
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L430 was hi_arm_dsa_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L431
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L431 was hi_arm_dsa_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L432
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_s_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L432 was hi_arm_dsa_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L433
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L433 was hi_arm_dsa_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L434
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L434 was hi_arm_dsa_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L435
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L435 was hi_arm_dsa_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dsa_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L436
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_s_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L436 was hi_arm_dha_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L437
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L437 was hi_arm_dha_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L438
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L438 was hi_arm_dha_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L439
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L439 was hi_arm_dha_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L440
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L440 was hi_arm_dha_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L441
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L441 was hi_arm_dha_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L442
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_3_hi_h_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L442 was hi_arm_dha_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L443
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L443 was hi_arm_dha_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L444
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L444 was hi_arm_dha_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L445
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L445 was hi_arm_dha_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_2_hi_dha_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L446
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_h_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L446 was hi_arm_dka
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dka_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L447
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ka arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L447 was hi_arm_dkha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dkha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L448
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_kha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L448 was hi_arm_dga
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dga_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L449
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ga arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L449 was hi_arm_dgha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dgha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L450
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_gha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L450 was hi_arm_dnga
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dnga_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L451
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nga arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L451 was hi_arm_dca
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dca_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L452
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ca arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L452 was hi_arm_dcha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dcha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L453
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_cha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L453 was hi_arm_dja
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dja_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L454
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ja arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L454 was hi_arm_djha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_djha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L455
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_jha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L455 was hi_arm_dnya
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dnya_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L456
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nya arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L456 was hi_arm_dTa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dTa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L457
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tta arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L457 was hi_arm_dTha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dTha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L458
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ttha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L458 was hi_arm_dDa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dDa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L459
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dda arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L459 was hi_arm_dDha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dDha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L460
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ddha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L460 was hi_arm_dNa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dNa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L461
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_nna arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L461 was hi_arm_dta
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dta_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L462
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ta arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L462 was hi_arm_dtha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dtha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L463
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_tha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L463 was hi_arm_dda
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dda_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L464
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_da arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L464 was hi_arm_ddha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_ddha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L465
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_dha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L465 was hi_arm_dna
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dna_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L466
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_na arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L466 was hi_arm_dpa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dpa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L467
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_pa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L467 was hi_arm_dpha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dpha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L468
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_pha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L468 was hi_arm_dba
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dba_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L469
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ba arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L469 was hi_arm_dbha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dbha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L470
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_bha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L470 was hi_arm_dma
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dma_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L471
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ma arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L471 was hi_arm_dya
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dya_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L472
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ya arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L472 was hi_arm_dra
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dra_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L473
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ra arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L473 was hi_arm_dla
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dla_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L474
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_la arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L474 was hi_arm_dva
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dva_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L475
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_va arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L475 was hi_arm_dsha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dsha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L476
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L476 was hi_arm_dSha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dSha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L477
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ssha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L477 was hi_arm_dsa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dsa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L478
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_sa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L478 was hi_arm_dha
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dha_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L479
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ha arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L479 was hi_arm_da_
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_da__char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L480
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_a arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L480 was hi_arm_daa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_daa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L481
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L481 was hi_arm_di
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_di_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L482
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L482 was hi_arm_dii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L483
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L483 was hi_arm_du
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_du_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L484
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L484 was hi_arm_duu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_duu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L485
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L485 was hi_arm_dri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L486
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L486 was hi_arm_de
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_de_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L487
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L487 was hi_arm_dai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L488
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L488 was hi_arm_do
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_do_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L489
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L489 was hi_arm_dau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L490
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L490 was hi_arm_dmaa
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmaa_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L491
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_aa arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L491 was hi_arm_dmi
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmi_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L492
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_i arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L492 was hi_arm_dmii
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmii_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L493
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ii arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L493 was hi_arm_dmu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L494
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_u arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L494 was hi_arm_dmuu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmuu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L495
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_uu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L495 was hi_arm_dmri
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmri_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L496
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_2_hi_ri arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L496 was hi_arm_dme
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dme_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L497
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_e arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L497 was hi_arm_dmai
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmai_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L498
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_ai arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L498 was hi_arm_dmo
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmo_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L499
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_o arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L499 was hi_arm_dmau
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dmau_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L500
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_au arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L500 was hi_arm_danu
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_danu_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L501
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_anu arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L501 was hi_arm_dvisarga
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dvisarga_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L502
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_1_hi_visg arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L502 was hi_arm_dvirama
+  push reg r6
+  call ZZlpta_load_vvg__setscan_0106r__1 arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZtest_string_s_1_1_hi_dvirama_char arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch jne to L503
+  push reg r6
+  call ZZ_lprp_load_vvg_0106_0107__insert_2pt_s_2_0_hi_nothing arity 1 depth 1
+  cmp testl reg r0 reg r0
+  popreg r1
+  branch je to L56
+label L503 was hi_arms_done
   push reg r6
   call ZZstarttest13 arity 1 depth 1
   push reg r6

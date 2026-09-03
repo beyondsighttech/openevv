@@ -127,8 +127,772 @@ bytes hi_visg  13          # ः  says h
 # tools/hien-devanagari.py takes them in order from the slots that were free, so
 # these two lines are read off that file rather than decided here. Change the
 # alphabet and these change with it.
-bytes hi_virama_char  cc         # ्  the vowel-killer, U+094D
+bytes hi_virama_char  68         # ्  the vowel-killer, U+094D
 # Every vowel sign as one string, so a consonant asks whether what follows is
 # any of them in one call rather than ten. Unicode order, which is the order
 # hien.codepoints lists them: aa i ii u uu ri e ai o au.
-bytes hi_matra_chars  bf c0 c1 c2 c3 c4 c5 c6 c7 c8
+bytes hi_matra_chars  aa 66 70 7a 81 88 8e 90 98 67
+
+# ---- a consonant and the vowel sign after it, as one string ----------
+# A consonant loses its inherent a to a vowel sign and says the sign's vowel
+# instead, and the pair is matched as one string of two characters, so what
+# it says is one string too. Every consonant against every sign, which is
+# three hundred and thirty lines nobody should type: written by tools/hien-thunks.py
+# out of the single sounds above, so a change to one of those reaches these.
+bytes hi_b_aa        01 2a
+bytes hi_b_ai        01 1f
+bytes hi_b_au        01 33
+bytes hi_b_e         01 1e
+bytes hi_b_i         01 1c
+bytes hi_b_ii        01 1d
+bytes hi_b_o         01 2f
+bytes hi_b_ri        01 18 1c
+bytes hi_b_u         01 2d
+bytes hi_b_uu        01 2e
+bytes hi_bh_aa       01 2a
+bytes hi_bh_ai       01 1f
+bytes hi_bh_au       01 33
+bytes hi_bh_e        01 1e
+bytes hi_bh_i        01 1c
+bytes hi_bh_ii       01 1d
+bytes hi_bh_o        01 2f
+bytes hi_bh_ri       01 18 1c
+bytes hi_bh_u        01 2d
+bytes hi_bh_uu       01 2e
+bytes hi_c_aa        12 2a
+bytes hi_c_ai        12 1f
+bytes hi_c_au        12 33
+bytes hi_c_e         12 1e
+bytes hi_c_i         12 1c
+bytes hi_c_ii        12 1d
+bytes hi_c_o         12 2f
+bytes hi_c_ri        12 18 1c
+bytes hi_c_u         12 2d
+bytes hi_c_uu        12 2e
+bytes hi_ch_aa       12 2a
+bytes hi_ch_ai       12 1f
+bytes hi_ch_au       12 33
+bytes hi_ch_e        12 1e
+bytes hi_ch_i        12 1c
+bytes hi_ch_ii       12 1d
+bytes hi_ch_o        12 2f
+bytes hi_ch_ri       12 18 1c
+bytes hi_ch_u        12 2d
+bytes hi_ch_uu       12 2e
+bytes hi_d_aa        03 2a
+bytes hi_d_ai        03 1f
+bytes hi_d_au        03 33
+bytes hi_d_e         03 1e
+bytes hi_d_i         03 1c
+bytes hi_d_ii        03 1d
+bytes hi_d_o         03 2f
+bytes hi_d_ri        03 18 1c
+bytes hi_d_u         03 2d
+bytes hi_d_uu        03 2e
+bytes hi_dd_aa       03 2a
+bytes hi_dd_ai       03 1f
+bytes hi_dd_au       03 33
+bytes hi_dd_e        03 1e
+bytes hi_dd_i        03 1c
+bytes hi_dd_ii       03 1d
+bytes hi_dd_o        03 2f
+bytes hi_dd_ri       03 18 1c
+bytes hi_dd_u        03 2d
+bytes hi_dd_uu       03 2e
+bytes hi_ddh_aa      03 2a
+bytes hi_ddh_ai      03 1f
+bytes hi_ddh_au      03 33
+bytes hi_ddh_e       03 1e
+bytes hi_ddh_i       03 1c
+bytes hi_ddh_ii      03 1d
+bytes hi_ddh_o       03 2f
+bytes hi_ddh_ri      03 18 1c
+bytes hi_ddh_u       03 2d
+bytes hi_ddh_uu      03 2e
+bytes hi_dh_aa       03 2a
+bytes hi_dh_ai       03 1f
+bytes hi_dh_au       03 33
+bytes hi_dh_e        03 1e
+bytes hi_dh_i        03 1c
+bytes hi_dh_ii       03 1d
+bytes hi_dh_o        03 2f
+bytes hi_dh_ri       03 18 1c
+bytes hi_dh_u        03 2d
+bytes hi_dh_uu       03 2e
+bytes hi_g_aa        08 2a
+bytes hi_g_ai        08 1f
+bytes hi_g_au        08 33
+bytes hi_g_e         08 1e
+bytes hi_g_i         08 1c
+bytes hi_g_ii        08 1d
+bytes hi_g_o         08 2f
+bytes hi_g_ri        08 18 1c
+bytes hi_g_u         08 2d
+bytes hi_g_uu        08 2e
+bytes hi_gh_aa       08 2a
+bytes hi_gh_ai       08 1f
+bytes hi_gh_au       08 33
+bytes hi_gh_e        08 1e
+bytes hi_gh_i        08 1c
+bytes hi_gh_ii       08 1d
+bytes hi_gh_o        08 2f
+bytes hi_gh_ri       08 18 1c
+bytes hi_gh_u        08 2d
+bytes hi_gh_uu       08 2e
+bytes hi_h_aa        13 2a
+bytes hi_h_ai        13 1f
+bytes hi_h_au        13 33
+bytes hi_h_e         13 1e
+bytes hi_h_i         13 1c
+bytes hi_h_ii        13 1d
+bytes hi_h_o         13 2f
+bytes hi_h_ri        13 18 1c
+bytes hi_h_u         13 2d
+bytes hi_h_uu        13 2e
+bytes hi_j_aa        11 2a
+bytes hi_j_ai        11 1f
+bytes hi_j_au        11 33
+bytes hi_j_e         11 1e
+bytes hi_j_i         11 1c
+bytes hi_j_ii        11 1d
+bytes hi_j_o         11 2f
+bytes hi_j_ri        11 18 1c
+bytes hi_j_u         11 2d
+bytes hi_j_uu        11 2e
+bytes hi_jh_aa       11 2a
+bytes hi_jh_ai       11 1f
+bytes hi_jh_au       11 33
+bytes hi_jh_e        11 1e
+bytes hi_jh_i        11 1c
+bytes hi_jh_ii       11 1d
+bytes hi_jh_o        11 2f
+bytes hi_jh_ri       11 18 1c
+bytes hi_jh_u        11 2d
+bytes hi_jh_uu       11 2e
+bytes hi_k_aa        07 2a
+bytes hi_k_ai        07 1f
+bytes hi_k_au        07 33
+bytes hi_k_e         07 1e
+bytes hi_k_i         07 1c
+bytes hi_k_ii        07 1d
+bytes hi_k_o         07 2f
+bytes hi_k_ri        07 18 1c
+bytes hi_k_u         07 2d
+bytes hi_k_uu        07 2e
+bytes hi_kh_aa       07 2a
+bytes hi_kh_ai       07 1f
+bytes hi_kh_au       07 33
+bytes hi_kh_e        07 1e
+bytes hi_kh_i        07 1c
+bytes hi_kh_ii       07 1d
+bytes hi_kh_o        07 2f
+bytes hi_kh_ri       07 18 1c
+bytes hi_kh_u        07 2d
+bytes hi_kh_uu       07 2e
+bytes hi_l_aa        19 2a
+bytes hi_l_ai        19 1f
+bytes hi_l_au        19 33
+bytes hi_l_e         19 1e
+bytes hi_l_i         19 1c
+bytes hi_l_ii        19 1d
+bytes hi_l_o         19 2f
+bytes hi_l_ri        19 18 1c
+bytes hi_l_u         19 2d
+bytes hi_l_uu        19 2e
+bytes hi_m_aa        14 2a
+bytes hi_m_ai        14 1f
+bytes hi_m_au        14 33
+bytes hi_m_e         14 1e
+bytes hi_m_i         14 1c
+bytes hi_m_ii        14 1d
+bytes hi_m_o         14 2f
+bytes hi_m_ri        14 18 1c
+bytes hi_m_u         14 2d
+bytes hi_m_uu        14 2e
+bytes hi_n_aa        15 2a
+bytes hi_n_ai        15 1f
+bytes hi_n_au        15 33
+bytes hi_n_e         15 1e
+bytes hi_n_i         15 1c
+bytes hi_n_ii        15 1d
+bytes hi_n_o         15 2f
+bytes hi_n_ri        15 18 1c
+bytes hi_n_u         15 2d
+bytes hi_n_uu        15 2e
+bytes hi_ng_aa       16 2a
+bytes hi_ng_ai       16 1f
+bytes hi_ng_au       16 33
+bytes hi_ng_e        16 1e
+bytes hi_ng_i        16 1c
+bytes hi_ng_ii       16 1d
+bytes hi_ng_o        16 2f
+bytes hi_ng_ri       16 18 1c
+bytes hi_ng_u        16 2d
+bytes hi_ng_uu       16 2e
+bytes hi_nn_aa       15 2a
+bytes hi_nn_ai       15 1f
+bytes hi_nn_au       15 33
+bytes hi_nn_e        15 1e
+bytes hi_nn_i        15 1c
+bytes hi_nn_ii       15 1d
+bytes hi_nn_o        15 2f
+bytes hi_nn_ri       15 18 1c
+bytes hi_nn_u        15 2d
+bytes hi_nn_uu       15 2e
+bytes hi_ny_aa       15 2a
+bytes hi_ny_ai       15 1f
+bytes hi_ny_au       15 33
+bytes hi_ny_e        15 1e
+bytes hi_ny_i        15 1c
+bytes hi_ny_ii       15 1d
+bytes hi_ny_o        15 2f
+bytes hi_ny_ri       15 18 1c
+bytes hi_ny_u        15 2d
+bytes hi_ny_uu       15 2e
+bytes hi_p_aa        02 2a
+bytes hi_p_ai        02 1f
+bytes hi_p_au        02 33
+bytes hi_p_e         02 1e
+bytes hi_p_i         02 1c
+bytes hi_p_ii        02 1d
+bytes hi_p_o         02 2f
+bytes hi_p_ri        02 18 1c
+bytes hi_p_u         02 2d
+bytes hi_p_uu        02 2e
+bytes hi_ph_aa       0c 2a
+bytes hi_ph_ai       0c 1f
+bytes hi_ph_au       0c 33
+bytes hi_ph_e        0c 1e
+bytes hi_ph_i        0c 1c
+bytes hi_ph_ii       0c 1d
+bytes hi_ph_o        0c 2f
+bytes hi_ph_ri       0c 18 1c
+bytes hi_ph_u        0c 2d
+bytes hi_ph_uu       0c 2e
+bytes hi_r_aa        18 2a
+bytes hi_r_ai        18 1f
+bytes hi_r_au        18 33
+bytes hi_r_e         18 1e
+bytes hi_r_i         18 1c
+bytes hi_r_ii        18 1d
+bytes hi_r_o         18 2f
+bytes hi_r_ri        18 18 1c
+bytes hi_r_u         18 2d
+bytes hi_r_uu        18 2e
+bytes hi_s_aa        0e 2a
+bytes hi_s_ai        0e 1f
+bytes hi_s_au        0e 33
+bytes hi_s_e         0e 1e
+bytes hi_s_i         0e 1c
+bytes hi_s_ii        0e 1d
+bytes hi_s_o         0e 2f
+bytes hi_s_ri        0e 18 1c
+bytes hi_s_u         0e 2d
+bytes hi_s_uu        0e 2e
+bytes hi_sh_aa       10 2a
+bytes hi_sh_ai       10 1f
+bytes hi_sh_au       10 33
+bytes hi_sh_e        10 1e
+bytes hi_sh_i        10 1c
+bytes hi_sh_ii       10 1d
+bytes hi_sh_o        10 2f
+bytes hi_sh_ri       10 18 1c
+bytes hi_sh_u        10 2d
+bytes hi_sh_uu       10 2e
+bytes hi_ssh_aa      10 2a
+bytes hi_ssh_ai      10 1f
+bytes hi_ssh_au      10 33
+bytes hi_ssh_e       10 1e
+bytes hi_ssh_i       10 1c
+bytes hi_ssh_ii      10 1d
+bytes hi_ssh_o       10 2f
+bytes hi_ssh_ri      10 18 1c
+bytes hi_ssh_u       10 2d
+bytes hi_ssh_uu      10 2e
+bytes hi_t_aa        04 2a
+bytes hi_t_ai        04 1f
+bytes hi_t_au        04 33
+bytes hi_t_e         04 1e
+bytes hi_t_i         04 1c
+bytes hi_t_ii        04 1d
+bytes hi_t_o         04 2f
+bytes hi_t_ri        04 18 1c
+bytes hi_t_u         04 2d
+bytes hi_t_uu        04 2e
+bytes hi_th_aa       04 2a
+bytes hi_th_ai       04 1f
+bytes hi_th_au       04 33
+bytes hi_th_e        04 1e
+bytes hi_th_i        04 1c
+bytes hi_th_ii       04 1d
+bytes hi_th_o        04 2f
+bytes hi_th_ri       04 18 1c
+bytes hi_th_u        04 2d
+bytes hi_th_uu       04 2e
+bytes hi_tt_aa       04 2a
+bytes hi_tt_ai       04 1f
+bytes hi_tt_au       04 33
+bytes hi_tt_e        04 1e
+bytes hi_tt_i        04 1c
+bytes hi_tt_ii       04 1d
+bytes hi_tt_o        04 2f
+bytes hi_tt_ri       04 18 1c
+bytes hi_tt_u        04 2d
+bytes hi_tt_uu       04 2e
+bytes hi_tth_aa      04 2a
+bytes hi_tth_ai      04 1f
+bytes hi_tth_au      04 33
+bytes hi_tth_e       04 1e
+bytes hi_tth_i       04 1c
+bytes hi_tth_ii      04 1d
+bytes hi_tth_o       04 2f
+bytes hi_tth_ri      04 18 1c
+bytes hi_tth_u       04 2d
+bytes hi_tth_uu      04 2e
+bytes hi_v_aa        0b 2a
+bytes hi_v_ai        0b 1f
+bytes hi_v_au        0b 33
+bytes hi_v_e         0b 1e
+bytes hi_v_i         0b 1c
+bytes hi_v_ii        0b 1d
+bytes hi_v_o         0b 2f
+bytes hi_v_ri        0b 18 1c
+bytes hi_v_u         0b 2d
+bytes hi_v_uu        0b 2e
+bytes hi_y_aa        1a 2a
+bytes hi_y_ai        1a 1f
+bytes hi_y_au        1a 33
+bytes hi_y_e         1a 1e
+bytes hi_y_i         1a 1c
+bytes hi_y_ii        1a 1d
+bytes hi_y_o         1a 2f
+bytes hi_y_ri        1a 18 1c
+bytes hi_y_u         1a 2d
+bytes hi_y_uu        1a 2e
+
+# ---- the characters the arms in generate_diaphones test against ------
+# Codes of hien's own alphabet -- what a record at the scan holds -- rather
+# than the bytes the characters arrive as. Two codes where the arm matches a
+# pair. Written by tools/hien-thunks.py out of the alphabet itself, so these
+# and it cannot disagree.
+bytes hi_dDa_char            ba
+bytes hi_dDa_dmaa_char       ba aa
+bytes hi_dDa_dmai_char       ba 90
+bytes hi_dDa_dmau_char       ba 67
+bytes hi_dDa_dme_char        ba 8e
+bytes hi_dDa_dmi_char        ba 66
+bytes hi_dDa_dmii_char       ba 70
+bytes hi_dDa_dmo_char        ba 98
+bytes hi_dDa_dmri_char       ba 88
+bytes hi_dDa_dmu_char        ba 7a
+bytes hi_dDa_dmuu_char       ba 81
+bytes hi_dDa_virama_char     ba 68
+bytes hi_dDha_char           ab
+bytes hi_dDha_dmaa_char      ab aa
+bytes hi_dDha_dmai_char      ab 90
+bytes hi_dDha_dmau_char      ab 67
+bytes hi_dDha_dme_char       ab 8e
+bytes hi_dDha_dmi_char       ab 66
+bytes hi_dDha_dmii_char      ab 70
+bytes hi_dDha_dmo_char       ab 98
+bytes hi_dDha_dmri_char      ab 88
+bytes hi_dDha_dmu_char       ab 7a
+bytes hi_dDha_dmuu_char      ab 81
+bytes hi_dDha_virama_char    ab 68
+bytes hi_dNa_char            c9
+bytes hi_dNa_dmaa_char       c9 aa
+bytes hi_dNa_dmai_char       c9 90
+bytes hi_dNa_dmau_char       c9 67
+bytes hi_dNa_dme_char        c9 8e
+bytes hi_dNa_dmi_char        c9 66
+bytes hi_dNa_dmii_char       c9 70
+bytes hi_dNa_dmo_char        c9 98
+bytes hi_dNa_dmri_char       c9 88
+bytes hi_dNa_dmu_char        c9 7a
+bytes hi_dNa_dmuu_char       c9 81
+bytes hi_dNa_virama_char     c9 68
+bytes hi_dSha_char           af
+bytes hi_dSha_dmaa_char      af aa
+bytes hi_dSha_dmai_char      af 90
+bytes hi_dSha_dmau_char      af 67
+bytes hi_dSha_dme_char       af 8e
+bytes hi_dSha_dmi_char       af 66
+bytes hi_dSha_dmii_char      af 70
+bytes hi_dSha_dmo_char       af 98
+bytes hi_dSha_dmri_char      af 88
+bytes hi_dSha_dmu_char       af 7a
+bytes hi_dSha_dmuu_char      af 81
+bytes hi_dSha_virama_char    af 68
+bytes hi_dTa_char            bd
+bytes hi_dTa_dmaa_char       bd aa
+bytes hi_dTa_dmai_char       bd 90
+bytes hi_dTa_dmau_char       bd 67
+bytes hi_dTa_dme_char        bd 8e
+bytes hi_dTa_dmi_char        bd 66
+bytes hi_dTa_dmii_char       bd 70
+bytes hi_dTa_dmo_char        bd 98
+bytes hi_dTa_dmri_char       bd 88
+bytes hi_dTa_dmu_char        bd 7a
+bytes hi_dTa_dmuu_char       bd 81
+bytes hi_dTa_virama_char     bd 68
+bytes hi_dTha_char           c8
+bytes hi_dTha_dmaa_char      c8 aa
+bytes hi_dTha_dmai_char      c8 90
+bytes hi_dTha_dmau_char      c8 67
+bytes hi_dTha_dme_char       c8 8e
+bytes hi_dTha_dmi_char       c8 66
+bytes hi_dTha_dmii_char      c8 70
+bytes hi_dTha_dmo_char       c8 98
+bytes hi_dTha_dmri_char      c8 88
+bytes hi_dTha_dmu_char       c8 7a
+bytes hi_dTha_dmuu_char      c8 81
+bytes hi_dTha_virama_char    c8 68
+bytes hi_da__char            a2
+bytes hi_daa_char            c0
+bytes hi_dai_char            ae
+bytes hi_danu_char           71
+bytes hi_dau_char            c2
+bytes hi_dba_char            be
+bytes hi_dba_dmaa_char       be aa
+bytes hi_dba_dmai_char       be 90
+bytes hi_dba_dmau_char       be 67
+bytes hi_dba_dme_char        be 8e
+bytes hi_dba_dmi_char        be 66
+bytes hi_dba_dmii_char       be 70
+bytes hi_dba_dmo_char        be 98
+bytes hi_dba_dmri_char       be 88
+bytes hi_dba_dmu_char        be 7a
+bytes hi_dba_dmuu_char       be 81
+bytes hi_dba_virama_char     be 68
+bytes hi_dbha_char           cd
+bytes hi_dbha_dmaa_char      cd aa
+bytes hi_dbha_dmai_char      cd 90
+bytes hi_dbha_dmau_char      cd 67
+bytes hi_dbha_dme_char       cd 8e
+bytes hi_dbha_dmi_char       cd 66
+bytes hi_dbha_dmii_char      cd 70
+bytes hi_dbha_dmo_char       cd 98
+bytes hi_dbha_dmri_char      cd 88
+bytes hi_dbha_dmu_char       cd 7a
+bytes hi_dbha_dmuu_char      cd 81
+bytes hi_dbha_virama_char    cd 68
+bytes hi_dca_char            a4
+bytes hi_dca_dmaa_char       a4 aa
+bytes hi_dca_dmai_char       a4 90
+bytes hi_dca_dmau_char       a4 67
+bytes hi_dca_dme_char        a4 8e
+bytes hi_dca_dmi_char        a4 66
+bytes hi_dca_dmii_char       a4 70
+bytes hi_dca_dmo_char        a4 98
+bytes hi_dca_dmri_char       a4 88
+bytes hi_dca_dmu_char        a4 7a
+bytes hi_dca_dmuu_char       a4 81
+bytes hi_dca_virama_char     a4 68
+bytes hi_dcha_char           c5
+bytes hi_dcha_dmaa_char      c5 aa
+bytes hi_dcha_dmai_char      c5 90
+bytes hi_dcha_dmau_char      c5 67
+bytes hi_dcha_dme_char       c5 8e
+bytes hi_dcha_dmi_char       c5 66
+bytes hi_dcha_dmii_char      c5 70
+bytes hi_dcha_dmo_char       c5 98
+bytes hi_dcha_dmri_char      c5 88
+bytes hi_dcha_dmu_char       c5 7a
+bytes hi_dcha_dmuu_char      c5 81
+bytes hi_dcha_virama_char    c5 68
+bytes hi_dda_char            cc
+bytes hi_dda_dmaa_char       cc aa
+bytes hi_dda_dmai_char       cc 90
+bytes hi_dda_dmau_char       cc 67
+bytes hi_dda_dme_char        cc 8e
+bytes hi_dda_dmi_char        cc 66
+bytes hi_dda_dmii_char       cc 70
+bytes hi_dda_dmo_char        cc 98
+bytes hi_dda_dmri_char       cc 88
+bytes hi_dda_dmu_char        cc 7a
+bytes hi_dda_dmuu_char       cc 81
+bytes hi_dda_virama_char     cc 68
+bytes hi_ddha_char           b5
+bytes hi_ddha_dmaa_char      b5 aa
+bytes hi_ddha_dmai_char      b5 90
+bytes hi_ddha_dmau_char      b5 67
+bytes hi_ddha_dme_char       b5 8e
+bytes hi_ddha_dmi_char       b5 66
+bytes hi_ddha_dmii_char      b5 70
+bytes hi_ddha_dmo_char       b5 98
+bytes hi_ddha_dmri_char      b5 88
+bytes hi_ddha_dmu_char       b5 7a
+bytes hi_ddha_dmuu_char      b5 81
+bytes hi_ddha_virama_char    b5 68
+bytes hi_de_char             ad
+bytes hi_dga_char            c3
+bytes hi_dga_dmaa_char       c3 aa
+bytes hi_dga_dmai_char       c3 90
+bytes hi_dga_dmau_char       c3 67
+bytes hi_dga_dme_char        c3 8e
+bytes hi_dga_dmi_char        c3 66
+bytes hi_dga_dmii_char       c3 70
+bytes hi_dga_dmo_char        c3 98
+bytes hi_dga_dmri_char       c3 88
+bytes hi_dga_dmu_char        c3 7a
+bytes hi_dga_dmuu_char       c3 81
+bytes hi_dga_virama_char     c3 68
+bytes hi_dgha_char           a9
+bytes hi_dgha_dmaa_char      a9 aa
+bytes hi_dgha_dmai_char      a9 90
+bytes hi_dgha_dmau_char      a9 67
+bytes hi_dgha_dme_char       a9 8e
+bytes hi_dgha_dmi_char       a9 66
+bytes hi_dgha_dmii_char      a9 70
+bytes hi_dgha_dmo_char       a9 98
+bytes hi_dgha_dmri_char      a9 88
+bytes hi_dgha_dmu_char       a9 7a
+bytes hi_dgha_dmuu_char      a9 81
+bytes hi_dgha_virama_char    a9 68
+bytes hi_dha_char            b1
+bytes hi_dha_dmaa_char       b1 aa
+bytes hi_dha_dmai_char       b1 90
+bytes hi_dha_dmau_char       b1 67
+bytes hi_dha_dme_char        b1 8e
+bytes hi_dha_dmi_char        b1 66
+bytes hi_dha_dmii_char       b1 70
+bytes hi_dha_dmo_char        b1 98
+bytes hi_dha_dmri_char       b1 88
+bytes hi_dha_dmu_char        b1 7a
+bytes hi_dha_dmuu_char       b1 81
+bytes hi_dha_virama_char     b1 68
+bytes hi_di_char             9e
+bytes hi_dii_char            92
+bytes hi_dja_char            a5
+bytes hi_dja_dmaa_char       a5 aa
+bytes hi_dja_dmai_char       a5 90
+bytes hi_dja_dmau_char       a5 67
+bytes hi_dja_dme_char        a5 8e
+bytes hi_dja_dmi_char        a5 66
+bytes hi_dja_dmii_char       a5 70
+bytes hi_dja_dmo_char        a5 98
+bytes hi_dja_dmri_char       a5 88
+bytes hi_dja_dmu_char        a5 7a
+bytes hi_dja_dmuu_char       a5 81
+bytes hi_dja_virama_char     a5 68
+bytes hi_djha_char           c6
+bytes hi_djha_dmaa_char      c6 aa
+bytes hi_djha_dmai_char      c6 90
+bytes hi_djha_dmau_char      c6 67
+bytes hi_djha_dme_char       c6 8e
+bytes hi_djha_dmi_char       c6 66
+bytes hi_djha_dmii_char      c6 70
+bytes hi_djha_dmo_char       c6 98
+bytes hi_djha_dmri_char      c6 88
+bytes hi_djha_dmu_char       c6 7a
+bytes hi_djha_dmuu_char      c6 81
+bytes hi_djha_virama_char    c6 68
+bytes hi_dka_char            9d
+bytes hi_dka_dmaa_char       9d aa
+bytes hi_dka_dmai_char       9d 90
+bytes hi_dka_dmau_char       9d 67
+bytes hi_dka_dme_char        9d 8e
+bytes hi_dka_dmi_char        9d 66
+bytes hi_dka_dmii_char       9d 70
+bytes hi_dka_dmo_char        9d 98
+bytes hi_dka_dmri_char       9d 88
+bytes hi_dka_dmu_char        9d 7a
+bytes hi_dka_dmuu_char       9d 81
+bytes hi_dka_virama_char     9d 68
+bytes hi_dkha_char           91
+bytes hi_dkha_dmaa_char      91 aa
+bytes hi_dkha_dmai_char      91 90
+bytes hi_dkha_dmau_char      91 67
+bytes hi_dkha_dme_char       91 8e
+bytes hi_dkha_dmi_char       91 66
+bytes hi_dkha_dmii_char      91 70
+bytes hi_dkha_dmo_char       91 98
+bytes hi_dkha_dmri_char      91 88
+bytes hi_dkha_dmu_char       91 7a
+bytes hi_dkha_dmuu_char      91 81
+bytes hi_dkha_virama_char    91 68
+bytes hi_dla_char            b7
+bytes hi_dla_dmaa_char       b7 aa
+bytes hi_dla_dmai_char       b7 90
+bytes hi_dla_dmau_char       b7 67
+bytes hi_dla_dme_char        b7 8e
+bytes hi_dla_dmi_char        b7 66
+bytes hi_dla_dmii_char       b7 70
+bytes hi_dla_dmo_char        b7 98
+bytes hi_dla_dmri_char       b7 88
+bytes hi_dla_dmu_char        b7 7a
+bytes hi_dla_dmuu_char       b7 81
+bytes hi_dla_virama_char     b7 68
+bytes hi_dma_char            ce
+bytes hi_dma_dmaa_char       ce aa
+bytes hi_dma_dmai_char       ce 90
+bytes hi_dma_dmau_char       ce 67
+bytes hi_dma_dme_char        ce 8e
+bytes hi_dma_dmi_char        ce 66
+bytes hi_dma_dmii_char       ce 70
+bytes hi_dma_dmo_char        ce 98
+bytes hi_dma_dmri_char       ce 88
+bytes hi_dma_dmu_char        ce 7a
+bytes hi_dma_dmuu_char       ce 81
+bytes hi_dma_virama_char     ce 68
+bytes hi_dmaa_char           aa
+bytes hi_dmai_char           90
+bytes hi_dmau_char           67
+bytes hi_dme_char            8e
+bytes hi_dmi_char            66
+bytes hi_dmii_char           70
+bytes hi_dmo_char            98
+bytes hi_dmri_char           88
+bytes hi_dmu_char            7a
+bytes hi_dmuu_char           81
+bytes hi_dna_char            b4
+bytes hi_dna_dmaa_char       b4 aa
+bytes hi_dna_dmai_char       b4 90
+bytes hi_dna_dmau_char       b4 67
+bytes hi_dna_dme_char        b4 8e
+bytes hi_dna_dmi_char        b4 66
+bytes hi_dna_dmii_char       b4 70
+bytes hi_dna_dmo_char        b4 98
+bytes hi_dna_dmri_char       b4 88
+bytes hi_dna_dmu_char        b4 7a
+bytes hi_dna_dmuu_char       b4 81
+bytes hi_dna_virama_char     b4 68
+bytes hi_dnga_char           a3
+bytes hi_dnga_dmaa_char      a3 aa
+bytes hi_dnga_dmai_char      a3 90
+bytes hi_dnga_dmau_char      a3 67
+bytes hi_dnga_dme_char       a3 8e
+bytes hi_dnga_dmi_char       a3 66
+bytes hi_dnga_dmii_char      a3 70
+bytes hi_dnga_dmo_char       a3 98
+bytes hi_dnga_dmri_char      a3 88
+bytes hi_dnga_dmu_char       a3 7a
+bytes hi_dnga_dmuu_char      a3 81
+bytes hi_dnga_virama_char    a3 68
+bytes hi_dnya_char           c7
+bytes hi_dnya_dmaa_char      c7 aa
+bytes hi_dnya_dmai_char      c7 90
+bytes hi_dnya_dmau_char      c7 67
+bytes hi_dnya_dme_char       c7 8e
+bytes hi_dnya_dmi_char       c7 66
+bytes hi_dnya_dmii_char      c7 70
+bytes hi_dnya_dmo_char       c7 98
+bytes hi_dnya_dmri_char      c7 88
+bytes hi_dnya_dmu_char       c7 7a
+bytes hi_dnya_dmuu_char      c7 81
+bytes hi_dnya_virama_char    c7 68
+bytes hi_do_char             bc
+bytes hi_dpa_char            b8
+bytes hi_dpa_dmaa_char       b8 aa
+bytes hi_dpa_dmai_char       b8 90
+bytes hi_dpa_dmau_char       b8 67
+bytes hi_dpa_dme_char        b8 8e
+bytes hi_dpa_dmi_char        b8 66
+bytes hi_dpa_dmii_char       b8 70
+bytes hi_dpa_dmo_char        b8 98
+bytes hi_dpa_dmri_char       b8 88
+bytes hi_dpa_dmu_char        b8 7a
+bytes hi_dpa_dmuu_char       b8 81
+bytes hi_dpa_virama_char     b8 68
+bytes hi_dpha_char           b9
+bytes hi_dpha_dmaa_char      b9 aa
+bytes hi_dpha_dmai_char      b9 90
+bytes hi_dpha_dmau_char      b9 67
+bytes hi_dpha_dme_char       b9 8e
+bytes hi_dpha_dmi_char       b9 66
+bytes hi_dpha_dmii_char      b9 70
+bytes hi_dpha_dmo_char       b9 98
+bytes hi_dpha_dmri_char      b9 88
+bytes hi_dpha_dmu_char       b9 7a
+bytes hi_dpha_dmuu_char      b9 81
+bytes hi_dpha_virama_char    b9 68
+bytes hi_dra_char            bf
+bytes hi_dra_dmaa_char       bf aa
+bytes hi_dra_dmai_char       bf 90
+bytes hi_dra_dmau_char       bf 67
+bytes hi_dra_dme_char        bf 8e
+bytes hi_dra_dmi_char        bf 66
+bytes hi_dra_dmii_char       bf 70
+bytes hi_dra_dmo_char        bf 98
+bytes hi_dra_dmri_char       bf 88
+bytes hi_dra_dmu_char        bf 7a
+bytes hi_dra_dmuu_char       bf 81
+bytes hi_dra_virama_char     bf 68
+bytes hi_dri_char            c1
+bytes hi_dsa_char            b0
+bytes hi_dsa_dmaa_char       b0 aa
+bytes hi_dsa_dmai_char       b0 90
+bytes hi_dsa_dmau_char       b0 67
+bytes hi_dsa_dme_char        b0 8e
+bytes hi_dsa_dmi_char        b0 66
+bytes hi_dsa_dmii_char       b0 70
+bytes hi_dsa_dmo_char        b0 98
+bytes hi_dsa_dmri_char       b0 88
+bytes hi_dsa_dmu_char        b0 7a
+bytes hi_dsa_dmuu_char       b0 81
+bytes hi_dsa_virama_char     b0 68
+bytes hi_dsha_char           ac
+bytes hi_dsha_dmaa_char      ac aa
+bytes hi_dsha_dmai_char      ac 90
+bytes hi_dsha_dmau_char      ac 67
+bytes hi_dsha_dme_char       ac 8e
+bytes hi_dsha_dmi_char       ac 66
+bytes hi_dsha_dmii_char      ac 70
+bytes hi_dsha_dmo_char       ac 98
+bytes hi_dsha_dmri_char      ac 88
+bytes hi_dsha_dmu_char       ac 7a
+bytes hi_dsha_dmuu_char      ac 81
+bytes hi_dsha_virama_char    ac 68
+bytes hi_dta_char            ca
+bytes hi_dta_dmaa_char       ca aa
+bytes hi_dta_dmai_char       ca 90
+bytes hi_dta_dmau_char       ca 67
+bytes hi_dta_dme_char        ca 8e
+bytes hi_dta_dmi_char        ca 66
+bytes hi_dta_dmii_char       ca 70
+bytes hi_dta_dmo_char        ca 98
+bytes hi_dta_dmri_char       ca 88
+bytes hi_dta_dmu_char        ca 7a
+bytes hi_dta_dmuu_char       ca 81
+bytes hi_dta_virama_char     ca 68
+bytes hi_dtha_char           cb
+bytes hi_dtha_dmaa_char      cb aa
+bytes hi_dtha_dmai_char      cb 90
+bytes hi_dtha_dmau_char      cb 67
+bytes hi_dtha_dme_char       cb 8e
+bytes hi_dtha_dmi_char       cb 66
+bytes hi_dtha_dmii_char      cb 70
+bytes hi_dtha_dmo_char       cb 98
+bytes hi_dtha_dmri_char      cb 88
+bytes hi_dtha_dmu_char       cb 7a
+bytes hi_dtha_dmuu_char      cb 81
+bytes hi_dtha_virama_char    cb 68
+bytes hi_du_char             a7
+bytes hi_duu_char            a8
+bytes hi_dva_char            bb
+bytes hi_dva_dmaa_char       bb aa
+bytes hi_dva_dmai_char       bb 90
+bytes hi_dva_dmau_char       bb 67
+bytes hi_dva_dme_char        bb 8e
+bytes hi_dva_dmi_char        bb 66
+bytes hi_dva_dmii_char       bb 70
+bytes hi_dva_dmo_char        bb 98
+bytes hi_dva_dmri_char       bb 88
+bytes hi_dva_dmu_char        bb 7a
+bytes hi_dva_dmuu_char       bb 81
+bytes hi_dva_virama_char     bb 68
+bytes hi_dvirama_char        68
+bytes hi_dvisarga_char       89
+bytes hi_dya_char            b6
+bytes hi_dya_dmaa_char       b6 aa
+bytes hi_dya_dmai_char       b6 90
+bytes hi_dya_dmau_char       b6 67
+bytes hi_dya_dme_char        b6 8e
+bytes hi_dya_dmi_char        b6 66
+bytes hi_dya_dmii_char       b6 70
+bytes hi_dya_dmo_char        b6 98
+bytes hi_dya_dmri_char       b6 88
+bytes hi_dya_dmu_char        b6 7a
+bytes hi_dya_dmuu_char       b6 81
+bytes hi_dya_virama_char     b6 68
+bytes hi_space_char          48
