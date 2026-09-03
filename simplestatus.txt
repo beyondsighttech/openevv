@@ -4,6 +4,72 @@ WHAT IS ACTUALLY DONE - Hindi in openevv
 Plain language. Newest entry at the top. Only real things, with proof.
 
 
+3 Sep 2026 - HINDI LETTERS NOW SPEAK. This is the one that matters.
+--------------------------------------------------------------------
+A Devanagari letter now reaches a rule that says what it sounds like.
+Before today the letters arrived and every word came out as the same
+silence; that is fixed.
+
+Proof - three words, three different lengths, three different hashes:
+  namaste  49,643 samples  hash 8eae9806
+  raam     27,797 samples  hash f7b80df2
+  kamal    46,519 samples  hash a2d84e80
+
+Before today all three were 18,557 samples under the one hash 47a8f230.
+Same word, three different sounds, is the whole point.
+
+And the vowel signs work. The same consonant with different signs comes
+out at different lengths, which is what proves the sign is being read:
+  क   (ka)   26,939 samples
+  का  (kaa)  27,687 samples
+  कि  (ki)   27,027 samples
+  को  (ko)   27,467 samples
+
+English did not move. The fox sentence still hashes f4de90c6, exactly
+what it hashed before any of this.
+
+WHY IT WAS BROKEN, and it was not the rules.
+It was one line in a tool of mine. When Hindi took over 59 unused slots
+in the alphabet, that tool also renamed each one - slot 157 became
+"dka" instead of holding the character it held. Turns out a slot's name
+is not a label. The engine reads an incoming byte, turns it into a
+one-character string, and compares it against the names one by one
+until it finds a match. THAT COMPARISON IS the byte-to-letter lookup -
+there is no other table. So a slot named "dka" matched no byte at all.
+Every Devanagari character was read, matched against nothing, and
+thrown away. Hence identical silence for every word.
+
+Fixed by putting the original names back and leaving the records alone,
+which were always the correct half of the job. Added a "mend" command
+so this is undoable rather than a hand edit.
+
+Then the rules themselves - 420 of them, written by two tools:
+  - tools/hien-thunks.py writes the 833 small wrappers the engine needs,
+    plus the 330 consonant-with-vowel-sign combinations, generated from
+    the basic sounds rather than typed out.
+  - tools/hien-arms.py splices the 420 tests into the rule that speaks.
+
+Two mistakes worth recording because each cost a day:
+  - Put the new rules just ABOVE the right label instead of just below
+    it. The engine loops back to that label, so anything above it ran
+    once and was skipped forever after. Exactly one letter of six spoke.
+  - Wrote the alphabet position wrong: used the byte a character arrives
+    as, not the slot number the engine actually compares. That fails
+    silently - every test just misses.
+
+STILL NOT DONE, and this is audible:
+  - राम comes out as "raama", not "raam". Hindi drops the built-in "a"
+    at the end of a word and this does not yet. Needs a way to check
+    for a word boundary without consuming it; every rule here consumes
+    what it matches.
+  - Eighteen letters still say a near neighbour: the aspirates (ख as क)
+    and the whole retroflex series (ट as त). Those sounds do not exist
+    in the phoneme set yet. Separate job, tools/lang-phonemes.py.
+  - Nobody has listened to it. It makes distinct sounds per letter,
+    which is measurable; whether it sounds like Hindi is not something
+    a hash can tell you.
+
+
 29 Aug 2026 - DEVANAGARI NOW ARRIVES PROPERLY. Half the gibberish fixed.
 -------------------------------------------------------------------------
 This is the real fix for yesterday's problem, and it works.
