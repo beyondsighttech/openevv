@@ -12,7 +12,7 @@ On this machine all of those come from the flake, and `nix develop` puts them on
 
     make
 
-That builds `build/libevv.a` and `build/evv`, which speaks. From nothing, that is about a quarter of an hour: seven minutes for Python to write the rules out as C and about as long again to compile the thirteen megabytes of it. Once that file exists it is not written again unless the decompiler or the bytecode changes.
+That builds `build/libevv.a` and `build/evv`, which speaks. From nothing, that is about two and a half minutes: a little over two for Python to write the rules out as C and about fifteen seconds to compile the thirteen megabytes of it across twenty-four cores. Once those files exist they are not written again unless the decompiler or the bytecode changes.
 
     make RULES=bytecode
 
@@ -560,13 +560,19 @@ rules` lists every rule with which of the three it is.
 
 ## The rules, twice
 
-The language's rules exist in the tree as bytecode, and the engine has an interpreter for them. They also exist as C: `tools/delta-decompile.py` writes all 3,377 of them out of that same bytecode into `lang/enus/delta_rules_c_enus.c`, and the interpreter prefers a rule written as C wherever it finds one. It writes beside whichever language it was pointed at, so `make LANG=lang/dede rules` writes German into `lang/dede`.
+The language's rules exist in the tree as bytecode, and the engine has an interpreter for them. They also exist as C: `tools/delta-decompile.py` writes all 3,377 of them out of that same bytecode into `lang/enus/delta_rules_c00_enus.c` and thirty-one more beside it, and the interpreter prefers a rule written as C wherever it finds one. It writes beside whichever language it was pointed at, so `make LANG=lang/dede rules` writes German into `lang/dede`.
+
+Thirty-two files rather than one because a translation unit cannot be compiled on more than one core, and thirteen megabytes of it is seven minutes. The decompiler deals the rules out by size so the files finish together; each carries its own piece of the table of rules-written-as-C and the first gathers the pieces, which is what lets every rule stay `static` and keeps one language's names from meeting another's. `PARTS` in the Makefile and `EVV_RULE_PARTS` in the decompiler have to agree, because the build names the files it expects rather than looking for whatever is there -- and the recipe deletes the old ones first, so lowering the number does not leave yesterday's files to be compiled in beside today's.
 
 Both speak the same samples. That is not a hope: `test/suite.sh` holds each form against IBM's binary over all 81 cases, and the two forms are set against each other call by call by `tools/delta-check.sh`. So which one is linked is a trade of build time and size against speed, and nothing else.
 
+Every rule of every language in the tree is written as C, with nothing refused: 3,377 of 3,377 for US English, 3,395 for British, 2,600 for German, 2,378 and 2,386 for the Frenches, 1,724 and 1,717 for the Spanishes, 1,749 for Italian and 1,804 for the Polish chassis. So the interpreter is not a fallback anything depends on any more, and a `RULES=c` build carries none of it: the bytecode, the constants it names and the tables it jumps through come to a megabyte and a half a language, and the language table says nought where it used to name them so the linker can drop the lot.
+
+What `RULES=bytecode` is for, then, is not building. It is the second opinion. `tools/delta-check.sh` is the only check finer than the audio -- it speaks a sentence twice, once each way, and holds every rule entered and every call made with its arguments against the other -- and that check exists only while there is something to compare against. The auxiliary harnesses use it too, for the plain reason that it builds in half a minute. Retiring it would save nothing that ships and would cost the decompiler its oracle.
+
 C is the default, because the speed is the part a person waiting for speech feels. Measured on one machine, the same long sentence, bytecode against C: the whole utterance synthesises in 138 ms against 63; the wait before the first samples of an utterance is 38 ms against 12; and interrupting an utterance and asking for another costs 124 ms against 39. That last one matters most and is the least obvious: the engine cannot abandon an utterance it has been told to stop -- see the interrupting section of `docs/status.md` for why not -- so what a cancel costs is whatever is left of the work, and compiled rules do that leftover work in a third of the time.
 
-What it costs is the build. The C is thirteen megabytes in one file: seven minutes of Python to write and about as long to compile, where the bytecode build wants half a minute and no Python at all. The binaries are some four times the size -- `build/probe` is 15.6 MB against 3.7 -- because that is what a machine's worth of lifted code looks like written out as C, with nothing kept in a register because a backtrack may land in the middle of any of it.
+What it costs is the build. The C is thirteen megabytes: a little over two minutes of Python to write and about fifteen seconds to compile over twenty-four cores, where the bytecode build wants half a minute and no Python at all. The binaries are about twice the size -- `build/probe` is 7.1 MB against 3.7 -- because that is what a machine's worth of lifted code looks like written out as C.
 
     make RULES=bytecode
 
@@ -919,6 +925,8 @@ Point `EVV_LIBDIR` at that directory and run the extractors:
 
 `extract-langs.sh` puts each of the other eight languages in `analysis/<tag>`, which is for comparison rather than for building. Both extractors want `llvm-ar`, `llvm-objdump` and the mingw `objcopy`, so both run inside `nix develop`.
 
+Read those objects with `llvm-objdump -d -r --no-show-raw-insn` and not with binutils `objdump -d`. Every function is its own COMDAT `.text` section and MSVC gave local labels the same names in different sections -- `$L61863` occurs several times in one object -- so binutils takes the recurring name for a function boundary, resynchronises the instruction stream at that byte and prints plausible nonsense from there to the end of the section. In `JpnUtil::ConvertDakuten` it produced `into` and `add %al,(%eax)` where the code is a compare and a conditional jump, and nothing warned. If a function's control flow stops making sense in the middle, suspect the disassembler first. The lifters go on using binutils `objdump` and `nm` for section bytes, headers, symbols and relocations, none of which is affected; it is instruction decoding that is wrong.
+
 IBM's public host carries more than the SDK: the AIX packages of the same engine, whose headers are how the interface across four generations was read, and the Pocket PC runtimes, are under `/software/` beside it. None of it is needed here.
 
 Mainline ViaVoice is a different product line and not a wider language set.
@@ -943,6 +951,12 @@ Six categories run by default: plain text, UTF-8, annotations, annotations with 
 `EVV_NATIVE=$PWD/build/probe32 test/suite.sh` runs the same cases through the thirty-two bit build. Both word sizes have to pass, and so does `RULES=c`.
 
 Without Wine there is no automatic check that the audio is right. `tools/say.sh` speaks a sentence and plays it, laying the dictionaries down first, so a change to the language data can be heard.
+
+    make crashers
+
+is the other check that wants neither Wine nor IBM's objects. `test/cases/crashers.txt` holds text the original cannot survive: every one of those strings takes an unhandled page fault in IBM's engine, all of them on a node reference of nought, and ours used to take the same one. This speaks each of them through ours and answers non-zero if the engine died on one or would not finish. There is nothing to hold the audio against, since the reference produces none for any of these, so what it checks is only that ours answers -- either the word is spoken or the utterance is given up, and the process is still there afterwards. It takes about fifteen seconds across the machine's cores, and `EVV_CRASH_JOBS` says how many to use.
+
+The strings were found rather than listed. `tools/crash-search.py` takes text that kills the engine, tries every one-letter change to it, keeps whatever kills it too, and does the same to those, with the engine itself as the oracle. Point it at a build with the guards taken out to find more of them, and at the build in the tree to check that none is left.
 
 `tools/delta-check.sh` is the other check. It holds named rules written as C against the same rules left as bytecode: it speaks each of the seven plain cases twice, once each way, with the engine saying which rule it is entering and every call it makes, arguments and all, and the two accounts have to be identical. That is finer than the audio, because a rule can go wrong in a way that changes what runs and not what is heard.
 
@@ -1005,6 +1019,12 @@ Three cases come at the end, the last two of them because unlike the rest they t
 Not everything it tests wants a spine. The walk over the names a field can take, the uniqueness test and the two prefix tests all read the language's own table, so those cases print whole answers rather than landmarks -- the alphabet, `undefined lower upper`, which characters could still begin a name -- and they are the strongest cases in the file for that reason.
 
 Three things it does not reach, and it says so where it stops. `get_tok` leaves two nodes rather than a sentence, so a call that walks the spine walks a short one, and the branch of the context pair that has to look for a mark is never taken -- putting the wrong walk under it changes nothing, which was checked rather than assumed. `init_stream` tears a stream down and builds it again, which on a machine with a sentence in it leaves nothing for the next call to stand on. And IBM's own `vsplit_time` faults on the only position the harness can offer `divide_time`, so that pair cannot be compared at all. A spine with statements on it wants the whole pipeline run with an output attached for the samples, and that is the next piece of this harness rather than something it does now.
+
+`test/romcan.sh` and `test/romprims.sh` are the two checks for a language written in another script, which is Japanese and nothing else in this SDK. Such a language goes through a romanizer on its way to the engine, and until that romanizer is transcribed there is no way to get a word of the language as far as the engine at all -- so the seam is recorded instead. `make -C reference TAG=jajp BUILD=../build/reference-jajp romtap` builds IBM's engine with `reference/romtap.c` standing in front of the eight public methods of its romanizer manager, which writes down every call and every answer when `EVV_ROMTAP` names a file. `make romcan LANGS=lang/jajp` builds `test/romcan.c`, a romanizer with no Japanese in it that reads such a recording back and answers from it, and `EVV_LANG=jajp test/romcan.sh` runs both sides over the Japanese cases. Two things have to hold: the samples have to be IBM's, which says the whole engine below the seam is right, and every call that arrives has to be the call the recording holds, which says our manager asks the same questions. That is what proved the engine right for Japanese before a line of its romanizer existed, and it is what says the romanizer is all that is left.
+
+The one thing a recording cannot show is a parameter being read: the manager reads a parameter before it writes one and flushes what the romanizer is holding when the two differ, so what `getParam` has to answer is worked out from the recording's own flushes. `EVV_ROMCAN_PARAMS=real` stops working it out and hands that half to the romanizer's own `rom/jajp/rominstparam.c`, which is how that file is proved: a wrong answer moves every flush after it and the recording stops lining up.
+
+`test/romprims.sh` is for a romanizer class the seam never reaches. It is the same arrangement as `test/prims.sh`: `test/romprims.c` is compiled twice, by `make romprims LANGS=lang/jajp` against ours and `make -C reference TAG=jajp romprims` against IBM's objects, and the script diffs what they print. What it sweeps is every input there is -- each single byte, each two-byte pair the codeset converter accepts, and all sixty-five thousand code points in the other direction, twice -- which is about a hundred and forty thousand calls a side. It found the one difference there was on its first run, and that difference turned out to be IBM reading past the end of its own table.
 
 Every language module is built and spoken in the bytecode CI job, and then all eight are built into one binary and each spoken out of it. Neither wants Wine or IBM's objects -- only the comparison against IBM does -- so what that catches is a module that stops linking, or an engine change that suits one language and not another, and it requires samples rather than only a successful link.
 

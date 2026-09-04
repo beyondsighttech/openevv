@@ -61,6 +61,7 @@ itit) : ${EVV_LANGUAGE:=0x50000} ;;
 frfr) : ${EVV_LANGUAGE:=0x30000} ;;
 frca) : ${EVV_LANGUAGE:=0x30001} ;;
 hien) : ${EVV_LANGUAGE:=0x90000} ;;
+jajp) : ${EVV_LANGUAGE:=0x80000} ;;
 esac
 export EVV_LANGUAGE
 

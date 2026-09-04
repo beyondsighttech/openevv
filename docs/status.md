@@ -12,7 +12,7 @@ Nothing is borrowed at build time. `make missing` answers nothing, which is the 
 
 Dictionaries can be edited. `tools/delta-dict.py` writes `lang/enus/enus.dict` out of the tables and reads it back in, so a pronunciation can be changed, laid down and heard.
 
-All nine languages in the SDK lift and decompile: US and British English, both Spanishes, both Frenches, German, Italian and Japanese. Eight of the nine build, speak and match IBM byte for byte over the cases there are for them -- everything but Japanese, which has no oracle to be held against and is the subject of a section of its own. English is the one that is finished in the fuller sense of having a dictionary a person can edit.
+All nine languages in the SDK lift and decompile: US and British English, both Spanishes, both Frenches, German, Italian and Japanese. Eight of the nine build, speak and match IBM byte for byte over the cases there are for them -- everything but Japanese, which has an oracle now and is the subject of a section of its own: the engine below its romanizer is proved against IBM's, and the romanizer itself is what is left. English is the one that is finished in the fuller sense of having a dictionary a person can edit.
 
 A build takes as many languages as it is given. `make LANGS="lang/enus lang/dede lang/engb lang/eses lang/frfr"` puts all five in one binary, and any other set the same way: `eciGetAvailableLanguages` answers with all of them, a caller picks one the way IBM's interface always allowed, and each is held against its own oracle out of the same binary. What made that possible is in `src/delta_lang.h` -- every module names its own tables after itself, because IBM gave them the same names in every language, and the engine reaches whichever is in force rather than linking to one by name.
 
@@ -116,66 +116,41 @@ That is also what made the first sabotage attempt useless and is the lesson wort
 
 ## Japanese
 
-`docs/japanese.md` is the whole of it, written for somebody picking this up who was not the person who found it: what is done, what is left with its sizes, the oracle and why it can be trusted, the target and how to observe it, the decisions already taken, and the traps. What follows here is the short version.
+`docs/japanese.md` is the whole of it, written for somebody picking this up who was not the person who found it: what is done and proved, what is left with its sizes, the two harnesses, the faults they found, the oracle and why it can be trusted, the decisions already taken, and the traps. What follows here is the short version.
 
-Japanese lifts -- 477 rules, its settings, and the language number 0x80000 --
-and one thing stands between that and a language that speaks: the romanizer.
+Japanese lifts -- 477 rules, its settings, and the language number 0x80000 -- and what stands between that and a language that speaks is the romanizer, which is what `jpnrom.dll` is in stock Eloquence.
 
-**It has an oracle now, which it did not before.** A reference built from
-`analysis/jajp` would not link: it wanted `getFullPathName`, which every other
-module's `libmain.obj` defines and Japanese's does not, and `ralStrNicmp` and
-`_chkstk`, which are in none of the nine. So there was nothing to hold a
-Japanese build against. All three are now supplied, and it matters where each
-one came from. `ralStrNicmp` went into `src/port_ral.c` beside `ralStrIcmp`,
-which already takes a length first with nought meaning the whole string, and is
-the same call shape -- the runtime abstraction layer has always been ours on
-both sides of the comparison, so that is the existing boundary and not a new
-one. The other two are in `reference/jajp_shim.c` and are linked for that one
-module only: a path to files this port never reads, and the stack-frame helper
-Microsoft's compiler calls instead of subtracting from the stack pointer. IBM's
-Japanese binary now speaks, and the English and German references are unchanged
--- English still matches over all 81.
+**Everything below the romanizer is now proved right, which it was not before.** Japanese text goes through the romanizer and comes out as a phoneme string with prosody annotations in it; from there the engine that speaks the other eight speaks Japanese. `reference/romtap.c` records every call IBM's romanizer manager makes and every answer it gets, and `test/romcan.c` replays those answers as a romanizer with no Japanese in it. Our samples are then IBM's, byte for byte, over seven Japanese cases -- kana, kanji, katakana, numbers, embedded English, romaji -- and the conversation with the romanizer is identical call for call. So Japanese is a text-to-text problem now, with an exact oracle in front of it.
 
-**What is left is the romanisation module**, which is what `jpnrom.dll` is in
-stock Eloquence. `rz_isRomExist` in `src/eci_romanizer.c` says family 8 dialect
-0 has one, which is Japanese, and `rz_getRomanizerInst` always answers that
-there is none because loading one is Win32 `LoadLibrary` work that was
-deliberately left on the far side of the porting boundary. So
-`rz_setActiveLanguage` returns -1, setting the language fails, and no instance
-is made. Take that one line out and Japanese speaks: 13,486 samples, against
-IBM's 18,293 for the same text, and the difference is the romanisation.
-Everything else about the language -- rules, globals, sets, settings -- is
-already right.
+**The seam is transcribed and the vtable slots are gone.** This project used to say that finding a romanizer was Win32 `LoadLibrary` work; it is not. IBM takes the address of `getRomObject`, a link-time symbol its own `romedll_link.obj` answers, and the only Win32 in it is asking where the program was loaded from. `src/eci_rom.h` says what a romanizer is -- one struct of named functions where IBM had numbered slots -- and `src/eci_romedll.c` stands in for the linker's answer. A romanizer is a property of its language, and `rom/<tag>` is built exactly when `lang/<tag>` is, so an English build carries none of it.
 
-**And the target is observable now, which it was not.** IBM's Japanese does
-speak Japanese script, and what decides whether it does is how the instance was
-made: `eciNew()` gives nothing for Shift-JIS kana, and `eciNewEx(0x80000)` --
-the only language there is -- gives 13,266 samples. That is why
-`reference/speak.c`, which tries `eciNew` first, produced nothing and looked for
-a while like an engine that could not do it. Setting the codeset parameter
-afterwards is refused; the language given at creation is what carries it.
-`make -C reference TAG=jajp jptry` builds the driver that settled it, and the
-head of `reference/jptry.c` has the table. Romaji gives 18,293 samples and kana
-13,266, so the romanizer is not passing letters through, and that difference is
-what anything transcribed has to reproduce.
+**The data is lifted, in two commands.** `tools/lift-rom.py` takes the static dictionary: 1,723 blobs and 2,669,092 bytes. `tools/lift-romtables.py` takes the five objects whose code is a few accessors over a great deal of table -- `dictman`, `unicodeconvt`, `jpnutil`, `userdict` and `phrasebuf`: 115 tables and 193,858 bytes.
 
-Measured properly, the transcription is about 163 KB of x86 across thirty
-objects once the engine objects already ported and the dictionary lifted as data
-are taken out. That is a Japanese morphological analyser: phrase tables, a path
-search, number reading, intonation phrases, unknown-word handling, penalties.
-The dictionary beside it is 2.67 MB in 1,723 blobs and lifts in one command with
-tools/lift-rom.py, which is written and proved.
+**Thirteen files are written and held to IBM's answer.** `rom/jajp/rominstparam.c` is the parameters and errors, proved by `EVV_ROMCAN_PARAMS=real test/romcan.sh`, which hands that half of the recorded conversation to it, and `rominstance.c` is the instance and its forwarding. `unicodeconvt.c`, `dictman.c`, `jpnutil.c`, `dictsearch.c`, `userdict.c`, `annotation.c`, `inputchar.c`, `codeconv.c`, `inputmngr.c`, `convtinterface.c` and `phrasebuf.c` are proved by `test/romprims.sh` over 789,549 calls a side: every byte and every two-byte character through every predicate, all 65,535 code points converted both ways, every accessor over the whole range of the table it reads, every kana code into letters, every hiragana into katakana, the whole of the run-to-readings walk over twelve Japanese texts at every position of each, a user dictionary taught eleven words and looked up against a sentence in both of the modes there are, the reader's own record printed byte for byte after every call that writes it, all 65,536 two-byte characters through the classifier that decides what each one is, every one of the 65,536 pairs through the JIS-to-Shift-JIS arithmetic and through the half-width widener in both of its walks, and every byte of the alphabet in each of the eight contexts that decide a road through the two whole-text codeset conversions.
 
-The subsystem is sixteen objects and about half a megabyte: `rominstance`,
-`rommanager`, `rominstparam`, `romreg` and `romedll_link` are the framework,
-`jpnrom`, `jpnutil`, `kanastr`, `PCRoman2BG` and the three `MakeReadable*` the
-Japanese half, and `skana0`, `skana1`, `stakankana0` and `jpnsdict` the tables
-and dictionary. `romedll_link` is what makes the reference romanise despite
-loading no DLL: in a static build it stands in for the library.
+**The annotations are lifted out and put back.** `rom/jajp/annotation.c` is the whole of `Annotation`, six methods: the marks a caller puts in the text are not Japanese and must not go through the analyser, so they are kept in a ring of 128 with the position each belonged to and written back as the output passes that place.
 
-`lang/jajp` is deliberately not in the tree until it can make an instance, since
-a module that cannot would break any build that named it. It lifts again in one
-pass from the tools.
+**The user dictionary works.** `rom/jajp/userdict.c` is the whole of `RomUserDict`, eleven methods: a caller teaches it a word as written and a reading in kana with a caret where the accent falls, and it normalises both into the forms the built-in dictionary uses, keeps them in the same skip list the English dictionary uses, and writes what it finds into `DictSearch`'s candidate entries so that a taught word is indistinguishable from a found one. All fifteen sabotages of it move lines. It also found a ninth deliberate divergence, and this one is IBM's: `updateDictExt` allows a key twice as long as the buffer it builds it in, and a word of twenty half-width kana walks off its own stack. Measured at exactly twenty.
+
+**The first real piece of the analyser is written.** `rom/jajp/dictsearch.c` holds all sixty-two of `DictSearch`'s methods, and they are the closure of `GenerateWord`: take a run of text, work out every way it can be read, and look each reading up in the dictionary. That closure calls nothing outside itself that was not already written, which is what made it the right unit. Two record formats came out of it and four more regions of the map were settled, including the long-reading store in the spine at 0x5f2. All twenty-two sabotages of that closure move lines. The number reader went in after `InputChar` did, and then `Do` itself with one private method of `Romanizer` to close it -- so the search runs now: text goes in as characters and comes out as every way the sentence can be read. The class is whole now: the four function-word methods that walk a phrase backwards went in last.
+
+**The first piece of the analyser above the dictionary search is written.** `rom/jajp/phrasebuf.c` is all nine methods of `PhraseBuf`: where the path search's answers become accent phrases, one slot of 344 bytes for each way the sentence can be broken up, holding the words, their readings, the accent and what kind of phrase it makes. It closes on code already written, which is what made it the unit. Three record formats came out of it -- a path, a sub-word and a phrase -- and `rom/jajp/phrasebuf.h` and `rom/jajp/jpath.h` are the maps, both held against IBM's objects by `tools/rom-offsets.py`, which now checks five records rather than three. Fifty-seven of sixty-one sabotages move lines and `docs/japanese.md` names the four that do not. The sweep found two faults in the reading: the cost of a phrase comes from the first word on its path rather than the last, and the test that refuses a one-word path reads how many characters it covers rather than how long its reading is.
+
+**The surface is written, so text now arrives the way the engine sends it.** `rom/jajp/convtinterface.c` is all twenty-one methods of `ConverterInterface`, `inputmngr.c` all ten of `InputManager` with the three queue-element classes beside it, and `codeconv.c` the five conversions of `JpnUtil` that IBM keeps in an object of its own. Text is recoded into Shift-JIS if it arrived in EUC-JP or in one of the three seven-bit JIS codesets, and waits with the `InputManager` until something asks for it; a mark or a parameter set part way through goes on a queue with a note of where in the output it belonged; and the user dictionary calls pass through to `RomUserDict`, so the ECI dictionary calls no longer answer refused for Japanese. `ConverterInterface` is Romanizer's base class, so `rom/jajp/romanizer.h` is no longer a guess at its head: the eight fields from 0x00 to 0x1f are read out of `convtinterface.obj`, and every displacement on a pointer in that object is one of them. A hundred sabotages were tried and eighty-one move lines; the eighteen that do not are named one by one in `docs/japanese.md`, and they are memory rather than answers, allocations that cannot be made to fail, or roads that read nothing the sabotage changed. Writing it corrected something this tree used to say, that `RomInstParam::setInputType` has no caller at all -- it has exactly one, `addText`, so `getParam(0)` and `isAnnotationsInText` answer what the last text was said to be rather than always nought.
+
+**The reader is written, and it is the whole of the analyser's first stage.** `rom/jajp/inputchar.c` is all twenty-one methods of `InputChar`: text arrives as bytes and leaves as three parallel arrays of seven hundred and twenty-six -- the characters, what each one is, and where each began in what the caller actually sent -- read one sentence at a time. `rom/jajp/inputchar.h` is that record, and `tools/rom-offsets.py` checks it against `inputchar.obj` the way it already checked the other two.
+
+`GetCharType` is in it, which is the method every earlier unit's character tests were read off, and it is now swept over all 65,536 two-byte characters against IBM's own. So the twelve kinds are settled by measurement rather than by reading.
+
+Two faults of the map came out of writing it. What `DictSearch` calls the user-dictionary context is one of the reader's own chain nodes, and the written form it names is a pointer at IBM's fourth byte, which on a sixty-four bit host it cannot be; two files were reading eight bytes there. And `IC_OFFSET` is not an offset into the buffer at all but into the raw text `TextAnalysis` keeps, which is how an annotation gets put back where the caller wrote it after the reader has folded and rewritten characters on the way through.
+
+**Both harnesses found real faults on their first run**, which is the argument for building them before the romanizer rather than after. `getActiveSampleRate` in `src/eci_managers.c` answered nought, so the sample rate never reached a romanizer -- and no language could see that, because the romanizer is the only thing in the engine that asks. Three faults are IBM's own and are not reproduced: `MBCSToUCS2` loops for ever on a byte of 0x80, 0xfe or 0xff; it looks a pair beginning 0xfd up past the end of the table it looks it up in, answering with whatever the linker put next; and `Hiragana2Katakana` walks for ever on 0x82ec, hiragana small wa, which its table has not got and its own test for hiragana lets through. That last one is measured: with it in the sweep, IBM's side does not finish in sixty seconds.
+
+What is left is the analyser above the dictionary search and the output side below it: 169 entry points in ten classes, counted from `nm` across the whole directory, which is roughly a quarter of the romanizer still to write by that measure. `TextAnalysis` is 37 of them and is the spine; `MakeReadableJP` 32 and is what produces the phoneme string; `Romanizer` 17 of its 18 and is last rather than next, because it drives the other four. `docs/japanese.md` has the order, which comes from the graph of which unwritten class calls which, and says what finishing it means besides the transcription: `JPROM_INCOMPLETE` out of `rom/jajp/jprom.h`, `lang/jajp` into the tree, and `EVV_LANG=jajp test/suite.sh` against a Japanese reference, for which the cases already exist.
+
+The one thing to know before starting on it: nothing is audible until nearly all of that exists, because the phoneme string is made by the last two pieces. Every unit before them is proved against IBM byte for byte and heard by nobody.
+
+`lang/jajp` is deliberately not in the tree until it can make an instance, since a module that cannot would break any build that named it, and `.gitignore` says so. It lifts again in one pass from the tools. `rom/jajp/jprom.h` defines `JPROM_INCOMPLETE` while the romanizer cannot convert anything, which makes it answer no instance at all rather than speaking something wrong.
 
 ## What the lifting cost, across all nine
 
@@ -185,8 +160,9 @@ them turned out to be a gap in our machine rather than something not understood
 about the language: two primitives no English rule reaches, one alignment rule,
 one signed number that should not have been signed, and a little floating point
 nobody expected a fixed-point engine to contain. The sections above say which
-was which. What is left is Japanese, and what is left of Japanese is an oracle
-rather than a lift.
+was which. What is left is Japanese, and what is left of Japanese is a
+transcription rather than a question: it has an oracle, the engine below its
+romanizer is proved, and the romanizer is measured.
 
 ## The compiler
 
@@ -410,6 +386,42 @@ The sets' text is written out of the C in the tree rather than out of IBM's obje
 
 That work also found that `tools/delta-sets.py` had not been able to write the file it generates for some time. The copy in the tree had been brought to the arena's forms during the sixty-four bit port and the tool had not, and its comment about the stores had gone stale with it. English's file had the newer forms and the other seven the older; the tool now writes English's and the seven have been brought into line, ten lines each with no data touched.
 
+## Words the engine could not say
+
+Eloquence dies on certain text and always has. The NVDA driver that loads IBM's engine -- `davidacm/NVDA-IBMTTS-Driver`, which is GPL-2.0 -- carries a table of regular expressions whose only job is to rewrite those words before the engine sees them, because otherwise the screen reader goes down with it. Ours died on every one of them and in the same place, which is what a faithful port does; under Wine the reference takes an unhandled page fault on a read of address 0x48 or of address 8, and ours reads the same address.
+
+They are all one fault. The Delta machine dereferences a node reference of nought.
+
+There are two ways it gets one. A rule can leave a position variable unset and then walk from it: `find_eng_nucleus` does, on a syllable it decides has no nucleus, and `assign_phone_durs` hands the two noughts it left to the duration rules a few calls later, where `lpta_mover` walks from nowhere. And the spine's two ends are nought links, so the machine's own walks step off the end of the delta -- the neighbour lookup in `chkdelnonseq`, and the context lookup behind `pta_ctxt`, `pta_tstctxt` and `vdef_proj`.
+
+IBM knew the state exists. `setd_lookup`, in the same file, tests both registers for nought before it uses them and answers rather than faulting. It is the only place in the machine that asks.
+
+Every place found to reach one now asks, and each answers the way that primitive already answers everything else it cannot do. That is the tenth deliberate divergence in the tree, and like the ninth it is IBM's fault rather than a choice about what to sound like. The four unconditional register moves backtrack the rule, as they already do for a position that will not settle. The four that are tests answer that they did not move, as they already do for a mark in the way. `pta_ctxt` backtracks and `pta_tstctxt` answers, which is the same split those two already make. `vdef_proj` answers that it could not project, which `vrange_l` already handles. And `chkdelnonseq` backtracks when the statement it is asked about has no sequential neighbour on one side, because there is then no run to mark and going on leaves the spine in a state a later walk goes round in.
+
+What makes this safe is that every one of those guards sits on a path the old code could not survive, so no input that works today can reach one. The suite says so rather than the argument: all 81 English cases still byte-identical to IBM's binary, in both forms of the rules and on both word sizes.
+
+**Which of them carry weight.** Taking each guard out on its own and speaking the whole corpus, six of the thirteen move cases: `chkdelnonseq` at 10,270 of the 20,526, `vdef_proj`'s test of the context it found at 9,636, `lpta_mover` at 608, `pta_tstctxt` at 139, `vdef_proj`'s test of the statement itself at 127, and `pta_ctxt` at 12. The other seven move none. They are the same operation on the other register or in the other direction, and they stay as they are, because a comparison on a path that already faults is not worth being clever about and because the seven are one primitive written seven times. But a guard nothing reaches is a guard nothing proves, and that is what this measurement is for: it is what said the corpus was too narrow, twice, before the searches below widened it.
+
+**The second half is a bound on every walk.** A guard on a nought stops the machine reading address nought; it does not stop a delta whose links have come round on themselves, and that is the other way these words end an engine. Refusing the deletion in `chkdelnonseq` and letting it finish were both tried on the two misspellings of Wednesday that trigger it, and letting it finish leaves a cycle that `visleft` walks for ever. In something a screen reader has loaded into itself a hang is worse than a fault, because a fault at least ends.
+
+So 43 walks in `src/delta.c` now count their steps, and a walk that takes more than `EVV_WALK_MAX` of them ends the rule the way a nought does. What says those counters are on the live path rather than sitting there: set the ceiling to four and an ordinary sentence gives the utterance up instead of speaking it. The machine keeps no count of its nodes, so that is a ceiling and not a measure: the deepest walk over every case in the suite and over the whole crash corpus is 1,634 steps, measured rather than reasoned about, and the ceiling is 200,000. Nothing any text can do reaches it. The 18 loops left unbounded are over byte strings, over numeric ranges that converge, or in the two functions the Delta debugger uses and nothing in this engine calls.
+
+**What the words do now.** The one this started from speaks: 8,074 samples where it used to be a fault. The two misspellings of Wednesday do not -- by the time the missing neighbour is found the spine is already wrong, so the rule fails and the utterance goes. Inside a sentence that means the words before it are spoken and the rest is dropped, which is what an engine that cannot say something should do. Neither takes the process with it, and that is the whole of what was asked for.
+
+**One bug of ours came out of this, and it had to be fixed first.** `forceErrorBacktrack` is the machine's error path, and thirty-six places call it; nothing in the suite had ever reached one, which is written down further down this file. So the path was untested, and in the interpreter it was wrong: `run_bytecode` put the argument depth back when a landing was re-entered but not the place the interpreter had got to, so a backtrack resumed at whatever instruction the rule had since run on to, re-entered a call with the wrong argument area and faulted. The rules written as C were already right, because there a landing is a real C setjmp and the compiler resumes where it should. Both now put the position back as well as the depth.
+
+**The corpus.** `test/cases/crashers.txt` holds the strings, and `make crashers` speaks every one of them and answers non-zero if the engine died on one or would not finish. It wants neither Wine nor IBM's objects, so it is the second of the two quick checks beside `test/hash.sh`. There is nothing to compare against -- the reference produces no audio for any of these -- so this is not part of the differential suite and checks only that ours answers.
+
+The strings were found rather than listed. `tools/crash-search.py` takes text that kills the engine, tries every one-letter change to it, keeps whatever kills it too, and does the same to those; the engine with no guards in it is the oracle. Three seeds -- the word this started from and two misspellings of Wednesday -- became 230 after one round and 10,751 after two. A third round would be four million candidates and several hours, and has not been run.
+
+A corpus grown that way covers the shapes it was grown from and nothing else, which is the thing to know before trusting one. All three seeds are letters, so not one of those ten thousand strings carried an apostrophe or a colon, and taking each guard back out one at a time said so plainly: with that corpus, the three in `pta_ctxt`, `pta_tstctxt` and `vdef_proj` moved not a single case, because nothing in it reached them. A separate sweep of 145,295 strings over the shapes the letters-only work had never tried -- letters with apostrophes among them, and a clock time followed by an ordinal -- found 142 more that kill the original, and one round outward from those brought the corpus to 20,399. Two of the three then began to carry weight, which is the measurement doing its job.
+
+The third search closed the last gap. At 20,399 one guard was still moving no case, `vdef_proj` asked to project a statement that is nowhere, so the family known to reach it was seeded and grown a round of its own: 127 more strings, a corpus of 20,526, and that guard now at 127. What is left unreached is the seven that are somebody else's direction or somebody else's register, and nothing found so far tells them apart from unreachable.
+
+Two things that search taught. The first is that random text does not find these: 24,000 random letter strings and the whole 123,382-word SCOWL list both come back clean, and so do 400,000 single-letter misspellings of common words. What kills the engine is a small number of specific shapes, and you reach them by growing outward from one rather than by throwing text at it. The second is that the families the NVDA driver's table describes are real and its list is not complete: expanding those patterns gives 864 strings, of which 267 kill an engine with no guards in it, and all 864 survive one with them -- but the search above found ten thousand more that the table does not cover.
+
+Nothing from that table is in this tree. Every string in `test/cases/crashers.txt` was grown by `tools/crash-search.py` from seeds of our own against a build of our own, and the driver is named here because it is where the knowledge that these families exist came from, which is a fact about IBM's engine rather than anything of theirs. That is also why `NOTICE` says nothing about it: there is no third-party data here for it to govern.
+
 ## Partly done
 
 The rules read as rules, to sixteen passes of the decompiler. What that means concretely: calls sit with their arguments, wrapper rules say which primitive they stand for, state reaches say which language variable they touch, frame reaches say which argument they are, the arms of a backtracking dispatch say which alternative they are whichever of the two ways the compiler wrote the dispatch, register halves say which half, a test of the flags is the comparison the machine made -- a call's answer against nought, a length against a limit, a bit against a mask -- rather than a flag set and a flag read, letting go of a call's arguments says that and not that a scratch register was written, a jump at the return is a return, 2,391 loops are loops, a jump out of one says it is leaving it, the two places a rule ends say whether it has matched or given up, and the machine's dead leavings are gone.
@@ -426,6 +438,24 @@ Three things in the rules cannot be recovered and are not going to be. The globa
 
 The suite is blind to the eight voices the caller may edit, and that was found by accident rather than by looking. Nothing it runs asks an instance about voice nine, so the loop that copies the language's own eight into them can be turned off and all 81 English cases, all 80 German and the samples hash still pass. A stale script in `/tmp`, left there on 17 August by a session doing the sabotage check, made exactly that edit on 23 August -- Python imported it under a standard module's name and ran it -- and nothing in the tree noticed. `make voices` is the answer and it runs in CI; `docs/building.md` says what it holds an instance to and which three sabotages it catches.
 
+
+**Where the engine's instructions actually are, measured on 31 August 2026 rather than assumed.** Of the instructions a run retires, about 15 per cent are in the rules written as C, 14 per cent in the machinery that gets from one rule to the next, 27 per cent in the synthesiser and the remaining 42 per cent in the Delta machine's own primitives -- `next_block`, `starttest`, `vback`, `ventproc`, `scan_fenced` and their like. Two things follow that are worth knowing before anyone optimises anything here.
+
+The first is that the rules are not where the time is. Making the compiled rules perfect -- free, not merely faster -- would buy fifteen per cent. The transliteration overhead that looks so obvious when reading the generated C is real, and it is not the bill.
+
+The second is that nothing here is a big lever. The heaviest single function is `pole_filter` at about 15 per cent of instructions, and after it the profile falls away to three per cent and then to two. That is what an engine looks like when the work is spread over a machine rather than concentrated in a loop, and it is why a further pass of this kind buys percentages rather than multiples.
+
+**Nothing in the suite ever lands on a landing place.** Every real rule plants one -- 725,962 of them over the benchmark text, 7,862 in a single ordinary sentence -- and not one is ever jumped to. The only thing that jumps is `forceErrorBacktrack`, which is the machine's own error path: a rule asking to move somewhere it cannot go, a range that will not settle, a case the dispatch has no arm for. Well-formed text through the shipped rules never reaches any of them.
+
+That was measured because it decides how a rule written as C keeps its registers. A backtrack comes back into the middle of a rule, and what comes back with it is only what the save could keep, so anything the compiler had chosen to hold in a register would be stale -- which is why every register of every rule was `volatile`, and why the compiled build was nine megabytes larger and a third slower than it needed to be. `tools/delta-decompile.py` now works out which registers a come-back could actually find stale, by asking the ordinary question of which are live where the save returns to, and 860 of the 1,042 rules need none at all: the code at a landing puts back what it is about to read, because IBM's compiler had the same problem and answered it the same way. 182 rules keep 198 registers between them, almost all of them r7 or r3.
+
+The point for anyone reading a check here is that **no case can tell the difference**, and that was established rather than assumed. Writing the rules with no register kept at all still matches IBM over all 81 cases, and still gives the same 3,653,383 lines of trace over the seven plain sentences, call for call. What does tell the difference is landing on a landing place on purpose: patch `lpta_movel` to call `forceErrorBacktrack` on the Nth call, build the rules both ways -- `EVV_STALE_ALL=1 make rules` is the old behaviour, with every register kept -- and speak the same sentence at each N. Over 200 fault points, 74 of which actually landed, the two agree on every sample. That is the evidence behind the change; the suite is not.
+
+One thing that analysis got wrong first time is worth keeping, because it is the shape of mistake to expect. A backtracking dispatch is written as a `switch` whose every arm jumps, and the first version of the flow graph did not know that shape: it read the arms as falling one into the next, so whole paths out of a landing were never looked down and seventeen rules came out needing fewer registers than they do. Nothing said so. What said so was the same graph being used a second time, to bound how deep a rule's argument area gets -- there the wrong answer is an array too small, which faults on the first sentence. Both analyses now build the graph through one function, and it refuses a shape it has not seen rather than leaving an edge out, because an edge left out is a path nothing looks down.
+
+The argument area is the other thing that graph pays for. The interpreter gives every rule 64 words of it because it has one piece of code for all of them; a rule written as C is in front of the decompiler, and 3,225 of the 3,377 never get past nine -- the median is four. That was a quarter of a kilobyte of stack and a `rep stosq' per rule entry, on a synthesis thread that has sixty-four kilobytes in all and rules that nest deeply. `make CFLAGS=-DEVV_ARG_CHECK` builds the guard that says whether any rule ever wants more than it was given; over every case file in `test/cases`, none does.
+
+The same graph settles one more thing: whether a rule needs a frame out of the arena at all. It does if it hands the machine the address of something in one, because a value is thirty-two bits and only the arena's addresses fit in one -- or if it has working memory below its arguments, or if a backtrack can land in it. That is every one of the 1,042 real rules and none of the 2,335 wrappers, so a wrapper keeps its few words on the stack like any other C function and neither takes a frame nor gives one back.
 
 The suite compares one utterance per process, and until 22 August 2026 that was the only utterance anything had ever compared. It is no longer: `probe` and the reference both take a `t` in their mode argument, which says the same text a second time on the same instance and writes it beside the first.
 

@@ -50,9 +50,19 @@ census = importlib.import_module('delta-census')
 # Beside the language it was read from, unless told otherwise. Writing it
 # anywhere else puts one language's rules where another language's build
 # will pick them up.
-OUT_C = os.environ.get(
-    'EVV_OUT_C',
-    os.path.join(census.LANG_DIR, 'delta_rules_c_%s.c' % census.LANG_TAG))
+OUT_DIR = os.environ.get('EVV_OUT_DIR', census.LANG_DIR)
+
+# How many files the rules are written into. One was seven minutes of compiler
+# and could not be shared out; this many finish in about a minute on a machine
+# with cores to spare, and the Makefile must be told the same number, since it
+# names the files it expects rather than looking for whatever is there.
+PARTS = int(os.environ.get('EVV_RULE_PARTS', '32'))
+
+# The number goes before the language, not after it. Everything in a language
+# module has to end in that module's name -- the Makefile refuses a file that
+# does not, since that is how a stray from an earlier lift is caught.
+def part_path(n):
+    return os.path.join(OUT_DIR, 'delta_rules_c%02d_%s.c' % (n, census.LANG_TAG))
 
 # Inlining a wrapper says what a rule does, and costs the only check that is
 # finer than the audio. A wrapper written out no longer calls the wrapper rule,
@@ -377,8 +387,15 @@ HEAD = """\
    well. Recovering the loops and the conditionals comes after this is known
    to be exact.
 
+   This is one of %d such files. Together they are some thirteen megabytes,
+   which is a quarter of an hour of compiler in one translation unit and about
+   a minute spread over as many cores as the machine has. Which rules land in
+   which file is settled by size, so that the files finish together; nothing
+   else depends on where a rule is.
+
    delta_rule_native names the ones written down; the interpreter looks there
-   first and runs a rule from here when it finds one. */
+   first and runs a rule from here when it finds one. Each file carries its own
+   piece of that table and the first gathers the pieces. */
 
 #include <string.h>
 
@@ -391,7 +408,7 @@ HEAD = """\
 
 def write(names):
     done, refused = [], []
-    text = [HEAD % census.LANG_TAG]
+    bodies = []
 
     for name in names:
         try:
@@ -404,39 +421,6 @@ def write(names):
 
         _n, _o, _s, _l = row
         frame, pbase, params = c_rule_shape(name)
-        text.append('/* %s, from %s */\n' % (name, rule.obj))
-        text.append('static int32_t evv_%s(void *state, const int32_t *args,'
-                    ' int nargs)\n{\n' % name)
-        # The frame is not an ordinary local. A rule hands the machine the
-        # address of it, and where a value is 32 bits and an address is not,
-        # the only stack that can be named in one is the arena's.
-        text.append('    unsigned char *frame = evv_frame_push('
-                    'DELTA_RULE_FRAME_MAX);\n')
-        text.append('    unsigned char *base = frame + %d;\n' % frame)
-        text.append('    unsigned char *param = base + %d;\n' % pbase)
-        text.append('    int32_t arg[%d];\n' % MAXARG)
-        # A landing from a backtrack comes back into the middle of the
-        # function, and anything the compiler had chosen to keep in a machine
-        # register would come back stale. The interpreter is safe because
-        # everything it needs lives in a block whose address has escaped; here
-        # the frame and the argument area are addressed, and the rest is said
-        # to be volatile so that it is not kept anywhere else.
-        text.append('    volatile int argn = 0;\n')
-        text.append('    volatile int32_t r0 = 0, r1 = 0, r2 = 0, r3 = 0,'
-                    ' r4 = 0, r5 = 0, r6 = 0, r7 = 0;\n')
-        text.append('    delta_flags fl;\n')
-        text.append('    int i;\n\n')
-        # The arena can run out, and then there is no frame. The interpreter
-        # answers nought here rather than writing through the nought it was
-        # given, and a rule written as C has to do the same or an engine that
-        # would have gone quiet falls over instead.
-        text.append('    if (frame == 0)\n        return 0;\n\n')
-        text.append('    memset(frame, 0, DELTA_RULE_FRAME_MAX);\n')
-        text.append('    memset(arg, 0, sizeof arg);\n')
-        text.append('    memset(&fl, 0, sizeof fl);\n')
-        text.append('    for (i = 0; i < nargs && i < %d; i++)\n' % params)
-        text.append('        memcpy(base + %d + 4 * i, &args[i], 4);\n\n'
-                    % pbase)
         # The rule while it is still one straight line of code with labels,
         # which is where anything that has to follow the machine's own control
         # flow has to look: the alternatives a dispatch chain names, and which
@@ -451,31 +435,407 @@ def write(names):
         named = name_tails(
             name_alternatives(name_params(named, pbase, params), alts))
         USED.update(saw)
+
+        plants = plants_landing(flat)
+        bad = stale_registers(flat) if plants else set()
+
+        # Whether this rule needs a frame out of the arena at all. It does
+        # if it hands the machine the address of anything in one -- a value
+        # is thirty-two bits, so such an address can only be the arena's --
+        # or if it has working memory below its arguments, or if a backtrack
+        # can land in it. None of that is true of a wrapper, and a wrapper is
+        # 2,335 of the 3,377: those keep their few words on the stack like
+        # any other C function, which is two calls and a clear a rule.
+        loose = (frame == 0 and not plants
+                 and not any('SLOT(' in l or 'PARAMAT(' in l for l in named))
+        if loose:
+            named = [l.replace('RETURN(', 'LEAVE(') for l in named]
+
+        text = []
+        text.append('/* %s, from %s */\n' % (name, rule.obj))
+        text.append('static int32_t evv_%s(void *state, const int32_t *args,'
+                    ' int nargs)\n{\n' % name)
+        # The frame is not an ordinary local. A rule hands the machine the
+        # address of it, and where a value is 32 bits and an address is not,
+        # the only stack that can be named in one is the arena's.
+        #
+        # Every rule takes the same number of bytes, though most want far
+        # fewer, because the address of a frame is the name a landing place
+        # is filed under and frames of one size put a rule at a given depth
+        # back where it was. What is cleared below is the rule's own, which
+        # is a different question.
+        room = frame + pbase + 4 * params
+        if loose:
+            # Words rather than bytes so that a four-byte read of it is
+            # aligned; nothing in a rule reads its frame wider than that.
+            text.append('    int32_t own[%d];\n' % ((room + 3) // 4))
+            text.append('    unsigned char *base = (unsigned char *)own;\n')
+            text.append('    unsigned char *param = base + %d;\n' % pbase)
+        else:
+            text.append('    unsigned char *frame = evv_frame_push('
+                        'DELTA_RULE_FRAME_MAX);\n')
+            text.append('    unsigned char *base = frame + %d;\n' % frame)
+            text.append('    unsigned char *param = base + %d;\n' % pbase)
+        text.append('    int32_t arg[%d];\n' % argument_depth(flat))
+        # A landing from a backtrack comes back into the middle of the
+        # function, and anything the compiler had chosen to keep in a machine
+        # register would come back stale. The interpreter is safe because
+        # everything it needs lives in a block whose address has escaped; here
+        # the frame and the argument area are addressed, and the rest is said
+        # to be volatile so that it is not kept anywhere else.
+        #
+        # A rule that plants no landing is never come back into, so nothing
+        # about it can be stale. That is every wrapper. Of the ones that do
+        # plant a landing, stale_registers says which registers a throw could
+        # leave holding the wrong thing, and it is usually none of them: the
+        # code at a landing puts back what it is about to read, because IBM's
+        # own compiler had the same problem with setjmp and answered it the
+        # same way.
+        #
+        # The argument depth is never one of them. The landing puts it back
+        # from a local written before the save and never after, which is the
+        # one thing C promises comes through a landing unharmed.
+        # And every register, which is what this used to do and what the
+        # claim above is held against: write the rules both ways, land on a
+        # landing place on purpose and see whether the two ever differ.
+        # docs/status.md says how that was done and what it answered.
+        if os.environ.get('EVV_STALE_ALL') and plants:
+            bad = set(range(8))
+        keep = [r for r in range(8) if r not in bad]
+        text.append('    int argn = 0;\n')
+        if keep:
+            text.append('    int32_t %s;\n'
+                        % ', '.join('r%d = 0' % r for r in keep))
+        if bad:
+            text.append('    volatile int32_t %s;\n'
+                        % ', '.join('r%d = 0' % r for r in sorted(bad)))
+        text.append('    delta_flags fl;\n')
+        text.append('    int i;\n\n')
+        # The arena can run out, and then there is no frame. The interpreter
+        # answers nought here rather than writing through the nought it was
+        # given, and a rule written as C has to do the same or an engine that
+        # would have gone quiet falls over instead.
+        if not loose:
+            text.append('    if (frame == 0)\n        return 0;\n\n')
+        # Only as much of the frame as this rule has. The interpreter clears
+        # the largest any rule asks for, since it has one piece of code for
+        # all of them; here the shape is known, and the number below is the
+        # same one delta-emit.py takes the largest of. A rule reaching past it
+        # would be reaching outside its own frame either way.
+        text.append('    memset(%s, 0, %d);\n'
+                    % ('own' if loose else 'frame', room))
+        text.append('    memset(arg, 0, sizeof arg);\n')
+        text.append('    memset(&fl, 0, sizeof fl);\n')
+        text.append('    for (i = 0; i < nargs && i < %d; i++)\n' % params)
+        text.append('        memcpy(base + %d + 4 * i, &args[i], 4);\n\n'
+                    % pbase)
         text.append('\n'.join(named))
-        tail = ('' if named and named[-1].strip().startswith('RETURN(')
-                else '\n    RETURN(r0);')
+        out = 'LEAVE' if loose else 'RETURN'
+        tail = ('' if named and named[-1].strip().startswith(out + '(')
+                else '\n    %s(r0);' % out)
         text.append('%s\n}\n\n' % tail)
+        bodies.append((name, ''.join(text)))
         done.append(name)
 
+    # Where each global the rules touch lands in the state. Every file gets
+    # the whole list rather than the part of it that file uses: it is a few
+    # thousand defines, the preprocessor does not care, and working out which
+    # rule touched which would be one more thing that could be wrong.
+    defs = ''
     if USED:
         where = {v: k for k, v in layout().items()}
-        text.insert(1, '/* Where each global the rules touch lands in the'
-                    ' state. */\n%s\n\n'
-                    % '\n'.join('#define DG_%-6s %5d' % (v, where[v])
-                                for v in sorted(USED,
-                                                key=lambda x: where[x])))
-    # The table carries the language, as every other name a module defines
-    # does, because a program may have several in it.
-    text.append('const delta_rule_c %s_delta_rule_native[] = {\n'
-                % census.LANG_TAG)
-    for name in done:
-        text.append('    { %d, evv_%s },\n' % (index_of(name), name))
-    text.append('    { -1, 0 },\n};\n')
+        defs = ('/* Where each global the rules touch lands in the state. */\n'
+                '%s\n\n'
+                % '\n'.join('#define DG_%-6s %5d' % (v, where[v])
+                            for v in sorted(USED, key=lambda x: where[x])))
 
-    open(OUT_C, 'w').write(''.join(text))
+    for n, part in enumerate(share_out(bodies)):
+        text = [HEAD % (PARTS, census.LANG_TAG), defs]
+        for _name, body in part:
+            text.append(body)
+        # The table carries the language, as every other name a module defines
+        # does, because a program may have several in it, and the number of the
+        # file besides, since each holds the rules that landed in it.
+        text.append('const delta_rule_c %s_delta_rule_native_p%02d[] = {\n'
+                    % (census.LANG_TAG, n))
+        for name, _body in part:
+            text.append('    { %d, evv_%s },\n' % (index_of(name), name))
+        text.append('    { -1, 0 },\n};\n')
+        if n == 0:
+            # The pieces gathered, in the one file that is always written.
+            # delta_run_rule walks these once and reads them into an index by
+            # rule number, so what is in which piece never matters afterwards.
+            text.append('\n')
+            for k in range(PARTS):
+                text.append('extern const delta_rule_c '
+                            '%s_delta_rule_native_p%02d[];\n'
+                            % (census.LANG_TAG, k))
+            text.append('\nconst delta_rule_c *const %s_delta_rule_native[] '
+                        '= {\n' % census.LANG_TAG)
+            for k in range(PARTS):
+                text.append('    %s_delta_rule_native_p%02d,\n'
+                            % (census.LANG_TAG, k))
+            text.append('    0,\n};\n')
+        open(part_path(n), 'w').write(''.join(text))
     return done, refused
 
 
+def plants_landing(body):
+    """Whether a backtrack can come back into the middle of this rule.
+
+    Every real rule plants one and no wrapper does, but that is a fact about
+    the language rather than about the machine, so it is read off the rule in
+    front of us. Either spelling counts: fold() writes LANDING where the whole
+    of it is in one place and leaves the save itself where it is not."""
+    return any('LANDING(' in l or 'EVV_LAND_SAVE' in l for l in body)
+
+
+REG_RE = re.compile(r'\br([0-7])\b')
+DEF_RE = re.compile(r'^\s*r([0-7]) = ')
+POP_RE = re.compile(r'^\s*POP\(r[0-7]')
+FLAT_LABEL = re.compile(r'^\s*(L\d+):;\s*$')
+FLAT_GOTO = re.compile(r'^\s*goto (L\d+);\s*$')
+FLAT_BRANCH = re.compile(r'^\s*if \((.*)\) goto (L\d+);\s*$')
+FLAT_CASE = re.compile(r'^\s*case \d+: goto (L\d+);\s*$')
+FLAT_SWITCH = re.compile(r'^\s*switch \(.*\) \{\s*$')
+FLAT_CLOSE = re.compile(r'^\s*\}\s*$')
+
+
+def flat_cfg(flat):
+    """Where each line of the flat form can go next, or None if there is a
+    line here this cannot read.
+
+    Five shapes carry flow and they are all of them: a label, a jump, a jump
+    on a condition, the return, and the switch a backtracking dispatch is
+    written as -- which is a block of arms that each jump, so the switch goes
+    to every one of them and each of those goes to its own label. Anything
+    else in such a block, a default among them, is not a shape this has seen
+    and the answer is to say so rather than to leave an edge out: an edge
+    left out is a path an analysis never looks down."""
+    at = {}
+    for i, line in enumerate(flat):
+        m = FLAT_LABEL.match(line)
+        if m:
+            at[m.group(1)] = i
+
+    n = len(flat)
+    succ = [[] for _ in range(n)]
+    i = 0
+    while i < n:
+        line = flat[i]
+        m = FLAT_GOTO.match(line)
+        if m:
+            succ[i] = [at[m.group(1)]]
+            i += 1
+            continue
+        m = FLAT_BRANCH.match(line)
+        if m:
+            succ[i] = ([i + 1] if i + 1 < n else []) + [at[m.group(2)]]
+            i += 1
+            continue
+        if FLAT_SWITCH.match(line):
+            k = i + 1
+            arms = []
+            while k < n and not FLAT_CLOSE.match(flat[k]):
+                m = FLAT_CASE.match(flat[k])
+                if not m:
+                    return None
+                arms.append(k)
+                succ[k] = [at[m.group(1)]]
+                k += 1
+            if k >= n:
+                return None
+            succ[i] = arms
+            succ[k] = [k + 1] if k + 1 < n else []
+            i = k + 1
+            continue
+        if line.strip().startswith('RETURN('):
+            i += 1
+            continue
+        if i + 1 < n:
+            succ[i] = [i + 1]
+        i += 1
+    return succ
+
+STALE = [0, 0]
+
+
+def _defuse(line):
+    """What one line of the flat form writes and what it reads."""
+    if 'LANDING(' in line or 'EVV_LAND_SAVE' in line:
+        # What the save reads it reads before it, not after; what it leaves
+        # behind is its answer in r0, and the argument depth, which the line
+        # after it puts back.
+        return {0}, set()
+    if 'ENTER(' in line:
+        return {0}, set()
+    if POP_RE.match(line):
+        # Not a write to be counted on. The machine takes nothing off an
+        # empty argument area, and then the register keeps what it had.
+        return set(), set()
+    m = DEF_RE.match(line)
+    if m:
+        # SETLOW and the two byte writers keep the rest of the register, so
+        # they do not match here and count as a read, which is right.
+        return {int(m.group(1))}, {int(x)
+                                   for x in REG_RE.findall(line[m.end():])}
+    return set(), {int(x) for x in REG_RE.findall(line)}
+
+
+def stale_registers(flat):
+    """Which registers a backtrack could leave holding something stale.
+
+    A landing place is come back into from a rule that threw, and only some of
+    what the machine was holding comes back with it: the C compiler may have
+    put a register anywhere, and the save puts back only what the two calling
+    conventions agree belongs to the callee. So a register the rule writes
+    after planting the landing, and reads after coming back to it without
+    writing it first, has to be somewhere the save cannot lose -- which is
+    what volatile is for.
+
+    A register that is only ever written before the landing is not one of
+    those: it holds the same thing on the way back as it did going in, and C
+    says so of any local that is not written between the two.
+
+    What is asked here is the ordinary question of which registers are live
+    where the save returns to, over the rule as flat code with labels. It is
+    asked of every path out of the landing rather than only the one a throw
+    takes, because which of the two the test after the landing chooses is not
+    worth working out: 877 of the 1,042 rules need no register kept either
+    way, and only thirteen need two.
+    """
+    succ = flat_cfg(flat)
+    if succ is None:
+        return set(range(8))
+
+    n = len(flat)
+    df = [None] * n
+    us = [None] * n
+    for i, line in enumerate(flat):
+        df[i], us[i] = _defuse(line)
+
+    live = [set() for _ in range(n)]
+    moved = True
+    while moved:
+        moved = False
+        for i in range(n - 1, -1, -1):
+            out = set()
+            for k in succ[i]:
+                out |= live[k]
+            was = us[i] | (out - df[i])
+            if was != live[i]:
+                live[i] = was
+                moved = True
+
+    bad = set()
+    for i, line in enumerate(flat):
+        if 'LANDING(' in line or 'EVV_LAND_SAVE' in line:
+            bad |= live[i]
+    if bad:
+        STALE[0] += 1
+        STALE[1] += len(bad)
+    return bad
+
+
+ARG_ONE = re.compile(r'^\s*ARG\(.*\);\s*$')
+DROP_N = re.compile(r'^\s*DROP\((\d+)\);\s*$')
+POP_ONE = re.compile(r'^\s*POP\(r[0-7]\);\s*$')
+
+DEEP = [0, 0]
+
+
+def _depth_effect(line):
+    """How far above the depth on entry a line reaches, and what it leaves the
+    depth at, or None where this cannot read the line at all."""
+    if ARG_ONE.match(line):
+        return 1, 1
+    m = DROP_N.match(line)
+    if m:
+        return 0, -int(m.group(1))
+    if POP_ONE.match(line):
+        return 0, -1
+    if 'LANDING(' in line:
+        return 2, 2
+    # The same thing where fold() could not put it in one place: the two
+    # pushes are on the first of its three lines and nothing else moves.
+    if 'int32_t buf' in line:
+        return 2, 2
+    if 'EVV_LAND_SAVE' in line or 'argn = depth' in line:
+        return 0, 0
+    if 'ENTER(' in line:
+        return 6, 0
+    if 'ARG(' in line or 'POP(' in line or 'DROP(' in line or 'argn' in line:
+        return None
+    return 0, 0
+
+
+def argument_depth(flat):
+    """How deep this rule's argument area ever gets.
+
+    The machine keeps one area per rule and the interpreter gives every rule
+    the same 64 words of it, because it has one piece of code for all of them.
+    Here the rule is in front of us, and 3,225 of the 3,377 never get past
+    nine: writing out 64 words and clearing them cost every rule a quarter of
+    a kilobyte of stack and a `rep stosq', on a thread that has sixty-four
+    kilobytes in all and rules that nest deeply.
+
+    What comes back is a bound rather than a guess, and 64 wherever there is
+    any doubt -- a line this cannot read, a loop that pushes more than it lets
+    go, anything at all that reaches the interpreter's own number. Sixty-four
+    is what the code did before, so falling back to it changes nothing.
+    """
+    succ = flat_cfg(flat)
+    if succ is None:
+        return MAXARG
+
+    n = len(flat)
+    eff = []
+    for line in flat:
+        e = _depth_effect(line)
+        if e is None:
+            return MAXARG
+        eff.append(e)
+
+    into = [None] * n
+    into[0] = 0
+    peak = 0
+    work = [0]
+    while work:
+        i = work.pop()
+        v = into[i]
+        p, ch = eff[i]
+        peak = max(peak, v + p)
+        if peak >= MAXARG:
+            return MAXARG
+        out = v + ch
+        out = 0 if out < 0 else out
+        if out >= MAXARG:
+            return MAXARG
+        for k in succ[i]:
+            if into[k] is None or out > into[k]:
+                into[k] = out
+                work.append(k)
+    peak = max(1, min(peak, MAXARG))
+    DEEP[0] += 1
+    DEEP[1] += peak
+    return peak
+
+
+def share_out(bodies):
+    """The rules dealt into PARTS files so that the files are about the same
+    size, since the slowest one is what a build waits for. Largest first into
+    whichever file is smallest so far, which is close enough to even: the
+    biggest rule is 30 kilobytes against a file of four hundred. Each file
+    keeps the rules in the order they were read, so that writing them again
+    gives the same files."""
+    parts = [[] for _ in range(PARTS)]
+    weight = [0] * PARTS
+    for i, (name, body) in sorted(enumerate(bodies),
+                                  key=lambda x: (-len(x[1][1]), x[0])):
+        n = min(range(PARTS), key=lambda k: (weight[k], k))
+        parts[n].append((i, name, body))
+        weight[n] += len(body)
+    return [[(name, body) for _i, name, body in sorted(p)] for p in parts]
 SHAPES = {}
 
 
@@ -1805,8 +2165,14 @@ def main():
           % (TAILED[0], TAILED[1]))
     print('landing places folded: %d, entries folded: %d'
           % (FOLDED[0], FOLDED[1]))
-    print('%d of %d rules written to %s'
-          % (len(done), len(names), os.path.relpath(OUT_C, ROOT)))
+    print('rules where a throw could leave a register stale: %d, registers'
+          ' kept for them: %d' % (STALE[0], STALE[1]))
+    print('rules whose argument area could be bounded: %d, words of it'
+          ' between them: %d' % (DEEP[0], DEEP[1]))
+    print('%d of %d rules written to %s, over %d files'
+          % (len(done), len(names),
+             os.path.relpath(part_path(0), ROOT).replace('c00_', 'cNN_'),
+             PARTS))
     if refused:
         seen = {}
         for name, why in refused:

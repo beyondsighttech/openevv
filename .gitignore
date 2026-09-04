@@ -9,7 +9,9 @@ __pycache__/
 
 # Thirteen megabytes written out of the transcription beside it by
 # tools/delta-decompile.py, and rewritten whole by every change to that tool.
-# `make rules' makes it.
+# `make rules' makes them. Numbered because one translation unit that size
+# cannot be compiled on more than one core.
+lang/*/delta_rules_c[0-9][0-9]_*.c
 lang/*/delta_rules_c_*.c
 
 # Local Windows toolchain (WinLibs mingw-w64 gcc), not part of the project.
@@ -20,3 +22,9 @@ lang/*/delta_rules_c_*.c
 # The ones that are evidence live in test/, under a name and a hash.
 /*.wav
 .freebuff/
+
+# The Japanese language module, lifted by the commands in docs/japanese.md.
+# It stays out of the tree until its romanizer can make an instance, because a
+# module that cannot would fail any build that named it -- and most of it is
+# nine megabytes of the romanizer's dictionary, written by tools/lift-rom.py.
+lang/jajp/
